@@ -1,7 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    <title>Aurelia</title>
+    <script>
+    var is_nodewebkit = (typeof process == "object");
+    if (is_nodewebkit) {
+      window.win = require('nw.gui').Window.get();
+      window.node_global = window.global;
+    }
+    </script>
+    <title>BooguNote5</title>
     <link rel="stylesheet" type="text/css" href="jspm_packages/npm/font-awesome@4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
   </head>

@@ -1,13 +1,15 @@
+import {DataSource} from './data-source';
+
 export class Flat{
-  constructor(){
-    // this.heading = 'Welcome to the Aurelia Navigation App!';
-    // this.firstName = 'John';
-    // this.lastName = 'Doe';
+  static inject() { return [DataSource]; }
+  constructor(dataSource){
+    this.dataSource = dataSource;
     this.params = "";
   }
 
   activate(params, queryString, routeConfig) {
-    this.params = params.id;
-    console.log(params.id);
+    this.id = params.id;
+    console.log(this.id);
+    console.log(this.dataSource.getData(this.id))
   }
 }
