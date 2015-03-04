@@ -11,9 +11,9 @@ export class Flat{
     console.log(params.id);
     var that = this;
     this.dataSource.getData(params.id)
-        .then(function(data) {
+        .then(data => {
           that.content = data;
-        }).catch(function(err) {
+        }).catch(err => {
           console.log(err);
         });
   }
