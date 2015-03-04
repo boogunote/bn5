@@ -1,13 +1,33 @@
 var fs = require("fs");
+var path = require("path");
+var dataPath = "/home/xgao/KuaiPan/bndata/";
+
+function fsReadFilePromise(filePath, options) {
+  var resolve;
+  var reject;
+
+  fs.readFile(filePath, options, function(err, buf) {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve(buf.toString());
+  });
+
+  return new Promise(function(_resolve, _reject) {
+    resolve = _resolve;
+    reject = _reject;
+  });
+};
 
 export class DataSource {
   constructor(){
   }
 
   getData(id) {
-    var dataPath = "/home/xgao/KuaiPan/bndata/";
+  	console.log(id)
     if ('root' == id) {
-      console.log(fs.readFileSync(dataPath+"root.json").toString());
+      return fsReadFilePromise(path.resolve(dataPath,"root.json"));
     };
   }
 }

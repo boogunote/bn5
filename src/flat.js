@@ -4,12 +4,17 @@ export class Flat{
   static inject() { return [DataSource]; }
   constructor(dataSource){
     this.dataSource = dataSource;
-    this.params = "";
+    // this.data = ""
   }
 
   activate(params, queryString, routeConfig) {
-    this.id = params.id;
-    console.log(this.id);
-    console.log(this.dataSource.getData(this.id))
+    console.log(params.id);
+    var that = this;
+    this.dataSource.getData(params.id)
+        .then(function(data) {
+          that.content = data;
+        }).catch(function(err) {
+          console.log(err);
+        });
   }
 }
