@@ -19,7 +19,8 @@ export class App {
     this.router.configure(config => {
       config.title = 'Aurelia';
       config.map([
-        {route: ['','flat/:id'],  moduleId: 'flat', nav: true},
+        {route: ['','index'],  moduleId: 'index', nav: true},
+        {route: ['flat/:id'],  moduleId: 'flat', nav: true},
         {route: ['tree/:id'],     moduleId: 'tree', nav: true}
       ]);
     });
