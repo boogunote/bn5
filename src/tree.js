@@ -1,10 +1,12 @@
 import {DataSource} from './data-source';
+import {TreeParams} from './tree-params';
 
 export class Flat{
-  static inject() { return [DataSource]; }
-  constructor(dataSource){
+  static inject() { return [DataSource, TreeParams]; }
+  constructor(dataSource, treeParams){
     this.dataSource = dataSource;
-    // this.node = {"content" : "", "children" : []};
+    this.treeParams = treeParams;
+    console.log(this.treeParams.path)
   }
 
   activate(params, queryString, routeConfig) {

@@ -1,11 +1,19 @@
-import {Behavior} from 'aurelia-framework';
+import {Behavior,Parent} from 'aurelia-framework';
+import {TreeParams} from './tree-params';
+import {Router} from 'aurelia-router'
 
 export class Index {
-  constructor() {
+  static inject() { return [TreeParams, Parent.of(Router)]; }
+  constructor(treeParams, parentRouter) {
+    this.treeParams = treeParams;
+    this.parentRouter = parentRouter;
   }
 
   open(path) {
     console.log(path);
+    this.treeParams.path = path;
+    // window.location.href = "#/tree/root"
+    this.parentRouter.navigate('tree/root');
   }
 
   new(path) {
