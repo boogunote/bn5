@@ -13,7 +13,7 @@ export class Index {
     console.log(path);
     this.treeParams.path = path;
     // window.location.href = "#/tree/root"
-    this.parentRouter.navigate('tree/root');
+    this.parentRouter.navigate('tree');
   }
 
   new(path) {

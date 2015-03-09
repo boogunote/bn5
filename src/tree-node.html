@@ -1,8 +1,8 @@
 <template>
-  <li>${node.content}</li>
-  <section repeat.for="child_id of node.children">
+  <li><textarea value.bind="node.content" keydown.delegate="onKeyDown($event)"></textarea></li>
+  <section repeat.for="child of node.children">
     <compose
-      model.bind="child_id"
+      model.bind="child"
       view-model="tree-node">
     </compose>
   </section>

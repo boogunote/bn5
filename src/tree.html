@@ -1,10 +1,8 @@
 <template>
-  <!-- <compose model.bind="id" view-model="tree-node"/> -->
-  <h2>${node.content}</h2>
-  <section repeat.for="child_id of node.children">
+  <div repeat.for="child of tree.children">
     <compose
-      model.bind="child_id"
+      model.bind="child"
       view-model="tree-node">
     </compose>
-  </section>
+  </div>
 </template>

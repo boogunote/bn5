@@ -20,8 +20,8 @@ export class App {
       config.title = 'Aurelia';
       config.map([
         {route: ['','index'],  moduleId: 'index', nav: true},
-        {route: ['flat/:id'],  moduleId: 'flat', nav: true},
-        {route: ['tree/:id'],     moduleId: 'tree', nav: true}
+        // {route: ['flat/:id'],  moduleId: 'flat', nav: true},
+        {route: ['tree'],     moduleId: 'tree', nav: true}
       ]);
     });
   }
