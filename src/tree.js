@@ -1,11 +1,13 @@
 import {DataSource} from './data-source';
 import {TreeParams} from './tree-params';
+import {Utility} from './utility';
 
 export class Tree{
-  static inject() { return [DataSource, TreeParams]; }
-  constructor(dataSource, treeParams){
+  static inject() { return [DataSource, TreeParams, Utility]; }
+  constructor(dataSource, treeParams, utility){
     this.dataSource = dataSource;
     this.treeParams = treeParams;
+    this.utility = utility;
   }
 
   activate(params, queryString, routeConfig) {
@@ -15,15 +17,8 @@ export class Tree{
     return this.dataSource.getData(this.treeParams.path)
         .then(jsonData => {
           this.jsonData = jsonData;
-          this.tree = JSON.parse(jsonData);
-          var addParent = function (node, treeVM) {
-            for (var i = 0; node.children && i < node.children.length; i++) {
-              node.children[i].parent = node;
-              node.children[i].treeVM = treeVM;
-              addParent(node.children[i]);
-            };
-          }
-          addParent(this.tree, this);
+          this.treeVM = this;
+          this.node = JSON.parse(jsonData);
         }).catch(err => {
           console.log(err);
         });
@@ -31,5 +26,19 @@ export class Tree{
 
   attached(){
     console.log("attached")
+  }
+
+  addChild(nodeId, before) {
+    var targetId = -1;
+    if (arguments.length == 0) {
+      this.node.children.splice(0, 0, this.utility.createNewNode());
+    } else {
+      for (var i = 0; i < this.node.children.length; i++) {
+        if (this.node.children[i].id == nodeId) {
+          this.node.children.splice(before?i:i+1, 0, this.utility.createNewNode());
+          break;
+        }
+      };
+    }
   }
 }
