@@ -13,8 +13,9 @@ export class Tree{
   activate(params, queryString, routeConfig) {
     console.log("activate");
     console.log(this.treeParams.path);
+    this.path = this.treeParams.path;
     var that = this;
-    return this.dataSource.getData(this.treeParams.path)
+    return this.dataSource.load(this.path)
         .then(jsonData => {
           this.jsonData = jsonData;
           this.treeVM = this;
@@ -40,5 +41,12 @@ export class Tree{
         }
       };
     }
+  }
+
+  save() {
+    this.dataSource.save(this.path, JSON.stringify(this.node))
+        .catch(err => {
+          console.log(err);
+        });
   }
 }

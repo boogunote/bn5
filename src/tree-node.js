@@ -13,8 +13,8 @@ export class TreeNode{
     console.log("TreeNode activate");
     console.log(model)
     this.node = model.node;
-    this.treeVM = model.treeVM;
     this.parentVM = model.parentVM;
+    this.treeVM = model.parentVM.treeVM;
   }
 
   addChild(nodeId, before) {
@@ -32,7 +32,7 @@ export class TreeNode{
   }
 
   onKeyDown(event) {
-    // console.log(event);
+    console.log(event);
     if (13 == event.keyCode) {
       var before = null;
       var child = false;
@@ -49,6 +49,8 @@ export class TreeNode{
         this.parentVM.addChild(this.node.id, before);
       }
       return false;
+    } else if (83 == event.keyCode && event.ctrlKey) {
+      this.treeVM.save();
     }
     return true;
   }

@@ -1,7 +1,7 @@
 <template>
   <div repeat.for="child of node.children">
     <compose
-      model.bind="{'node':child, 'treeVM':$parent.treeVM, 'parentVM':$parent}"
+      model.bind="{'node':child, 'parentVM':$parent}"
       view-model="tree-node">
     </compose>
   </div>

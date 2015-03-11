@@ -20,12 +20,34 @@ function fsReadFilePromise(filePath, options) {
   });
 };
 
+function fsWriteFilePromise(filePath, data, position, encoding) {
+  var resolve;
+  var reject;
+
+  fs.writeFile(filePath, data, position, encoding, function(err, written) {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve(written);
+  });
+
+  return new Promise(function(_resolve, _reject) {
+    resolve = _resolve;
+    reject = _reject;
+  });
+};
+
 export class DataSource {
   constructor(){
   }
 
-  getData(path) {
+  load(path) {
   	console.log(path)
     return fsReadFilePromise(path);
+  }
+
+  save(path, jsonData) {
+    return fsWriteFilePromise(path, jsonData);
   }
 }
