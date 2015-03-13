@@ -11,11 +11,16 @@ export class TreeNode extends Node {
   }
 
   activate(model){
-    console.log("TreeNode activate");
-    console.log(model)
+    // console.log("TreeNode activate");
+    // console.log(model)
     this.node = model.node;
     this.parentVM = model.parentVM;
     this.treeVM = model.parentVM.treeVM;
+  }
+
+  toggle() {
+    // console.log("toggle")
+    this.node.collapsed = !this.node.collapsed;
   }
 
   onKeyDown(event) {
