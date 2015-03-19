@@ -14,8 +14,8 @@ export class Node {
     if (insertPoint != -1) {
       this.childVMList.splice(insertPoint, 0, vm);
     };
-    console.log("this.childVMList")
-    console.log(this.childVMList)
+    // console.log("this.childVMList")
+    // console.log(this.childVMList)
   }
 
   removeChildVM(vm) {
@@ -29,8 +29,8 @@ export class Node {
     if (insertPoint != -1) {
       this.childVMList.splice(insertPoint, 1);
     };
-    console.log("this.childVMList")
-    console.log(this.childVMList)
+    // console.log("this.childVMList")
+    // console.log(this.childVMList)
   }
 
   // addChild(nodeId, before) {

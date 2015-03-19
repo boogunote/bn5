@@ -10,6 +10,7 @@ export class Tree extends Node {
     this.dataSource = dataSource;
     this.operationRecordList = [];
     this.operationRecordList.cursor = -1;
+    this.focusedVM = null;
     this.treeParams = treeParams;
     this.utility = utility;
   }
@@ -33,6 +34,26 @@ export class Tree extends Node {
     console.log("attached")
   }
 
+  delete() {
+    console.log("delete")
+    var selectedVMList = this.getSelectedVMList();
+    console.log(selectedVMList)
+    if (0 >= selectedVMList.length && !!this.focusedVM)
+      selectedVMList.push(this.focusedVM);
+    console.log(selectedVMList)
+    var recordNodeList = [];
+    for (var i = selectedVMList.length - 1; i >= 0 ; i--) {
+      var positionArray = selectedVMList[i].getPositionArray();
+      var nodeRecord = {
+        positionArray : positionArray,
+        node : selectedVMList[i].node
+      }
+      recordNodeList.push(nodeRecord)
+      this.removeNodeAt(positionArray);
+    };
+    this.record(recordNodeList, "remove");
+  }
+
   getVMByPositionArray(positionArray) {
     var vm = this;
     for (var i = 0; i < positionArray.length; i++) {
@@ -42,21 +63,64 @@ export class Tree extends Node {
     return vm;
   }
 
+  getSelectedVMList() {
+    console.log(this)
+    var selectedVMList = [];
+    var visite = function(vm) {
+      if (vm.selected) {
+        selectedVMList.push(vm);
+      } else {
+        for (var i = 0; i < vm.childVMList.length; i++) {
+          visite(vm.childVMList[i])
+        };
+      }
+    }
+    visite(this);
+    return selectedVMList;
+  }
+
   insertNodeAt(positionArray, node) {
-    console.log("insertNodeAt:"+positionArray.toString())
     var positionArray = JSON.parse(JSON.stringify(positionArray)); //clone object
     var insertPosition = positionArray.pop();
     var vm = this.getVMByPositionArray(positionArray);
     vm.node.children.splice(insertPosition, 0, node);
   }
 
+  onKeyDown(event) {
+    console.log(event);
+    if (event.ctrlKey && 46 == event.keyCode) {
+      this.delete();
+      // var positionArray = this.getPositionArray();
+      // var nodeRecord = {
+      //   positionArray : positionArray,
+      //   node : this.node
+      // }
+      // this.treeVM.record([nodeRecord], "remove");
+      // this.treeVM.removeNodeAt(positionArray);
+      return false
+
+    } else if (83 == event.keyCode && event.ctrlKey) {
+      this.treeVM.save();
+      return false;
+    } else if (event.ctrlKey && event.shiftKey && 90 == event.keyCode) {
+      this.treeVM.undo();
+      return false;
+    } else if (event.ctrlKey && event.shiftKey && 89 == event.keyCode) {
+      this.treeVM.redo();
+      return false;
+    }
+    return true;
+  }
+
   removeNodeAt(positionArray) {
     console.log("removeNodeAt:"+positionArray.toString())
-    var positionArray = JSON.parse(JSON.stringify(positionArray)); //clone object
-    var removePosition = positionArray.pop();
+    var parentPositionArray = JSON.parse(JSON.stringify(positionArray)); //clone object
+    var removePosition = parentPositionArray.pop();
     var vm = this.getVMByPositionArray(positionArray);
+    var parentVM = this.getVMByPositionArray(parentPositionArray);
     setTimeout(function() {
-      vm.node.children.splice(removePosition, 1);
+      parentVM.removeChildVM(vm);
+      parentVM.node.children.splice(removePosition, 1);
     }, 0);
   }
 
@@ -87,6 +151,11 @@ export class Tree extends Node {
     //     });
   }
 
+  select(positionArray) {
+    var vm = getVMByPositionArray(positionArray);
+    vm.select();
+  }
+
   redo() {
     console.log("redo")
     // console.log($scope.$operationRecordList)
@@ -94,27 +163,16 @@ export class Tree extends Node {
 
     this.operationRecordList.cursor++;
     var record = this.operationRecordList[this.operationRecordList.cursor];
-    var that = this;
     if ("insert" == record.operation) {
       for (var i = 0; i < record.nodeList.length; i++) {
         this.uncollapsed(record.nodeList[i].positionArray);
         this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
       }
-      // setTimeout(function() {
-      //   for (var i = 0; i < record.nodeList.length; i++) {
-      //     that.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
-      //   }
-      // }, 0);
     } else if ("remove" == record.operation) {
-      for (var i = record.nodeList.length - 1; i >= 0; i--) {
+      for (var i = 0; i < record.nodeList.length; i++) {
         this.uncollapsed(record.nodeList[i].positionArray);
         this.removeNodeAt(record.nodeList[i].positionArray);
       }
-      // setTimeout(function() {
-      //   for (var i = 0; i < record.nodeList.length; i++) {
-      //     that.removeNodeAt(record.nodeList[i].positionArray);
-      //   }
-      // }, 0);
     }
   }
 
@@ -122,27 +180,16 @@ export class Tree extends Node {
     if (this.operationRecordList.cursor < 0) return;
     var record = this.operationRecordList[this.operationRecordList.cursor];
     this.operationRecordList.cursor--;
-    var that = this;
     if ("insert" == record.operation) {
       for (var i = record.nodeList.length - 1; i >= 0; i--) {
         this.uncollapsed(record.nodeList[i].positionArray);
-        that.removeNodeAt(record.nodeList[i].positionArray);
+        this.removeNodeAt(record.nodeList[i].positionArray);
       }
-      // setTimeout(function() {
-      //   for (var i = record.nodeList.length - 1; i >= 0; i--) {
-      //     that.removeNodeAt(record.nodeList[i].positionArray);
-      //   }
-      // }, 0);
     } else if ("remove" == record.operation) {
-      for (var i = record.nodeList.length - 1; i >= 0; i--) {
+      for (var i = record.nodeList.length - 1; i >= 0 ; i--) {
         this.uncollapsed(record.nodeList[i].positionArray);
-        that.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
       }
-      // setTimeout(function() {
-      //   for (var i = record.nodeList.length - 1; i >= 0; i--) {
-      //     that.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
-      //   }
-      // }, 0);
     }
   }
 }

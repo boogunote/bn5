@@ -1,8 +1,10 @@
 <template>
-  <div repeat.for="child of node.children">
-    <compose
-      model.bind="{'node':child, 'parentVM':$parent}"
-      view-model="tree-node">
-    </compose>
+  <div keydown.delegate="onKeyDown($event)">
+    <div repeat.for="child of node.children">
+      <compose
+        model.bind="{'node':child, 'parentVM':$parent}"
+        view-model="tree-node">
+      </compose>
+    </div>
   </div>
 </template>

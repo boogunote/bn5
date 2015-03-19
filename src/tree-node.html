@@ -1,6 +1,6 @@
 <template>
   <span class="tree-node-expand-button glyphicon ${node.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
-  <textarea value.bind="node.content" keydown.delegate="onKeyDown($event)"></textarea>
+  <textarea class="${selected ? 'tree-node-selected':''}" value.bind="node.content" keydown.delegate="onKeyDown($event)" click.delegate="onClick($event)" focus.delegate="onFocus($event)"></textarea>
   <section repeat.for="child of node.children" show.bind="!$parent.node.collapsed">
     <compose
       model.bind="{'node':child, 'parentVM':$parent}"

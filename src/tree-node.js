@@ -7,6 +7,7 @@ export class TreeNode extends Node {
   static inject() { return [DataSource, Utility]; }
   constructor(dataSource, utility){
     super();
+    this.selected = false;
     this.dataSource = dataSource;
     this.utility = utility;
   }
@@ -45,6 +46,17 @@ export class TreeNode extends Node {
     return positionArray;
   }
 
+  onClick(event) {
+    if (event.ctrlKey) {
+      this.select(!this.selected);
+      return true;
+    }
+  }
+
+  onFocus(event) {
+    this.treeVM.focusedVM = this;
+  }
+
   onKeyDown(event) {
     // console.log(event);
     if (13 == event.keyCode) {
@@ -77,22 +89,14 @@ export class TreeNode extends Node {
       //   this.parentVM.addChild(this.node.id, before);
       // }
       // return false;
-    } else if (event.ctrlKey && 46 == event.keyCode) {
-      var positionArray = this.getPositionArray();
-      var nodeRecord = {
-        positionArray : positionArray,
-        node : this.node
-      }
-      this.treeVM.record([nodeRecord], "remove");
-      this.treeVM.removeNodeAt(positionArray);
-
-    } else if (83 == event.keyCode && event.ctrlKey) {
-      this.treeVM.save();
-    } else if (event.ctrlKey && event.shiftKey && 90 == event.keyCode) {
-      this.treeVM.undo();
-    } else if (event.ctrlKey && event.shiftKey && 89 == event.keyCode) {
-      this.treeVM.redo();
-    } 
+    }
     return true;
+  }
+
+  select(selected) {
+    this.selected = selected;
+    for (var i = 0; i < this.childVMList.length; i++) {
+      this.childVMList[i].select(selected);
+    };
   }
 }
