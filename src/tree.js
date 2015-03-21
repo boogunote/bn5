@@ -170,6 +170,10 @@ export class Tree extends Node {
     } else if (67 == event.keyCode && event.ctrlKey && event.shiftKey) {
       this.copy();
       return false;
+    } else if (88 == event.keyCode && event.ctrlKey && event.shiftKey) {
+      this.copy();
+      this.delete();
+      return false;
     } else if (86 == event.keyCode && event.ctrlKey && event.shiftKey) {
       this.paste();
       return false;
