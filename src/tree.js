@@ -186,6 +186,12 @@ export class Tree extends Node {
     } else if (89 == event.keyCode && event.ctrlKey && event.shiftKey) {
       this.redo();
       return false;
+    } else if (187 == event.keyCode && event.altKey) {
+      this.stepIcon(true);
+      return false;
+    } else if (189 == event.keyCode && event.altKey) {
+      this.stepIcon(false);
+      return false;
     }
     return true;
   }
@@ -200,6 +206,16 @@ export class Tree extends Node {
       parentVM.removeChildVM(vm);
       parentVM.node.children.splice(removePosition, 1);
     }, 0);
+  }
+
+  stepIcon(direction) {
+    if (!this.focusedVM) return;
+    if (direction)
+      this.focusedVM.node.icon++;
+    else
+      this.focusedVM.node.icon--;
+    if (this.focusedVM.node.icon > 7) this.focusedVM.node.icon = 0;
+    if (this.focusedVM.node.icon < 0) this.focusedVM.node.icon = 7;
   }
 
   uncollapsed(positionArray) {

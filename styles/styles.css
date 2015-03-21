@@ -71,11 +71,17 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 .tree-node {
 }
 
+.tree-node-child-list {
+    /*margin-left-left: 50px;*/
+    padding-left: 20px;
+}
+
 .tree-node-wrapper {
     /*position: relative;
     margin-left: 20px;*/
     display: -webkit-flex;
     display: flex;
+    margin-top: 5px;
 }
 
 .tree-node-icon-container {
