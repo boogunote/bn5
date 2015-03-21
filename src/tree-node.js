@@ -4,10 +4,11 @@ import {Node} from './node';
 import {Utility} from './utility';
 
 export class TreeNode extends Node {
-  static inject() { return [DataSource, Utility]; }
-  constructor(dataSource, utility){
+  static inject() { return [Element, DataSource, Utility]; }
+  constructor(element, dataSource, utility){
     super();
     this.selected = false;
+    this.element = element;
     this.dataSource = dataSource;
     this.utility = utility;
   }
@@ -83,6 +84,10 @@ export class TreeNode extends Node {
         node : newNode
       }
       this.treeVM.record([nodeRecord], "insert");
+      var that = this;
+      setTimeout(function() {
+        that.treeVM.focusNodeAt(positionArray);
+      }, 0);
 
       return false;
       

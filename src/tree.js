@@ -81,6 +81,12 @@ export class Tree extends Node {
     this.record(recordNodeList, "remove");
   }
 
+  focusNodeAt(positionArray) {
+    var vm = this.getVMByPositionArray(positionArray);
+    if (vm)
+      vm.element.getElementsByTagName("textarea")[0].focus();
+  }
+
   paste() {
     if (!this.focusedVM) return;
     var clipboardData = localStorage.getItem("clipboardData");
@@ -146,7 +152,7 @@ export class Tree extends Node {
   }
 
   onKeyDown(event) {
-    console.log(event);
+    // console.log(event);
     if (event.ctrlKey && 46 == event.keyCode) {
       this.delete();
       // var positionArray = this.getPositionArray();
@@ -212,7 +218,8 @@ export class Tree extends Node {
   }
 
   save() {
-    console.log(this.operationRecordList)
+    console.log(this.focusedVM.element);
+    // console.log(this.operationRecordList)
     // this.dataSource.save(this.path, JSON.stringify(this.node))
     //     .catch(err => {
     //       console.log(err);
