@@ -46,6 +46,10 @@ export class TreeNode extends Node {
     return positionArray;
   }
 
+  onBlur(event) {
+    this.treeVM.focusedVM = null;
+  }
+
   onClick(event) {
     if (event.ctrlKey) {
       this.select(!this.selected);

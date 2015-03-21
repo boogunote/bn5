@@ -34,6 +34,33 @@ export class Tree extends Node {
     console.log("attached")
   }
 
+  clearNodeState() {
+    var visite = function(vm) {
+      vm.selected = false;
+      for (var i = 0; i < vm.childVMList.length; i++) {
+        visite(vm.childVMList[i])
+      }
+    }
+    visite(this);
+  }
+
+  copy() {
+    var selectedVMList = this.getSelectedVMList();
+    if (0 >= selectedVMList.length && !!this.focusedVM)
+      selectedVMList.push(this.focusedVM);
+    var copiedNodeList = [];
+    for (var i = 0; i < selectedVMList.length; i++) {
+      copiedNodeList.push({
+        file : this.path,
+        node : selectedVMList[i].node
+      });
+    };
+    delete localStorage.clipboardData;
+    localStorage.clipboardData = undefined;
+    localStorage.clipboardData = JSON.stringify(copiedNodeList);
+    console.log(localStorage.clipboardData);
+  }
+
   delete() {
     console.log("delete")
     var selectedVMList = this.getSelectedVMList();
@@ -52,6 +79,38 @@ export class Tree extends Node {
       this.removeNodeAt(positionArray);
     };
     this.record(recordNodeList, "remove");
+  }
+
+  paste() {
+    if (!this.focusedVM) return;
+    var clipboardData = localStorage.getItem("clipboardData");
+    if (!clipboardData) return;
+    var copiedNodeList = JSON.parse(clipboardData);
+
+    this.clearNodeState();
+    var positionArray = this.focusedVM.getPositionArray();
+    positionArray[positionArray.length-1]++;
+    var nodeRecordList = [];
+    for (var i = 0; i < copiedNodeList.length; i++) {
+      // console.log(positionArray)
+      var that = this
+      var visite = function(node) {
+        node.id = that.utility.getUniqueId();
+        for (var i = 0; i < node.children.length; i++) {
+          visite(node.children[i]);
+        };
+      }
+      visite(copiedNodeList[i].node)
+      this.insertNodeAt(positionArray, copiedNodeList[i].node);
+      var nodeRecord = {
+        positionArray : JSON.parse(JSON.stringify(positionArray)),
+        node : copiedNodeList[i].node
+      }
+      nodeRecordList.push(nodeRecord);
+      positionArray[positionArray.length-1]++;
+    };
+
+    this.record(nodeRecordList, "insert");
   }
 
   getVMByPositionArray(positionArray) {
@@ -99,14 +158,23 @@ export class Tree extends Node {
       // this.treeVM.removeNodeAt(positionArray);
       return false
 
+    } else if (27 == event.keyCode) {
+      this.clearNodeState();
+      return false;
+    } else if (67 == event.keyCode && event.ctrlKey && event.shiftKey) {
+      this.copy();
+      return false;
+    } else if (86 == event.keyCode && event.ctrlKey && event.shiftKey) {
+      this.paste();
+      return false;
     } else if (83 == event.keyCode && event.ctrlKey) {
-      this.treeVM.save();
+      this.save();
       return false;
-    } else if (event.ctrlKey && event.shiftKey && 90 == event.keyCode) {
-      this.treeVM.undo();
+    } else if (90 == event.keyCode && event.ctrlKey && event.shiftKey) {
+      this.undo();
       return false;
-    } else if (event.ctrlKey && event.shiftKey && 89 == event.keyCode) {
-      this.treeVM.redo();
+    } else if (89 == event.keyCode && event.ctrlKey && event.shiftKey) {
+      this.redo();
       return false;
     }
     return true;
