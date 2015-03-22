@@ -24,8 +24,19 @@ export class TreeNode extends Node {
     this.parentVM.addChildVM(this)
   }
 
+  foldNode(fold) {
+    var ta = this.element.children[0].children[1]
+    if (!fold)
+      autosize(ta);
+    else {
+      var evt = document.createEvent('Event');
+      evt.initEvent('autosize.destroy', true, false);
+      ta.dispatchEvent(evt);
+      ta.style.height = ta.scrollHeight;
+    }
+  }
   attached() {
-    autosize(this.element.children[0].children[1]);
+    this.foldNode(this.node.fold);
   }
 
   deactivate() {
@@ -69,7 +80,7 @@ export class TreeNode extends Node {
   }
 
   onKeyDown(event) {
-    // console.log(event);
+     console.log(event);
     if (13 == event.keyCode) {
       var before = null;
       var child = false;
@@ -104,6 +115,9 @@ export class TreeNode extends Node {
       //   this.parentVM.addChild(this.node.id, before);
       // }
       // return false;
+    } else if (83 == event.keyCode && event.altKey) {
+      this.node.fold = !this.node.fold;
+      this.foldNode(this.node.fold);
     }
     return true;
   }

@@ -112,7 +112,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 
 .tree-textarea {
     /*width: 100%;*/
-    border:0px;
+    overflow: hidden;
+    resize: none;
+    border: 0px;
+    margin-right: 5px;
     box-sizing:border-box;
     -webkit-flex: 1;
           flex: 1;
