@@ -84,7 +84,8 @@ export class Tree extends Node {
   focusNodeAt(positionArray) {
     var vm = this.getVMByPositionArray(positionArray);
     if (vm)
-      vm.element.getElementsByTagName("textarea")[0].focus();
+      vm.element.children[0].children[1].focus(); // focus textarea
+      // vm.element.getElementsByTagName("textarea")[0].focus();
   }
 
   paste() {

@@ -2,6 +2,7 @@ import {Behavior} from 'aurelia-framework';
 import {DataSource} from './data-source';
 import {Node} from './node';
 import {Utility} from './utility';
+import 'jquery-autosize';
 
 export class TreeNode extends Node {
   static inject() { return [Element, DataSource, Utility]; }
@@ -9,6 +10,7 @@ export class TreeNode extends Node {
     super();
     this.selected = false;
     this.element = element;
+    console.log(element)
     this.dataSource = dataSource;
     this.utility = utility;
   }
@@ -20,6 +22,10 @@ export class TreeNode extends Node {
     this.parentVM = model.parentVM;
     this.treeVM = model.parentVM.treeVM;
     this.parentVM.addChildVM(this)
+  }
+
+  attached() {
+    autosize(this.element.children[0].children[1]);
   }
 
   deactivate() {

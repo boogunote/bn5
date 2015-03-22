@@ -54,7 +54,8 @@
       "aurelia-router": "github:aurelia/router@^0.5.7",
       "aurelia/task-queue": "github:aurelia/task-queue@^0.2.4",
       "bootstrap": "github:twbs/bootstrap@^3.3.1",
-      "font-awesome": "npm:font-awesome@^4.3.0"
+      "font-awesome": "npm:font-awesome@^4.3.0",
+      "jquery-autosize": "github:jackmoore/autosize@^2.0.0"
     }
   }
 }
