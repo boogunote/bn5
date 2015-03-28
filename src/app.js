@@ -19,9 +19,10 @@ export class App {
     this.router.configure(config => {
       config.title = 'Aurelia';
       config.map([
-        {route: ['','index'],  moduleId: 'index', nav: true},
+        {route: ['index'],  moduleId: 'index', nav: true},
         // {route: ['flat/:id'],  moduleId: 'flat', nav: true},
-        {route: ['tree'],     moduleId: 'tree', nav: true}
+        {route: ['tree'],     moduleId: 'tree', nav: true},
+        {route: ['','login'],     moduleId: 'login', nav: true}
       ]);
     });
   }

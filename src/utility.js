@@ -19,6 +19,11 @@ export class Utility {
       for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
       return result;
     }
+    // TODO: Replace with Firebase.ServerValue.TIMESTAMP.
     return new Date().getTime().toString() + "-" + randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  }
+
+  clone(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 }
