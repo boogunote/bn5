@@ -12,7 +12,7 @@ export class Login {
   login() {
     console.log("login");
     // var hash = window.location.hash;
-    var ref = new Firebase(this.config.firebase_url);
+    var ref = new Firebase(this.common.firebase_url);
     ref.authWithPassword({
       email    : $("#login-username").val(),
       password : $("#login-password").val()

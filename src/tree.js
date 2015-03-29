@@ -2,32 +2,68 @@ import {DataSource} from './data-source';
 import {Node} from './node';
 import {TreeParams} from './tree-params';
 import {Utility} from './utility';
+import {Common} from './common'
 
 export class Tree extends Node {
-  static inject() { return [DataSource, TreeParams, Utility]; }
-  constructor(dataSource, treeParams, utility){
+  static inject() { return [DataSource, TreeParams, Common, Utility]; }
+  constructor(dataSource, treeParams, common, utility){
     super();
     this.dataSource = dataSource;
     this.operationRecordList = [];
     this.operationRecordList.cursor = -1;
     this.focusedVM = null;
     this.treeParams = treeParams;
+    this.common = common;
     this.utility = utility;
+
+    this.treeVM = this;
   }
 
   activate(params, queryString, routeConfig) {
-    console.log("activate");
-    console.log(this.treeParams.path);
-    this.path = this.treeParams.path;
-    var that = this;
-    return this.dataSource.load(this.path)
-        .then(jsonData => {
-          this.jsonData = jsonData;
-          this.treeVM = this;
-          this.node = JSON.parse(jsonData);
-        }).catch(err => {
-          console.log(err);
-        });
+    console.log('activate');
+    // console.log("params")
+    // console.log(params)
+    if ('online' == params.type) {
+      var ref = new Firebase(this.common.firebase_url);
+      var authData = ref.getAuth();
+      // console.log("authData")
+      // console.log(authData)
+      if (!authData) return;
+      var fileRef = ref.child('notes').child('users').child(authData.uid).child('files').child(params.file_id);
+      // var fileRef = new Firebase("https://boogutest.firebaseio.com/notes/users/simplelogin:38/files/1427561345308-YTCDy");
+      // console.log("fileRef")
+      // console.log(fileRef)
+      var that = this;
+      fileRef.once('value', function(dataSnapshot) {
+        console.log("dataSnapshot.val()");
+        console.log(dataSnapshot.val());
+        var tree = that.createTreeFromOnlineData("root", dataSnapshot.val().nodes);
+        console.log("tree")
+        console.log(tree)
+        that.realTree = tree;
+        if (params.root_id) {
+          that.node = that.getNodeDataById(tree, params.root_id)
+          console.log("that.node")
+          console.log(that.node)
+        } else {
+          that.node = tree;
+        }
+      }, function(error) {
+        console.log(JSON.stringify(error))
+      });
+    }
+    else if (window.is_nodewebkit) {
+      console.log(this.treeParams.path);
+      this.path = this.treeParams.path;
+      var that = this;
+      return this.dataSource.load(this.path)
+          .then(jsonData => {
+            this.jsonData = jsonData;
+            this.node = JSON.parse(jsonData);
+          }).catch(err => {
+            console.log(err);
+          });
+    }
   }
 
   attached(){
@@ -59,6 +95,34 @@ export class Tree extends Node {
     localStorage.clipboardData = undefined;
     localStorage.clipboardData = JSON.stringify(copiedNodeList);
     console.log(localStorage.clipboardData);
+  }
+
+  createTreeFromOnlineData(nodeId, onlineNotesList) {
+    function visite(nodeId, onlineNotesList) {
+      var newNode = new Object();
+      var node = onlineNotesList[nodeId];
+      function copyAttributes(newNode, node, attrName) {
+        // console.log(node[attrName])
+        if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
+        // console.log(newNode[attrName])
+      }
+      var attrList = ["collapsed", "content", "fold", "icon", "id"];
+      // console.log("copyAttributes")
+      for (var i = 0; i < attrList.length; i++) {
+        copyAttributes(newNode, node, attrList[i]);
+      };
+      newNode.children = [];
+      // console.log("newNode")
+      // console.log(newNode)
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        var child = visite(node.children[i], onlineNotesList);
+        child.parent = newNode;
+        newNode.children.push(child);
+      };
+      return newNode;
+    }
+    var tree = visite(nodeId, onlineNotesList);
+    return tree;
   }
 
   delete() {
@@ -118,6 +182,20 @@ export class Tree extends Node {
     };
 
     this.record(nodeRecordList, "insert");
+  }
+
+  getNodeDataById(tree, id) {
+    function visite(node) {
+      if (id == node.id) return node;
+      var ret = null;
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        ret = visite(node.children[i]);
+        if (!ret) break;
+      };
+      return ret;
+    }
+
+    return visite(tree);
   }
 
   getVMByPositionArray(positionArray) {

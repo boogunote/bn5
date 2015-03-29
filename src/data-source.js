@@ -1,11 +1,9 @@
-var fs = require("fs");
-var path = require("path");
-var dataPath = "/home/xgao/KuaiPan/bndata/";
 
 function fsReadFilePromise(filePath, options) {
   var resolve;
   var reject;
 
+  var fs = require("fs");
   fs.readFile(filePath, options, function(err, buf) {
     if (err) {
       reject(err);
@@ -24,6 +22,7 @@ function fsWriteFilePromise(filePath, data, position, encoding) {
   var resolve;
   var reject;
 
+  var fs = require("fs");
   fs.writeFile(filePath, data, position, encoding, function(err, written) {
     if (err) {
       reject(err);
