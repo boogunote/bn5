@@ -1,5 +1,11 @@
+import 'firebase'
+
 export class Utility {
   constructor(){
+  }
+
+  clone(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
 
   createNewNode() {
@@ -23,7 +29,7 @@ export class Utility {
     return new Date().getTime().toString() + "-" + randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   }
 
-  clone(obj) {
-    return JSON.parse(JSON.stringify(obj));
+  now() {
+    return new Date().getTime();
   }
 }

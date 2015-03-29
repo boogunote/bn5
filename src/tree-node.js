@@ -80,7 +80,7 @@ export class TreeNode extends Node {
   }
 
   onKeyDown(event) {
-     console.log(event);
+     // console.log(event);
     if (13 == event.keyCode) {
       var before = null;
       var child = false;

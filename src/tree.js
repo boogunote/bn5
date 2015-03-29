@@ -21,6 +21,8 @@ export class Tree extends Node {
 
   activate(params, queryString, routeConfig) {
     console.log('activate');
+    this.file_id = params.file_id;
+    this.root_id = params.root_id;
     // console.log("params")
     // console.log(params)
     if ('online' == params.type) {
@@ -29,7 +31,7 @@ export class Tree extends Node {
       // console.log("authData")
       // console.log(authData)
       if (!authData) return;
-      var fileRef = ref.child('notes').child('users').child(authData.uid).child('files').child(params.file_id);
+      var fileRef = ref.child('notes').child('users').child(authData.uid).child('files').child(this.file_id);
       // var fileRef = new Firebase("https://boogutest.firebaseio.com/notes/users/simplelogin:38/files/1427561345308-YTCDy");
       // console.log("fileRef")
       // console.log(fileRef)
@@ -38,11 +40,12 @@ export class Tree extends Node {
         console.log("dataSnapshot.val()");
         console.log(dataSnapshot.val());
         var tree = that.createTreeFromOnlineData("root", dataSnapshot.val().nodes);
+        that.addObserver(tree, 500);
         console.log("tree")
         console.log(tree)
         that.realTree = tree;
-        if (params.root_id) {
-          that.node = that.getNodeDataById(tree, params.root_id)
+        if (that.root_id) {
+          that.node = that.getNodeDataById(tree, that.root_id)
           console.log("that.node")
           console.log(that.node)
         } else {
@@ -66,8 +69,60 @@ export class Tree extends Node {
     }
   }
 
-  attached(){
+  attached() {
     console.log("attached")
+  }
+
+  addObserver(node) {
+    var that = this;
+    function visite(node) {
+      // var monitoring = false;
+      // var createTime = that.utility.now();
+      var observer =  function(changes) {
+        var pass = true;
+        for (var i = 0; i < changes.length; i++) {
+          // console.log("changes[i].name")
+          // console.log(changes[i].name)
+          var bypassList = ["observer", "children_observer", "__observer__",
+              "__observers__", "__array_observer__"];
+          for (var j = 0; j < bypassList.length; j++) {
+            if (changes[i].name == bypassList[j]) {
+              pass = false;
+              break;
+            }
+          };
+        };
+        if (!pass) return;
+        // console.log(changes)
+        // if (!monitoring)
+        //   if (that.utility.now() - createTime > waitingTime) {
+        //     monitoring = true;
+        //   }
+        //   else
+        //     return;
+        // console.log(changes)
+        var newNode = that.clonAttributesWithoutChildren(node);
+        newNode.children = [];
+        for (var i = 0; node.children && i < node.children.length; i++) {
+          newNode.children.push(node.children[i].id)
+        };
+        var ref = new Firebase(that.common.firebase_url);
+        var authData = ref.getAuth();
+        var nodeRef = ref.child("notes").child("users").child(authData.uid)
+            .child("files").child(that.file_id).child("nodes").child(node.id);
+        nodeRef.set(newNode)
+      }
+      node.observer = observer;
+      node.children_observer = observer;
+      Object.observe(node, observer);
+      Object.observe(node.children, observer);
+
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        visite(node.children[i]);
+      };
+    }
+
+    visite(node);
   }
 
   clearNodeState() {
@@ -78,6 +133,18 @@ export class Tree extends Node {
       }
     }
     visite(this);
+  }
+
+  clonAttributesWithoutChildren(node) {
+    var newNode = new Object;
+    function copyAttributes(newNode, node, attrName) {
+      if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
+    }
+    var attrList = ["collapsed", "content", "fold", "icon", "id"];
+    for (var i = 0; i < attrList.length; i++) {
+      copyAttributes(newNode, node, attrList[i]);
+    };
+    return newNode;
   }
 
   copy() {
@@ -98,19 +165,10 @@ export class Tree extends Node {
   }
 
   createTreeFromOnlineData(nodeId, onlineNotesList) {
+    var that = this;
     function visite(nodeId, onlineNotesList) {
-      var newNode = new Object();
       var node = onlineNotesList[nodeId];
-      function copyAttributes(newNode, node, attrName) {
-        // console.log(node[attrName])
-        if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
-        // console.log(newNode[attrName])
-      }
-      var attrList = ["collapsed", "content", "fold", "icon", "id"];
-      // console.log("copyAttributes")
-      for (var i = 0; i < attrList.length; i++) {
-        copyAttributes(newNode, node, attrList[i]);
-      };
+      var newNode = that.clonAttributesWithoutChildren(node);
       newNode.children = [];
       // console.log("newNode")
       // console.log(newNode)
@@ -224,10 +282,33 @@ export class Tree extends Node {
   }
 
   insertNodeAt(positionArray, node) {
+    console.log("insertNodeAt")
     var positionArray = JSON.parse(JSON.stringify(positionArray)); //clone object
     var insertPosition = positionArray.pop();
     var vm = this.getVMByPositionArray(positionArray);
-    vm.node.children.splice(insertPosition, 0, node);
+    var newNode = this.utility.clone(node); // To monitor the new node.
+    this.addObserver(newNode, 70);
+    vm.node.children.splice(insertPosition, 0, newNode);
+    // Save to server
+    var that = this;
+    var visite = function(node) {
+      console.log("save")
+      console.log("node")
+      var newNode = that.clonAttributesWithoutChildren(node);
+      newNode.children = [];
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        newNode.children.push(node.children[i].id)
+      };
+      var ref = new Firebase(that.common.firebase_url);
+      var authData = ref.getAuth();
+      var nodeRef = ref.child("notes").child("users").child(authData.uid)
+          .child("files").child(that.file_id).child("nodes").child(node.id);
+      nodeRef.set(newNode)
+      for (var i = 0; i < node.children.length; i++) {
+        visite(node.children[i]);
+      };
+    }
+    visite(newNode);
   }
 
   onKeyDown(event) {
@@ -281,10 +362,35 @@ export class Tree extends Node {
     var removePosition = parentPositionArray.pop();
     var vm = this.getVMByPositionArray(positionArray);
     var parentVM = this.getVMByPositionArray(parentPositionArray);
+    var that = this;
     setTimeout(function() {
       parentVM.removeChildVM(vm);
-      parentVM.node.children.splice(removePosition, 1);
+      var removedNodes = parentVM.node.children.splice(removePosition, 1);
+      console.log("removedNodes")
+      console.log(removedNodes)
+      for (var i = 0; removedNodes && i < removedNodes.length; i++) {
+        that.removeObserver(removedNodes[i]);
+        // Remove from server
+        var visite = function(node) {
+          var ref = new Firebase(that.common.firebase_url);
+          var authData = ref.getAuth();
+          var nodeRef = ref.child("notes").child("users").child(authData.uid)
+              .child("files").child(that.file_id).child("nodes").child(node.id);
+          nodeRef.remove();
+          for (var i = 0; i < node.children.length; i++) {
+            visite(node.children[i]);
+          };
+        }
+        visite(removedNodes[i]);
+      };
+
+      
     }, 0);
+  }
+
+  removeObserver(node) {
+    Object.unobserve(node, node.observer);
+    Object.unobserve(node.children, node.children_observer);
   }
 
   stepIcon(direction) {
