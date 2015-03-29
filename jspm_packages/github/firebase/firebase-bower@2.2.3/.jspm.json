@@ -1,0 +1,8 @@
+{
+  "jspm": {
+    "main": "firebase",
+    "registry": "jspm"
+  },
+  "main": "firebase",
+  "registry": "jspm"
+}
