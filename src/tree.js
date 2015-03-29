@@ -40,7 +40,7 @@ export class Tree extends Node {
         console.log("dataSnapshot.val()");
         console.log(dataSnapshot.val());
         var tree = that.createTreeFromOnlineData("root", dataSnapshot.val().nodes);
-        that.addObserver(tree, 500);
+        that.addObserver(tree);
         console.log("tree")
         console.log(tree)
         that.realTree = tree;
@@ -101,7 +101,7 @@ export class Tree extends Node {
         //   else
         //     return;
         // console.log(changes)
-        var newNode = that.clonAttributesWithoutChildren(node);
+        var newNode = that.cloneAttributesWithoutChildren(node);
         newNode.children = [];
         for (var i = 0; node.children && i < node.children.length; i++) {
           newNode.children.push(node.children[i].id)
@@ -135,7 +135,20 @@ export class Tree extends Node {
     visite(this);
   }
 
-  clonAttributesWithoutChildren(node) {
+  cloneNode(node) {
+    var that = this;
+    function visite(node) {
+      var newNode = that.cloneAttributesWithoutChildren(node);
+      newNode.children = [];
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        newNode.children.push(visite(node.children[i]));
+      };
+      return newNode;
+    }
+    return visite(node);
+  }
+
+  cloneAttributesWithoutChildren(node) {
     var newNode = new Object;
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
@@ -168,7 +181,7 @@ export class Tree extends Node {
     var that = this;
     function visite(nodeId, onlineNotesList) {
       var node = onlineNotesList[nodeId];
-      var newNode = that.clonAttributesWithoutChildren(node);
+      var newNode = that.cloneAttributesWithoutChildren(node);
       newNode.children = [];
       // console.log("newNode")
       // console.log(newNode)
@@ -195,8 +208,10 @@ export class Tree extends Node {
       var positionArray = selectedVMList[i].getPositionArray();
       var nodeRecord = {
         positionArray : positionArray,
-        node : selectedVMList[i].node
+        node : this.cloneNode(selectedVMList[i].node)
       }
+      // console.log("testssssssssssssssssssss")
+      // console.log(nodeRecord)
       recordNodeList.push(nodeRecord)
       this.removeNodeAt(positionArray);
     };
@@ -233,7 +248,7 @@ export class Tree extends Node {
       this.insertNodeAt(positionArray, copiedNodeList[i].node);
       var nodeRecord = {
         positionArray : JSON.parse(JSON.stringify(positionArray)),
-        node : copiedNodeList[i].node
+        node : this.cloneNode(copiedNodeList[i].node)
       }
       nodeRecordList.push(nodeRecord);
       positionArray[positionArray.length-1]++;
@@ -287,14 +302,14 @@ export class Tree extends Node {
     var insertPosition = positionArray.pop();
     var vm = this.getVMByPositionArray(positionArray);
     var newNode = this.utility.clone(node); // To monitor the new node.
-    this.addObserver(newNode, 70);
+    this.addObserver(newNode);
     vm.node.children.splice(insertPosition, 0, newNode);
     // Save to server
     var that = this;
     var visite = function(node) {
       console.log("save")
       console.log("node")
-      var newNode = that.clonAttributesWithoutChildren(node);
+      var newNode = that.cloneAttributesWithoutChildren(node);
       newNode.children = [];
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(node.children[i].id)
@@ -419,7 +434,6 @@ export class Tree extends Node {
     this.operationRecordList.splice(this.operationRecordList.cursor+1);
     this.operationRecordList.push(record);
     this.operationRecordList.cursor++;
-    //console.log($scope.$operationRecordList)
   }
 
   save() {
