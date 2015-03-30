@@ -45,6 +45,7 @@ export class Tree extends Node {
         console.log(dataSnapshot.val());
         var tree = that.createTreeFromOnlineData("root", dataSnapshot.val().nodes);
         that.addObserver(tree);
+        that.addMonitor(tree);
         console.log("tree")
         console.log(tree)
         that.realTree = tree;
@@ -77,6 +78,34 @@ export class Tree extends Node {
     console.log("attached")
   }
 
+  addMonitor(node) {
+    console.log("this.common.firebase_url")
+    console.log(this.common.firebase_url)
+    var ref = new Firebase(this.common.firebase_url);
+    console.log(ref)
+    var that = this;
+    function visite(node) {
+      var fileRef = ref.child(that.filePath);
+      var nodeRef = fileRef.child("nodes").child(node.id);
+      // TODO: hard to remove it when removeNodeAt();
+      nodeRef.on("value", function(dataSnapshot) {
+        // console.log("dataSnapshot");
+        // console.log(dataSnapshot.val());
+        that.cloneAttributesWithoutChildren(node, dataSnapshot.val());
+      });
+      nodeRef.child("children").on("value", function(dataSnapshot) {
+        console.log("children dataSnapshot");
+        console.log(dataSnapshot.val());
+      });
+      for (var i = 0; node.children && i < node.children.length; i++) {
+        visite(node.children[i]);
+      };
+    }
+
+    visite(node);
+  }
+
+
   addObserver(node) {
     var that = this;
     function visite(node) {
@@ -105,7 +134,8 @@ export class Tree extends Node {
         //   else
         //     return;
         // console.log(changes)
-        var newNode = that.cloneAttributesWithoutChildren(node);
+        var newNode = new Object();
+        that.cloneAttributesWithoutChildren(newNode, node);
         newNode.children = [];
         for (var i = 0; node.children && i < node.children.length; i++) {
           newNode.children.push(node.children[i].id)
@@ -142,7 +172,8 @@ export class Tree extends Node {
   cloneNode(node) {
     var that = this;
     function visite(node) {
-      var newNode = that.cloneAttributesWithoutChildren(node);
+      var newNode = new Object();
+      that.cloneAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(visite(node.children[i]));
@@ -152,8 +183,7 @@ export class Tree extends Node {
     return visite(node);
   }
 
-  cloneAttributesWithoutChildren(node) {
-    var newNode = new Object;
+  cloneAttributesWithoutChildren(newNode, node) {
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
@@ -161,7 +191,6 @@ export class Tree extends Node {
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
-    return newNode;
   }
 
   copy() {
@@ -186,7 +215,8 @@ export class Tree extends Node {
     function visite(nodeId, onlineNotesList) {
       var node = onlineNotesList[nodeId];
       if (!node) return null;
-      var newNode = that.cloneAttributesWithoutChildren(node);
+      var newNode = new Object();
+      that.cloneAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       // console.log("newNode")
       // console.log(newNode)
@@ -315,7 +345,8 @@ export class Tree extends Node {
     var visite = function(node) {
       console.log("save")
       console.log("node")
-      var newNode = that.cloneAttributesWithoutChildren(node);
+      var newNode = new Object();
+      that.cloneAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(node.children[i].id)
