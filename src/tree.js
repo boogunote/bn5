@@ -17,6 +17,7 @@ export class Tree extends Node {
     this.utility = utility;
 
     this.treeVM = this;
+    this.filePath = null;
   }
 
   activate(params, queryString, routeConfig) {
@@ -31,7 +32,10 @@ export class Tree extends Node {
       // console.log("authData")
       // console.log(authData)
       if (!authData) return;
-      var fileRef = ref.child('notes').child('users').child(authData.uid).child('files').child(this.file_id);
+      this.filePath = '/notes/users/' + authData.uid + '/files/' + this.file_id;
+      console.log("this.filePath")
+      console.log(this.filePath)
+      var fileRef = ref.child(this.filePath);
       // var fileRef = new Firebase("https://boogutest.firebaseio.com/notes/users/simplelogin:38/files/1427561345308-YTCDy");
       // console.log("fileRef")
       // console.log(fileRef)
@@ -181,12 +185,14 @@ export class Tree extends Node {
     var that = this;
     function visite(nodeId, onlineNotesList) {
       var node = onlineNotesList[nodeId];
+      if (!node) return null;
       var newNode = that.cloneAttributesWithoutChildren(node);
       newNode.children = [];
       // console.log("newNode")
       // console.log(newNode)
       for (var i = 0; node.children && i < node.children.length; i++) {
         var child = visite(node.children[i], onlineNotesList);
+        if (!child) continue;
         child.parent = newNode;
         newNode.children.push(child);
       };
