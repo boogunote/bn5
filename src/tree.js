@@ -91,12 +91,50 @@ export class Tree extends Node {
       nodeRef.on("value", function(dataSnapshot) {
         // console.log("dataSnapshot");
         // console.log(dataSnapshot.val());
-        that.cloneAttributesWithoutChildren(node, dataSnapshot.val());
+        that.copyAttributesWithoutChildren(node, dataSnapshot.val());
       });
+
+      // Monit children
       nodeRef.child("children").on("value", function(dataSnapshot) {
-        console.log("children dataSnapshot");
-        console.log(dataSnapshot.val());
-      });
+        console.log("children dataSnapshot1111111111111111111");
+        var newChildrenIdList = dataSnapshot.val();
+        console.log(newChildrenIdList)
+        if (!newChildrenIdList || newChildrenIdList.length <= 0) return;
+        var ref = new Firebase(that.common.firebase_url);
+        that.filePath = '/notes/users/' + ref.getAuth().uid + '/files/' + that.file_id;
+        var fileRef = ref.child(that.filePath);
+        fileRef.once('value', function(dataSnapshotFile) {
+          var fileNodes = dataSnapshotFile.val().nodes;
+          var newChildren = [];
+          for (var i = 0; i < newChildrenIdList.length; i++) {
+            var has = false
+            for (var j = 0; node.children && j < node.children.length; j++) {
+              if (newChildrenIdList[i] == node.children[j]) {
+                has = true;
+                newChildren.push(node.children[j]);
+                break;
+              }
+            };
+
+            if (!has) {
+              var newNode = that.createTreeFromOnlineData(newChildrenIdList[i], fileNodes);
+              that.addObserver(newNode);
+              that.addMonitor(newNode);
+              newChildren.push(newNode);
+            };
+            
+          };
+
+          node.children = newChildren;
+
+
+        }, function(error) {
+          console.log(JSON.stringify(error))
+        });
+        
+      }); // Monite children
+
+
       for (var i = 0; node.children && i < node.children.length; i++) {
         visite(node.children[i]);
       };
@@ -135,7 +173,7 @@ export class Tree extends Node {
         //     return;
         // console.log(changes)
         var newNode = new Object();
-        that.cloneAttributesWithoutChildren(newNode, node);
+        that.copyAttributesWithoutChildren(newNode, node);
         newNode.children = [];
         for (var i = 0; node.children && i < node.children.length; i++) {
           newNode.children.push(node.children[i].id)
@@ -173,7 +211,7 @@ export class Tree extends Node {
     var that = this;
     function visite(node) {
       var newNode = new Object();
-      that.cloneAttributesWithoutChildren(newNode, node);
+      that.copyAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(visite(node.children[i]));
@@ -183,7 +221,7 @@ export class Tree extends Node {
     return visite(node);
   }
 
-  cloneAttributesWithoutChildren(newNode, node) {
+  copyAttributesWithoutChildren(newNode, node) {
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
@@ -216,7 +254,7 @@ export class Tree extends Node {
       var node = onlineNotesList[nodeId];
       if (!node) return null;
       var newNode = new Object();
-      that.cloneAttributesWithoutChildren(newNode, node);
+      that.copyAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       // console.log("newNode")
       // console.log(newNode)
@@ -346,7 +384,7 @@ export class Tree extends Node {
       console.log("save")
       console.log("node")
       var newNode = new Object();
-      that.cloneAttributesWithoutChildren(newNode, node);
+      that.copyAttributesWithoutChildren(newNode, node);
       newNode.children = [];
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(node.children[i].id)
