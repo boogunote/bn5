@@ -17,6 +17,7 @@ export class Tree extends Node {
     this.utility = utility;
 
     this.treeVM = this;
+    this.file_id = null;
     this.filePath = null;
   }
 
@@ -27,38 +28,7 @@ export class Tree extends Node {
     // console.log("params")
     // console.log(params)
     if ('online' == params.type) {
-      var ref = new Firebase(this.common.firebase_url);
-      var authData = ref.getAuth();
-      // console.log("authData")
-      // console.log(authData)
-      if (!authData) return;
-      this.filePath = '/notes/users/' + authData.uid + '/files/' + this.file_id;
-      console.log("this.filePath")
-      console.log(this.filePath)
-      var fileRef = ref.child(this.filePath);
-      // var fileRef = new Firebase("https://boogutest.firebaseio.com/notes/users/simplelogin:38/files/1427561345308-YTCDy");
-      // console.log("fileRef")
-      // console.log(fileRef)
-      var that = this;
-      fileRef.once('value', function(dataSnapshot) {
-        console.log("dataSnapshot.val()");
-        console.log(dataSnapshot.val());
-        var tree = that.createTreeFromOnlineData("root", dataSnapshot.val().nodes);
-        that.addObserver(tree);
-        that.addMonitor(tree);
-        console.log("tree")
-        console.log(tree)
-        that.realTree = tree;
-        if (that.root_id) {
-          that.node = that.getNodeDataById(tree, that.root_id)
-          console.log("that.node")
-          console.log(that.node)
-        } else {
-          that.node = tree;
-        }
-      }, function(error) {
-        console.log(JSON.stringify(error))
-      });
+      this.loadNodeDataById(this.file_id, this.root_id);
     }
     else if (window.is_nodewebkit) {
       console.log(this.treeParams.path);
@@ -144,58 +114,58 @@ export class Tree extends Node {
   }
 
 
-  addObserver(node) {
-    var that = this;
-    function visite(node) {
-      // var monitoring = false;
-      // var createTime = that.utility.now();
-      var observer =  function(changes) {
-        var pass = true;
-        for (var i = 0; i < changes.length; i++) {
-          // console.log("changes[i].name")
-          // console.log(changes[i].name)
-          var bypassList = ["observer", "children_observer", "__observer__",
-              "__observers__", "__array_observer__"];
-          for (var j = 0; j < bypassList.length; j++) {
-            if (changes[i].name == bypassList[j]) {
-              pass = false;
-              break;
-            }
-          };
-        };
-        if (!pass) return;
-        // console.log(changes)
-        // if (!monitoring)
-        //   if (that.utility.now() - createTime > waitingTime) {
-        //     monitoring = true;
-        //   }
-        //   else
-        //     return;
-        // console.log(changes)
-        var newNode = new Object();
-        that.copyAttributesWithoutChildren(newNode, node);
-        newNode.children = [];
-        for (var i = 0; node.children && i < node.children.length; i++) {
-          newNode.children.push(node.children[i].id)
-        };
-        var ref = new Firebase(that.common.firebase_url);
-        var authData = ref.getAuth();
-        var nodeRef = ref.child("notes").child("users").child(authData.uid)
-            .child("files").child(that.file_id).child("nodes").child(node.id);
-        nodeRef.set(newNode)
-      }
-      node.observer = observer;
-      node.children_observer = observer;
-      Object.observe(node, observer);
-      Object.observe(node.children, observer);
+  // addObserver(node) {
+  //   var that = this;
+  //   function visite(node) {
+  //     // var monitoring = false;
+  //     // var createTime = that.utility.now();
+  //     var observer =  function(changes) {
+  //       var pass = true;
+  //       for (var i = 0; i < changes.length; i++) {
+  //         // console.log("changes[i].name")
+  //         // console.log(changes[i].name)
+  //         var bypassList = ["observer", "children_observer", "__observer__",
+  //             "__observers__", "__array_observer__"];
+  //         for (var j = 0; j < bypassList.length; j++) {
+  //           if (changes[i].name == bypassList[j]) {
+  //             pass = false;
+  //             break;
+  //           }
+  //         };
+  //       };
+  //       if (!pass) return;
+  //       // console.log(changes)
+  //       // if (!monitoring)
+  //       //   if (that.utility.now() - createTime > waitingTime) {
+  //       //     monitoring = true;
+  //       //   }
+  //       //   else
+  //       //     return;
+  //       // console.log(changes)
+  //       var newNode = new Object();
+  //       that.copyAttributesWithoutChildren(newNode, node);
+  //       newNode.children = [];
+  //       for (var i = 0; node.children && i < node.children.length; i++) {
+  //         newNode.children.push(node.children[i].id)
+  //       };
+  //       var ref = new Firebase(that.common.firebase_url);
+  //       var authData = ref.getAuth();
+  //       var nodeRef = ref.child("notes").child("users").child(authData.uid)
+  //           .child("files").child(that.file_id).child("nodes").child(node.id);
+  //       nodeRef.set(newNode)
+  //     }
+  //     node.observer = observer;
+  //     node.children_observer = observer;
+  //     Object.observe(node, observer);
+  //     Object.observe(node.children, observer);
 
-      for (var i = 0; node.children && i < node.children.length; i++) {
-        visite(node.children[i]);
-      };
-    }
+  //     for (var i = 0; node.children && i < node.children.length; i++) {
+  //       visite(node.children[i]);
+  //     };
+  //   }
 
-    visite(node);
-  }
+  //   visite(node);
+  // }
 
   clearNodeState() {
     var visite = function(vm) {

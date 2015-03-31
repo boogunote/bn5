@@ -9,7 +9,7 @@
   </div>
     <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.node.collapsed">
       <compose
-        model.bind="{'node':child, 'parentVM':$parent}"
+        model.bind="{'node_id':child, 'parentVM':$parent}"
         view-model="tree-node">
       </compose>
     </div>

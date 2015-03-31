@@ -1,13 +1,15 @@
 import {Behavior} from 'aurelia-framework';
+import {Common} from './common'
 import {DataSource} from './data-source';
 import {Node} from './node';
 import {Utility} from './utility';
 import 'jquery-autosize';
 
 export class TreeNode extends Node {
-  static inject() { return [Element, DataSource, Utility]; }
-  constructor(element, dataSource, utility){
+  static inject() { return [Common, Element, DataSource, Utility]; }
+  constructor(common, element, dataSource, utility){
     super();
+    this.common = common;
     this.selected = false;
     this.element = element;
     console.log(element)
@@ -18,10 +20,11 @@ export class TreeNode extends Node {
   activate(model){
     // console.log("TreeNode activate");
     // console.log(model)
-    this.node = model.node;
+    // this.node = model.node;
     this.parentVM = model.parentVM;
     this.treeVM = model.parentVM.treeVM;
-    this.parentVM.addChildVM(this)
+    this.parentVM.addChildVM(this, model.node_id);
+    this.loadNodeDataById(this.treeVM.file_id, model.node_id);
   }
 
   foldNode(fold) {
@@ -36,7 +39,7 @@ export class TreeNode extends Node {
     }
   }
   attached() {
-    this.foldNode(this.node.fold);
+    // this.foldNode(this.node.fold);
   }
 
   deactivate() {

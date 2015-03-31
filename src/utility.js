@@ -8,6 +8,31 @@ export class Utility {
     return JSON.parse(JSON.stringify(obj));
   }
 
+  copyAttributesWithoutChildren(newNode, node) {
+    function copyAttributes(newNode, node, attrName) {
+      if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
+    }
+    var attrList = ["collapsed", "content", "fold", "icon", "id"];
+    for (var i = 0; i < attrList.length; i++) {
+      copyAttributes(newNode, node, attrList[i]);
+    };
+  }
+
+  copyAttributes(newNode, node) {
+    function copyAttributes(newNode, node, attrName) {
+      if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
+    }
+    var attrList = ["collapsed", "content", "fold", "icon", "id"];
+    for (var i = 0; i < attrList.length; i++) {
+      copyAttributes(newNode, node, attrList[i]);
+    };
+
+    newNode.children = [];
+    for (var i = 0; i < node.children.length; i++) {
+      newNode.children.push(node.children[i]);
+    };
+  }
+
   createNewNode() {
     return {
       id : this.getUniqueId(),
