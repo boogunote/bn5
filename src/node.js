@@ -39,36 +39,63 @@ export class Node {
       };
       return really;
     }
+
+    var ref = new Firebase(this.common.firebase_url);
+    var authData = ref.getAuth();
+    if (!authData) {
+      console.log("Please login!")
+      return;
+    }
+    var nodePath = '/notes/users/' + authData.uid +
+      '/files/' + file_id + '/nodes/' + node_id;
+    console.log(nodePath);
+    var nodeRef = ref.child(nodePath);
+
     var that = this;
+
+    var timeSupressLocalObserver = 0;
+    var timeSupressRemoteObserver = 0;
     this.localObserver = function (changes) {
       if (!isReallyChange(changes)) return;
-      var ref = new Firebase(that.common.firebase_url);
-      var authData = ref.getAuth();
-      if (!authData) {
-        console.log("Please login!")
-        return;
-      }
-      var nodePath = '/notes/users/' + authData.uid +
-        '/files/' + file_id + '/nodes/' + node_id;
-      console.log(nodePath);
-      var nodeRef = ref.child(nodePath);
+      if (that.utility.now() < timeSupressLocalObserver) return;
       var newNode = new Object();
       that.utility.copyAttributesWithoutChildren(newNode, node);
       console.log(newNode);
       nodeRef.set(newNode)
+      timeSupressRemoteObserver = that.utility.now() + 1000;
     }
 
     Object.observe(node, this.localObserver);
+
+    this.remoteObserver = function(dataSnapshot) {
+      var newNode = dataSnapshot.val();
+      if (!newNode) return;
+      if (that.utility.now() < timeSupressRemoteObserver) return;
+      console.log("dataSnapshot");
+      console.log(dataSnapshot.val());
+      timeSupressLocalObserver = that.utility.now() + 1000;
+      that.utility.copyAttributes(node, newNode);
+    }
+    nodeRef.on("value", this.remoteObserver);
+
+    // nodeRef.child("children").on("value", function(dataSnapshot) {
+    //   console.log("dataSnapshot");
+    //   console.log(dataSnapshot.val());
+    // });
   }
 
   loadNodeFromLocalCache(node_id) {
     if (!this.node) {
       this.node = this.treeVM.file.nodes[node_id];
-      this.addObserver(this.node, this.treeVM.file_id, node_id);
+      if (this.node) {
+        this.addObserver(this.node, this.treeVM.file_id, node_id);
+      } else {
+        this.loadNodeFromServer(this.treeVM.file_id, node_id);
+      }
     }
   }
 
-  loadNodeDataById(file_id, node_id) {
+  loadNodeFromServer(file_id, node_id) {
     var ref = new Firebase(this.common.firebase_url);
     var authData = ref.getAuth();
     if (!authData) {
@@ -81,38 +108,12 @@ export class Node {
     console.log(nodePath)
     var nodeRef = ref.child(nodePath);
     var that = this;
-    nodeRef.on('value', function(dataSnapshot) {
-      console.log("dataSnapshot.val()")
+    nodeRef.once('value', function(dataSnapshot) {
+      console.log("loadNodeFromServer dataSnapshot.val()")
       console.log(dataSnapshot.val())
-      var firstTime = false;
-      if (!that.node) {
-        that.node = new Object();
-        firstTime = true;
-      }
-      var newNode = dataSnapshot.val();
-      that.utility.copyAttributesWithoutChildren(that.node, newNode);
-      if (!newNode.children) {newNode.children = []};
-
-      var copyChildren = false;
-      if (!that.node.children) {
-        copyChildren = true;
-      } else if (that.node.children.length != newNode.children.length) {
-        copyChildren = true;
-      } else {
-        for (var i = 0; i < newNode.children.length; i++) {
-          if (that.node.children[i] != newNode.children[i]) {
-            copyChildren = true;
-            break;
-          }
-        }
-      }
-      if (copyChildren) {
-        that.node.children = newNode.children;
-      };
-
-      if (firstTime) {
-        that.addObserver(that.node, file_id, node_id);
-      }
+      that.node = dataSnapshot.val();
+      that.addObserver(that.node, file_id, node_id);
+      that.treeVM.file.nodes[that.node.id] = that.node;
     }, function(error) {
       console.log(JSON.stringify(error))
     });

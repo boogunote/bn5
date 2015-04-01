@@ -28,7 +28,7 @@ export class Utility {
     };
 
     newNode.children = [];
-    for (var i = 0; i < node.children.length; i++) {
+    for (var i = 0; node.children && i < node.children.length; i++) {
       newNode.children.push(node.children[i]);
     };
   }

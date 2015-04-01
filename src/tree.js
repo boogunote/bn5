@@ -277,7 +277,9 @@ export class Tree extends Node {
       // console.log("testssssssssssssssssssss")
       // console.log(nodeRecord)
       recordNodeList.push(nodeRecord)
-      this.removeNodeAt(positionArray);
+      // this.removeNodeAt(positionArray);
+      console.log(selectedVMList[i])
+      this.removeSubTree(selectedVMList[i].parentVM.node.id, selectedVMList[i].node.id);
     };
     this.record(recordNodeList, "remove");
   }
@@ -476,6 +478,47 @@ export class Tree extends Node {
 
       
     }, 0);
+  }
+
+  removeSubTree(parent_id, node_id) {
+    console.log("removeSubTree(parent_id, node_id) {")
+    console.log(parent_id)
+    console.log(node_id)
+    var parent = this.treeVM.file.nodes[parent_id];
+    var position = -1;
+    for (var i = 0; i < parent.children.length; i++) {
+      if (parent.children[i] == node_id) {
+        position = i;
+        break;
+      }
+    };
+
+    parent.children.splice(position, 1);
+
+    var ref = new Firebase(this.common.firebase_url);
+    var authData = ref.getAuth();
+    if (!authData) {
+      console.log("Please login!")
+      return;
+    }
+    var nodesPath = '/notes/users/' + authData.uid +
+      '/files/' + this.file_id + '/nodes';
+      console.log(nodesPath)
+    var nodesRef = ref.child(nodesPath);
+    var parentChildren = [];
+    for (var i = 0; parent.children && i < parent.children.length; i++) {
+      parentChildren.push(parent.children[i].id)
+    };
+    nodesRef.child(parent_id).child("children").set(parentChildren);
+    var that = this;
+    var visite = function(node_id) {
+      nodesRef.child(node_id).remove();
+      for (var i = 0; that.treeVM.file.nodes[node_id].children && i < that.treeVM.file.nodes[node_id].children.length; i++) {
+        visite(that.treeVM.file.nodes[node_id].children[i]);
+      };
+    }
+
+    visite(node_id);
   }
 
   removeObserver(node) {
