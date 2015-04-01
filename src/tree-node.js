@@ -88,27 +88,76 @@ export class TreeNode extends Node {
     if (13 == event.keyCode) {
       var before = null;
       var child = false;
-      var positionArray = this.getPositionArray();
+      // var positionArray = this.getPositionArray();
+      var updateNode = null;
+      var updateNodeList = null;
+      var currNodePosition = -1;
+      for (var i = 0; i < this.parentVM.node.children.length; i++) {
+        if (this.node.id == this.parentVM.node.children[i]) {
+          currNodePosition = i;
+          break;
+        }
+      };
+      var insertParentNodeId = -1;
+      var insertPosition = -1;
       if (event.altKey) {
+        insertParentNodeId = this.parentVM.node.id;
+        insertPosition = currNodePosition;
       } else if (event.ctrlKey) {
-        positionArray[positionArray.length-1]++;
+        insertParentNodeId = this.parentVM.node.id;
+        insertPosition = currNodePosition + 1;
       } else if (event.shiftKey) {
-        positionArray.push(0);
+        insertParentNodeId = this.node.id;
+        insertPosition = 0;
       } else {
         return true;
       }
-      console.log(positionArray);
+
       var newNode = this.utility.createNewNode();
-      this.treeVM.insertNodeAt(positionArray, newNode);
-      var nodeRecord = {
-        positionArray : positionArray,
-        node : newNode
-      }
-      this.treeVM.record([nodeRecord], "insert");
-      var that = this;
-      setTimeout(function() {
-        that.treeVM.focusNodeAt(positionArray);
-      }, 0);
+      var newNodeList = [newNode];
+      console.log("insertPosition");
+      console.log(insertPosition);
+      this.treeVM.insertSubTree(insertParentNodeId, insertPosition,
+          newNodeList, newNode.id);
+      updateNode = this.treeVM.file.nodes[insertParentNodeId];
+      updateNodeList = newNodeList;
+
+      // Sync to server
+      if (updateNode && updateNodeList) {
+        var ref = new Firebase(this.common.firebase_url);
+        var authData = ref.getAuth();
+        if (!authData) {
+          console.log("Please login!")
+          return;
+        }
+        var childrenPath = '/notes/users/' + authData.uid + '/files/' + this.treeVM.file_id + 
+            "/nodes/" + updateNode.id + "/children";
+        var childrenRef = ref.child(childrenPath);
+        // clean children;
+        var children = []
+        for (var i = 0; i < updateNode.children.length; i++) {
+          children.push(updateNode.children[i]);
+        };
+        childrenRef.set(children);
+        for (var i = 0; i < updateNodeList.length; i++) {
+          var nodePath = '/notes/users/' + authData.uid + '/files/' + this.treeVM.file_id + 
+              "/nodes/" + updateNodeList[i].id;
+          var nodeRef = ref.child(nodePath);
+          nodeRef.set(updateNodeList[i])
+        };
+      };
+      // console.log(positionArray);
+      
+      // this.treeVM.insertNodeAt(positionArray, newNode);
+      // var nodeRecord = {
+      //   positionArray : positionArray,
+      //   node : newNode
+      // }
+      // this.treeVM.record([nodeRecord], "insert");
+      // var that = this;
+      // setTimeout(function() {
+      //   that.treeVM.focusNodeAt(positionArray);
+      // }, 0);
 
       return false;
       

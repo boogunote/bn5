@@ -71,7 +71,7 @@ export class Login {
               files: {}
             };
             var new_tree_note_skeleton = that.utility.clone(that.common.new_tree_note_skeleton)
-            new_tree_note_skeleton.time = Firebase.ServerValue.TIMESTAMP;
+            new_tree_note_skeleton.meta.time = Firebase.ServerValue.TIMESTAMP;
             user_notes_skeleton.files[file_id] = new_tree_note_skeleton;
             userNotesRef.set(user_notes_skeleton);
             var userInfoRef = ref.child("info").child("users").child(userData.uid);

@@ -2,8 +2,10 @@ export class Common {
   constructor(){
     this.firebase_url = "https://boogutest.firebaseio.com";
     this.new_tree_note_skeleton = {
-        type: "tree",
-        title: "New Tree Note",
+        meta: {
+          type: "tree",
+          title: "New Tree Note"
+        },
         nodes: {
           root: {
             id: "root",

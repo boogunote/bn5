@@ -40,9 +40,9 @@ export class Tree extends Node {
       }
       var filePath = '/notes/users/' + authData.uid +
           '/files/' + this.file_id;
-      var nodeRef = ref.child(filePath);
+      var fileRef = ref.child(filePath);
       var that = this;
-      nodeRef.once('value', function(dataSnapshot) {
+      fileRef.once('value', function(dataSnapshot) {
         console.log("dataSnapshot.val()")
         that.file = dataSnapshot.val()
         console.log(that.file);
@@ -358,6 +358,16 @@ export class Tree extends Node {
     }
     visite(this);
     return selectedVMList;
+  }
+
+  insertSubTree(parent_id, insertPosition, sub_tree, root_id) {
+    var parent = this.treeVM.file.nodes[parent_id];
+    for (var i = 0; i < sub_tree.length; i++) {
+      this.treeVM.file.nodes[sub_tree[i].id] = sub_tree[i];
+    };
+
+    if (!parent.children) {parent.children = []};
+    parent.children.splice(insertPosition, 0, root_id);
   }
 
   insertNodeAt(positionArray, node) {
