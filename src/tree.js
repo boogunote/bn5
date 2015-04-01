@@ -18,6 +18,10 @@ export class Tree extends Node {
 
     this.treeVM = this;
     this.file_id = null;
+    this.file = null;
+
+
+
     this.filePath = null;
   }
 
@@ -28,7 +32,23 @@ export class Tree extends Node {
     // console.log("params")
     // console.log(params)
     if ('online' == params.type) {
-      this.loadNodeDataById(this.file_id, this.root_id);
+      var ref = new Firebase(this.common.firebase_url);
+      var authData = ref.getAuth();
+      if (!authData) {
+        console.log("Please login!")
+        return;
+      }
+      var filePath = '/notes/users/' + authData.uid +
+          '/files/' + this.file_id;
+      var nodeRef = ref.child(filePath);
+      var that = this;
+      nodeRef.once('value', function(dataSnapshot) {
+        console.log("dataSnapshot.val()")
+        that.file = dataSnapshot.val()
+        console.log(that.file);
+        that.loadNodeFromLocalCache(that.root_id);
+      });
+      // this.loadNodeDataById(this.file_id, this.root_id);
     }
     else if (window.is_nodewebkit) {
       console.log(this.treeParams.path);

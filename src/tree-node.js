@@ -24,7 +24,8 @@ export class TreeNode extends Node {
     this.parentVM = model.parentVM;
     this.treeVM = model.parentVM.treeVM;
     this.parentVM.addChildVM(this, model.node_id);
-    this.loadNodeDataById(this.treeVM.file_id, model.node_id);
+    this.loadNodeFromLocalCache(model.node_id);
+    // this.loadNodeDataById(this.treeVM.file_id, model.node_id);
   }
 
   foldNode(fold) {

@@ -40,7 +40,7 @@ export class Node {
       return really;
     }
     var that = this;
-    var localObserver = function (changes) {
+    this.localObserver = function (changes) {
       if (!isReallyChange(changes)) return;
       var ref = new Firebase(that.common.firebase_url);
       var authData = ref.getAuth();
@@ -53,12 +53,19 @@ export class Node {
       console.log(nodePath);
       var nodeRef = ref.child(nodePath);
       var newNode = new Object();
-      that.utility.copyAttributes(newNode, node);
+      that.utility.copyAttributesWithoutChildren(newNode, node);
       console.log(newNode);
       nodeRef.set(newNode)
     }
 
-    Object.observe(node, localObserver);
+    Object.observe(node, this.localObserver);
+  }
+
+  loadNodeFromLocalCache(node_id) {
+    if (!this.node) {
+      this.node = this.treeVM.file.nodes[node_id];
+      this.addObserver(this.node, this.treeVM.file_id, node_id);
+    }
   }
 
   loadNodeDataById(file_id, node_id) {
