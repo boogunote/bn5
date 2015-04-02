@@ -4,10 +4,20 @@ import {Utility} from './utility';
 export class Node {
   static inject() { return [Common, Utility]; }
   constructor(common, utility){
-    this.childVMList = [];
-
     this.common = common;
     this.utility = utility;
+
+    this.childVMList = [];
+
+    this.editing = false;
+    this.updating = false;
+    this.localChangedTime = 0;
+    this.setToRemoteTime = 0;
+    this.receiveRemoteTime = 0;
+    this.localChangeWaitTime = 500;
+    this.localChangeWaitEpsilon = 50;
+    this.remoteChangeWaitTime = 1000;
+    this.remoteChangeWaitEpsilon = 50;
   }
 
   addChildVM(vm, id) {
@@ -26,6 +36,7 @@ export class Node {
   }
 
   addObserver(node, file_id, node_id) {
+    console.log("addObserver-----------------------------------------------")
     function isReallyChange (changes) {
       var  really = true;
       for (var i = 0; i < changes.length; i++) {
@@ -40,6 +51,49 @@ export class Node {
       return really;
     }
 
+    var that = this;
+
+
+    if (!this.localObserver) {
+      this.localObserver = function (changes) {
+        console.log("changes")
+        console.log(changes)
+        console.log("node")
+        console.log(node)
+        console.log(that.updating);
+        if (!isReallyChange(changes)) return;
+        if (that.updating) return;
+
+
+
+        that.doEdit(node, file_id, node_id);
+      }
+
+      Object.observe(node, this.localObserver);
+    }
+
+    if (!this.remoteObserver) {
+      this.remoteObserver = function(dataSnapshot) {
+        if (that.editing) return;
+        if (that.utility.now() - that.setToRemoteTime < 1000) return;
+        console.log("dataSnapshot");
+        console.log(dataSnapshot.val());
+        var newNode = dataSnapshot.val();
+        if (!newNode) return;
+
+        that.doUpdate(node, newNode, file_id, node_id);
+      }
+      this.treeVM.nodesRef.child(node_id).on("value", this.remoteObserver);  
+    }
+    
+
+    // nodeRef.child("children").on("value", function(dataSnapshot) {
+    //   console.log("dataSnapshot");
+    //   console.log(dataSnapshot.val());
+    // });
+  }
+
+  doEdit(node, file_id, node_id) {
     var ref = new Firebase(this.common.firebase_url);
     var authData = ref.getAuth();
     if (!authData) {
@@ -48,50 +102,74 @@ export class Node {
     }
     var nodePath = '/notes/users/' + authData.uid +
       '/files/' + file_id + '/nodes/' + node_id;
-    console.log(nodePath);
+    // console.log(nodePath);
     var nodeRef = ref.child(nodePath);
-
+    
     var that = this;
+    var edit = function() {
+      if (that.editing && that.utility.now() - that.localChangedTime < that.localChangeWaitTime - that.localChangeWaitEpsilon) {
+        setTimeout(edit, that.localChangeWaitTime);
+        // console.log("setTimeout2")
+      } else {
+        var newNode = new Object();
+        that.utility.copyAttributesWithoutChildren(newNode, node);
+        newNode.children = [];
+        for (var i = 0; i < node.children.length; i++) {
+          newNode.children.push(node.children[i]);
+        };
+        nodeRef.set(newNode);
+        that.editing = false;
 
-    var timeSupressLocalObserver = 0;
-    var timeSupressRemoteObserver = 0;
-    this.localObserver = function (changes) {
-      if (!isReallyChange(changes)) return;
-      if (that.utility.now() < timeSupressLocalObserver) return;
-      var newNode = new Object();
-      that.utility.copyAttributesWithoutChildren(newNode, node);
-      newNode.children = [];
-      for (var i = 0; i < node.children.length; i++) {
-        newNode.children.push(node.children[i]);
-      };
-      console.log(newNode);
-      nodeRef.set(newNode)
-      timeSupressRemoteObserver = that.utility.now() + 1000;
+        that.setToRemoteTime = that.utility.now();
+        var t = new Date(that.setToRemoteTime)
+        // console.log("localObserver:"+t.toLocaleTimeString()+" "+t.getMilliseconds());
+        // console.log(newNode);         
+      }
     }
+    this.localChangedTime = this.utility.now();
+    if (!this.editing) {
+      this.editing = true;
+      setTimeout(edit, that.localChangeWaitTime);
+      // console.log("setTimeout1")
+    };
+  }
 
-    Object.observe(node, this.localObserver);
-
-    this.remoteObserver = function(dataSnapshot) {
-      var newNode = dataSnapshot.val();
-      if (!newNode) return;
-      if (that.utility.now() < timeSupressRemoteObserver) return;
-      console.log("dataSnapshot");
-      console.log(dataSnapshot.val());
-      timeSupressLocalObserver = that.utility.now() + 1000;
-      that.utility.copyAttributes(node, newNode);
+  doUpdate(node, newNode, file_id, node_id) {
+    // var ref = new Firebase(this.common.firebase_url);
+    // var authData = ref.getAuth();
+    // if (!authData) {
+    //   console.log("Please login!")
+    //   return;
+    // }
+    // var nodePath = '/notes/users/' + authData.uid +
+    //   '/files/' + file_id + '/nodes/' + node_id;
+    // console.log(nodePath);
+    // var nodeRef = ref.child(nodePath);
+    console.log("doUpdate---------------------------------------------------------------------")
+    var that = this;
+    var update = function() {
+      console.log("that.receiveRemoteTime")
+      console.log(that.receiveRemoteTime)
+      if (that.utility.now() - that.receiveRemoteTime < that.remoteChangeWaitTime - that.remoteChangeWaitEpsilon) {
+        setTimeout(update, that.remoteChangeWaitTime);
+      } else {
+        that.updating =false;
+        console.log("that.updating =false;")
+      }
     }
-    nodeRef.on("value", this.remoteObserver);
-
-    // nodeRef.child("children").on("value", function(dataSnapshot) {
-    //   console.log("dataSnapshot");
-    //   console.log(dataSnapshot.val());
-    // });
+    if (!this.updating) {
+      this.updating = true;
+      setTimeout(update, that.remoteChangeWaitTime);
+    };
+    this.utility.copyAttributes(node, newNode);
+    this.receiveRemoteTime = this.utility.now();
   }
 
   loadNodeFromLocalCache(node_id) {
     if (!this.node) {
       this.node = this.treeVM.file.nodes[node_id];
       if (this.node) {
+        if (!this.node.children) this.node.children = [];
         this.addObserver(this.node, this.treeVM.file_id, node_id);
       } else {
         this.loadNodeFromServer(this.treeVM.file_id, node_id);
@@ -116,6 +194,7 @@ export class Node {
       console.log("loadNodeFromServer dataSnapshot.val()")
       console.log(dataSnapshot.val())
       that.node = dataSnapshot.val();
+      if (!that.node.children) {that.node.children = []};
       that.addObserver(that.node, file_id, node_id);
       that.treeVM.file.nodes[that.node.id] = that.node;
     }, function(error) {

@@ -29,6 +29,19 @@ export class Tree extends Node {
     console.log('activate');
     this.file_id = params.file_id;
     this.root_id = params.root_id;
+    this.rootRef = new Firebase(this.common.firebase_url);
+    var authData = this.rootRef.getAuth();
+    if (!authData) {
+      console.log("Please login!")
+      return;
+    }
+    var nodesPath = '/notes/users/' + authData.uid +
+      '/files/' + this.file_id + '/nodes';
+    this.nodesRef = this.rootRef.child(nodesPath);
+
+
+
+
     // console.log("params")
     // console.log(params)
     if ('online' == params.type) {
@@ -369,8 +382,8 @@ export class Tree extends Node {
     };
 
     if (!parent.children) {parent.children = []};
-    parent.children.push(root_id)
-    // parent.children.splice(insertPosition, 0, root_id);
+    parent.children.splice(insertPosition, 0, root_id);
+    // this.doEdit(parent, this.treeVM.file_id, parent.id);
   }
 
   insertNodeAt(positionArray, node) {
@@ -528,6 +541,7 @@ export class Tree extends Node {
     }
 
     delete_sub_node(node_id);
+    // this.doEdit(parent, this.treeVM.file_id, parent.id);
   }
 
   removeObserver(node) {

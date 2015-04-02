@@ -12,7 +12,7 @@ export class TreeNode extends Node {
     this.common = common;
     this.selected = false;
     this.element = element;
-    console.log(element)
+    // console.log(element)
     this.dataSource = dataSource;
     this.utility = utility;
   }
