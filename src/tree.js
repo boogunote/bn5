@@ -507,7 +507,7 @@ export class Tree extends Node {
     var nodesRef = ref.child(nodesPath);
     var parentChildren = [];
     for (var i = 0; parent.children && i < parent.children.length; i++) {
-      parentChildren.push(parent.children[i].id)
+      parentChildren.push(parent.children[i])
     };
     nodesRef.child(parent_id).child("children").set(parentChildren);
     var that = this;
