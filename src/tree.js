@@ -369,7 +369,8 @@ export class Tree extends Node {
     };
 
     if (!parent.children) {parent.children = []};
-    parent.children.splice(insertPosition, 0, root_id);
+    parent.children.push(root_id)
+    // parent.children.splice(insertPosition, 0, root_id);
   }
 
   insertNodeAt(positionArray, node) {
@@ -511,14 +512,22 @@ export class Tree extends Node {
     };
     nodesRef.child(parent_id).child("children").set(parentChildren);
     var that = this;
-    var visite = function(node_id) {
+    var remove_observer = function(vm) {
+      Object.unobserve(vm.node, vm.localObserver);
+      nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+      for (var i = 0; i < vm.childVMList.length; i++) {
+        remove_observer(vm.childVMList[i]);
+      };
+    }
+    remove_observer(this.childVMList[position]);
+    var delete_sub_node = function(node_id) {
       nodesRef.child(node_id).remove();
       for (var i = 0; that.treeVM.file.nodes[node_id].children && i < that.treeVM.file.nodes[node_id].children.length; i++) {
-        visite(that.treeVM.file.nodes[node_id].children[i]);
+        delete_sub_node(that.treeVM.file.nodes[node_id].children[i]);
       };
     }
 
-    visite(node_id);
+    delete_sub_node(node_id);
   }
 
   removeObserver(node) {
