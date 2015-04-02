@@ -60,6 +60,10 @@ export class Node {
       if (that.utility.now() < timeSupressLocalObserver) return;
       var newNode = new Object();
       that.utility.copyAttributesWithoutChildren(newNode, node);
+      newNode.children = [];
+      for (var i = 0; i < node.children.length; i++) {
+        newNode.children.push(node.children[i]);
+      };
       console.log(newNode);
       nodeRef.set(newNode)
       timeSupressRemoteObserver = that.utility.now() + 1000;
