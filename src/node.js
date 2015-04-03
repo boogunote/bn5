@@ -56,11 +56,11 @@ export class Node {
 
     if (!this.localObserver) {
       this.localObserver = function (changes) {
-        console.log("changes")
-        console.log(changes)
-        console.log("node")
-        console.log(node)
-        console.log(that.updating);
+        // console.log("changes")
+        // console.log(changes)
+        // console.log("node")
+        // console.log(node)
+        // console.log(that.updating);
         if (!isReallyChange(changes)) return;
         if (that.updating) return;
 
@@ -76,8 +76,8 @@ export class Node {
       this.remoteObserver = function(dataSnapshot) {
         if (that.editing) return;
         if (that.utility.now() - that.setToRemoteTime < 1000) return;
-        console.log("dataSnapshot");
-        console.log(dataSnapshot.val());
+        // console.log("dataSnapshot");
+        // console.log(dataSnapshot.val());
         var newNode = dataSnapshot.val();
         if (!newNode) return;
 
@@ -148,13 +148,13 @@ export class Node {
     console.log("doUpdate---------------------------------------------------------------------")
     var that = this;
     var update = function() {
-      console.log("that.receiveRemoteTime")
-      console.log(that.receiveRemoteTime)
+      // console.log("that.receiveRemoteTime")
+      // console.log(that.receiveRemoteTime)
       if (that.utility.now() - that.receiveRemoteTime < that.remoteChangeWaitTime - that.remoteChangeWaitEpsilon) {
         setTimeout(update, that.remoteChangeWaitTime);
       } else {
         that.updating =false;
-        console.log("that.updating =false;")
+        // console.log("that.updating =false;")
       }
     }
     if (!this.updating) {
@@ -162,7 +162,11 @@ export class Node {
       setTimeout(update, that.remoteChangeWaitTime);
     };
     this.utility.copyAttributes(node, newNode);
+    // console.log(this.resize)
     this.receiveRemoteTime = this.utility.now();
+    setTimeout(function() {
+      if (that.resize) that.resize();
+    }, 0)
   }
 
   loadNodeFromLocalCache(node_id) {

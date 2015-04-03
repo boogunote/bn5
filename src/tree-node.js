@@ -15,6 +15,7 @@ export class TreeNode extends Node {
     // console.log(element)
     this.dataSource = dataSource;
     this.utility = utility;
+    this.ta = null;
   }
 
   activate(model){
@@ -28,19 +29,20 @@ export class TreeNode extends Node {
     // this.loadNodeDataById(this.treeVM.file_id, model.node_id);
   }
 
-  foldNode(fold) {
-    var ta = this.element.children[0].children[1]
-    if (!fold)
-      autosize(ta);
+  foldNode() {
+    if (!this.node.fold)
+      autosize(this.ta);
     else {
       var evt = document.createEvent('Event');
       evt.initEvent('autosize.destroy', true, false);
-      ta.dispatchEvent(evt);
-      ta.style.height = ta.scrollHeight;
+      this.ta.dispatchEvent(evt);
+      this.ta.style.height = this.ta.scrollHeight;
     }
   }
+
   attached() {
-    // this.foldNode(this.node.fold);
+    this.ta = this.element.getElementsByTagName("textarea")[0]
+    this.foldNode();
   }
 
   deactivate() {
@@ -173,6 +175,15 @@ export class TreeNode extends Node {
       this.foldNode(this.node.fold);
     }
     return true;
+  }
+
+  resize() {
+    if (!this.ta) return;
+    console.log("resize")
+    var evt = document.createEvent('Event');
+    evt.initEvent('autosize.update', true, false);
+    this.ta.dispatchEvent(evt);
+    this.ta.style.height = this.ta.scrollHeight;
   }
 
   select(selected) {
