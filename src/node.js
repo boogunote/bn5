@@ -36,7 +36,7 @@ export class Node {
   }
 
   addObserver(node, file_id, node_id) {
-    console.log("addObserver-----------------------------------------------")
+    // console.log("addObserver-----------------------------------------------")
     function isReallyChange (changes) {
       var  really = true;
       for (var i = 0; i < changes.length; i++) {
@@ -145,7 +145,7 @@ export class Node {
     //   '/files/' + file_id + '/nodes/' + node_id;
     // console.log(nodePath);
     // var nodeRef = ref.child(nodePath);
-    console.log("doUpdate---------------------------------------------------------------------")
+    // console.log("doUpdate---------------------------------------------------------------------")
     var that = this;
     var update = function() {
       // console.log("that.receiveRemoteTime")
@@ -175,6 +175,14 @@ export class Node {
       if (this.node) {
         if (!this.node.children) this.node.children = [];
         this.addObserver(this.node, this.treeVM.file_id, node_id);
+        // if (this.node.id != this.treeVM.root_id) {
+        //   console.log(this.treeVM.root_id)
+        //   setTimeout(function() {
+        //     this.ta = this.element.children[0].children[1];
+        //     this.foldNode();
+        //   }, 0);
+        // }
+        // console.log("loadData@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
       } else {
         this.loadNodeFromServer(this.treeVM.file_id, node_id);
       }
@@ -190,17 +198,23 @@ export class Node {
     }
     var nodePath = '/notes/users/' + authData.uid +
         '/files/' + file_id + '/nodes/' + node_id;
-    console.log("nodePath")
-    console.log(nodePath)
+    // console.log("nodePath")
+    // console.log(nodePath)
     var nodeRef = ref.child(nodePath);
     var that = this;
     nodeRef.once('value', function(dataSnapshot) {
-      console.log("loadNodeFromServer dataSnapshot.val()")
-      console.log(dataSnapshot.val())
+      // console.log("loadNodeFromServer dataSnapshot.val()")
+      // console.log(dataSnapshot.val())
       that.node = dataSnapshot.val();
       if (!that.node.children) {that.node.children = []};
       that.addObserver(that.node, file_id, node_id);
       that.treeVM.file.nodes[that.node.id] = that.node;
+      if (that.node.id != that.treeVM.root_id) {
+        if (that.element.children[0].children[1])
+          that.ta = that.element.children[0].children[1];
+        if (that.ta)
+          that.foldNode();
+      }
     }, function(error) {
       console.log(JSON.stringify(error))
     });

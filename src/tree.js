@@ -18,6 +18,7 @@ export class Tree extends Node {
 
     this.treeVM = this;
     this.file_id = null;
+    this.root_id = null;
     this.file = null;
 
 
@@ -56,15 +57,15 @@ export class Tree extends Node {
       var fileRef = ref.child(filePath);
       var that = this;
       fileRef.once('value', function(dataSnapshot) {
-        console.log("dataSnapshot.val()")
+        // console.log("dataSnapshot.val()")
         that.file = dataSnapshot.val()
-        console.log(that.file);
+        // console.log(that.file);
         that.loadNodeFromLocalCache(that.root_id);
       });
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
     else if (window.is_nodewebkit) {
-      console.log(this.treeParams.path);
+      // console.log(this.treeParams.path);
       this.path = this.treeParams.path;
       var that = this;
       return this.dataSource.load(this.path)
@@ -240,15 +241,46 @@ export class Tree extends Node {
       selectedVMList.push(this.focusedVM);
     var copiedNodeList = [];
     for (var i = 0; i < selectedVMList.length; i++) {
-      copiedNodeList.push({
-        file : this.path,
-        node : selectedVMList[i].node
-      });
+      var newSubTree = this.cloneSubTree(selectedVMList[i].node.id)
+      newSubTree.file_id = this.file_id;
+      copiedNodeList.push(newSubTree);
     };
     delete localStorage.clipboardData;
     localStorage.clipboardData = undefined;
     localStorage.clipboardData = JSON.stringify(copiedNodeList);
     console.log(localStorage.clipboardData);
+  }
+
+  cloneSubTree(root_id) {
+    var subTreeNodeList = [];
+    var newRootId = null;
+    var that = this;
+    function visit(node_id) {
+      var node = that.file.nodes[node_id];
+      var children = [];
+      for (var i = 0; i < node.children.length; i++) {
+        var newChildNode = visit(node.children[i]);
+        subTreeNodeList.push(newChildNode);
+        children.push(newChildNode.id);
+      };
+      var newNode = new Object();
+      that.utility.copyAttributesWithoutChildren(newNode, node);
+      if (node.id == root_id) {
+        newRootId = that.utility.getUniqueId();
+        node_id = newRootId;
+      }
+      else
+        node.id = that.utility.getUniqueId();
+      newNode.children = children;
+      return newNode;
+    }
+
+    visit(root_id);
+
+    return {
+      root_id: newRootId,
+      nodes: subTreeNodeList
+    }
   }
 
   createTreeFromOnlineData(nodeId, onlineNotesList) {
@@ -308,32 +340,44 @@ export class Tree extends Node {
     if (!this.focusedVM) return;
     var clipboardData = localStorage.getItem("clipboardData");
     if (!clipboardData) return;
-    var copiedNodeList = JSON.parse(clipboardData);
+    var copiedSubTreeList = JSON.parse(clipboardData);
 
     this.clearNodeState();
-    var positionArray = this.focusedVM.getPositionArray();
-    positionArray[positionArray.length-1]++;
-    var nodeRecordList = [];
-    for (var i = 0; i < copiedNodeList.length; i++) {
-      // console.log(positionArray)
-      var that = this
-      var visite = function(node) {
-        node.id = that.utility.getUniqueId();
-        for (var i = 0; i < node.children.length; i++) {
-          visite(node.children[i]);
-        };
+    var parent = this.focusedVM.parentVM.node;
+    var position = -1;
+    for (var i = 0; i < parent.children.length; i++) {
+      if(parent.children[i].id == this.focusedVM.node.id) {
+        position = i;
+        break;
       }
-      visite(copiedNodeList[i].node)
-      this.insertNodeAt(positionArray, copiedNodeList[i].node);
-      var nodeRecord = {
-        positionArray : JSON.parse(JSON.stringify(positionArray)),
-        node : this.cloneNode(copiedNodeList[i].node)
-      }
-      nodeRecordList.push(nodeRecord);
-      positionArray[positionArray.length-1]++;
     };
+    for (var i = 0; i < copiedSubTreeList.length; i++) {
+      this.treeVM.insertSubTree(parent.id, position+i,
+          copiedSubTreeList[i].nodes, copiedSubTreeList[i].root_id);
+    };
+    // var positionArray = this.focusedVM.getPositionArray();
+    // positionArray[positionArray.length-1]++;
+    // var nodeRecordList = [];
+    // for (var i = 0; i < copiedNodeList.length; i++) {
+    //   // console.log(positionArray)
+    //   var that = this
+    //   var visite = function(node) {
+    //     node.id = that.utility.getUniqueId();
+    //     for (var i = 0; i < node.children.length; i++) {
+    //       visite(node.children[i]);
+    //     };
+    //   }
+    //   visite(copiedNodeList[i].node)
+    //   this.insertNodeAt(positionArray, copiedNodeList[i].node);
+    //   var nodeRecord = {
+    //     positionArray : JSON.parse(JSON.stringify(positionArray)),
+    //     node : this.cloneNode(copiedNodeList[i].node)
+    //   }
+    //   nodeRecordList.push(nodeRecord);
+    //   positionArray[positionArray.length-1]++;
+    // };
 
-    this.record(nodeRecordList, "insert");
+    // this.record(nodeRecordList, "insert");
   }
 
   getNodeDataById(tree, id) {

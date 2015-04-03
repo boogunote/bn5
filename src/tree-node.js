@@ -30,8 +30,10 @@ export class TreeNode extends Node {
   }
 
   foldNode() {
-    if (!this.node.fold)
+    if (this.node && !this.node.fold) {
+      // console.log("autosize-----------------------------------------------------")
       autosize(this.ta);
+    }
     else {
       var evt = document.createEvent('Event');
       evt.initEvent('autosize.destroy', true, false);
@@ -41,8 +43,12 @@ export class TreeNode extends Node {
   }
 
   attached() {
-    this.ta = this.element.getElementsByTagName("textarea")[0]
-    this.foldNode();
+    // console.log("attached!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    // this.ta = this.element.children[0].children[1];
+    if (this.element.children[0].children[1])
+      this.ta = this.element.children[0].children[1];
+    if (this.ta && this.node)
+      this.foldNode();
   }
 
   deactivate() {
@@ -179,7 +185,7 @@ export class TreeNode extends Node {
 
   resize() {
     if (!this.ta) return;
-    console.log("resize")
+    // console.log("resize")
     var evt = document.createEvent('Event');
     evt.initEvent('autosize.update', true, false);
     this.ta.dispatchEvent(evt);
