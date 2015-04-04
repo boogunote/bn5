@@ -14,8 +14,8 @@ export class Node {
     this.localChangedTime = 0;
     this.setToRemoteTime = 0;
     this.receiveRemoteTime = 0;
-    this.localChangeWaitTime = 500;
-    this.localChangeWaitEpsilon = 50;
+    this.localChangeWaitTime = 200;
+    this.localChangeWaitEpsilon = 10;
     this.remoteChangeWaitTime = 1000;
     this.remoteChangeWaitEpsilon = 50;
   }
@@ -160,6 +160,27 @@ export class Node {
     if (!this.updating) {
       this.updating = true;
       setTimeout(update, that.remoteChangeWaitTime);
+    };
+    // remove observer.
+    for (var i = node.children.length - 1; i >= 0; i--) {
+      var removed = true
+      for (var j = 0; newNode.children && j < newNode.children.length; j++) {
+        if (node.children[i] == newNode.children[j]) {
+          removed = false;
+          break;
+        }
+      }
+      if (removed) {
+        // var that = this;
+        var remove_observer = function(vm) {
+          Object.unobserve(vm.node, vm.localObserver);
+          that.treeVM.nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+          for (var i = 0; i < vm.childVMList.length; i++) {
+            remove_observer(vm.childVMList[i]);
+          };
+        }
+        remove_observer(this.childVMList[i]);
+      };
     };
     this.utility.copyAttributes(node, newNode);
     // console.log(this.resize)

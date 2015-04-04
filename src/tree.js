@@ -239,15 +239,17 @@ export class Tree extends Node {
     var selectedVMList = this.getSelectedVMList();
     if (0 >= selectedVMList.length && !!this.focusedVM)
       selectedVMList.push(this.focusedVM);
-    var copiedNodeList = [];
+    var copiedSubTreeList = [];
     for (var i = 0; i < selectedVMList.length; i++) {
-      var newSubTree = this.cloneSubTree(selectedVMList[i].node.id)
-      newSubTree.file_id = this.file_id;
-      copiedNodeList.push(newSubTree);
+      var newSubTree = {
+        file_id: this.file_id,
+        node_id: selectedVMList[i].node.id
+      };
+      copiedSubTreeList.push(newSubTree);
     };
     delete localStorage.clipboardData;
     localStorage.clipboardData = undefined;
-    localStorage.clipboardData = JSON.stringify(copiedNodeList);
+    localStorage.clipboardData = JSON.stringify(copiedSubTreeList);
     console.log(localStorage.clipboardData);
   }
 
@@ -260,18 +262,18 @@ export class Tree extends Node {
       var children = [];
       for (var i = 0; i < node.children.length; i++) {
         var newChildNode = visit(node.children[i]);
-        subTreeNodeList.push(newChildNode);
         children.push(newChildNode.id);
       };
       var newNode = new Object();
       that.utility.copyAttributesWithoutChildren(newNode, node);
       if (node.id == root_id) {
         newRootId = that.utility.getUniqueId();
-        node_id = newRootId;
+        newNode.id = newRootId;
       }
       else
-        node.id = that.utility.getUniqueId();
+        newNode.id = that.utility.getUniqueId();
       newNode.children = children;
+      subTreeNodeList.push(newNode);
       return newNode;
     }
 
@@ -314,19 +316,19 @@ export class Tree extends Node {
     console.log(selectedVMList)
     var recordNodeList = [];
     for (var i = selectedVMList.length - 1; i >= 0 ; i--) {
-      var positionArray = selectedVMList[i].getPositionArray();
-      var nodeRecord = {
-        positionArray : positionArray,
-        node : this.cloneNode(selectedVMList[i].node)
-      }
-      // console.log("testssssssssssssssssssss")
-      // console.log(nodeRecord)
-      recordNodeList.push(nodeRecord)
-      // this.removeNodeAt(positionArray);
-      console.log(selectedVMList[i])
+      // var positionArray = selectedVMList[i].getPositionArray();
+      // var nodeRecord = {
+      //   positionArray : positionArray,
+      //   node : this.cloneNode(selectedVMList[i].node)
+      // }
+      // // console.log("testssssssssssssssssssss")
+      // // console.log(nodeRecord)
+      // recordNodeList.push(nodeRecord)
+      // // this.removeNodeAt(positionArray);
+      // console.log(selectedVMList[i])
       this.removeSubTree(selectedVMList[i].parentVM.node.id, selectedVMList[i].node.id);
     };
-    this.record(recordNodeList, "remove");
+    // this.record(recordNodeList, "remove");
   }
 
   focusNodeAt(positionArray) {
@@ -346,15 +348,28 @@ export class Tree extends Node {
     var parent = this.focusedVM.parentVM.node;
     var position = -1;
     for (var i = 0; i < parent.children.length; i++) {
-      if(parent.children[i].id == this.focusedVM.node.id) {
+      console.log("test id: "+parent.children[i].id+" "+this.focusedVM.node.id)
+      if(parent.children[i] == this.focusedVM.node.id) {
         position = i;
         break;
       }
     };
     for (var i = 0; i < copiedSubTreeList.length; i++) {
-      this.treeVM.insertSubTree(parent.id, position+i,
-          copiedSubTreeList[i].nodes, copiedSubTreeList[i].root_id);
+      var ret = this.cloneSubTree(copiedSubTreeList[i].node_id)
+      console.log("paste position:"+(position+i+1))
+      this.treeVM.insertSubTree(parent.id, position+i+1, ret.nodes, ret.root_id);
+      for (var j = 0; j < ret.nodes.length; j++) {
+        var nodeRef = this.nodesRef.child(ret.nodes[j].id)
+        nodeRef.set(ret.nodes[j]);
+      };
     };
+
+    // clean children.
+    var children = []
+    for (var i = 0; i < parent.children.length; i++) {
+      children.push(parent.children[i]);
+    };
+    this.nodesRef.child(parent.id).child("children").set(children)
     // var positionArray = this.focusedVM.getPositionArray();
     // positionArray[positionArray.length-1]++;
     // var nodeRecordList = [];
@@ -404,7 +419,7 @@ export class Tree extends Node {
   }
 
   getSelectedVMList() {
-    console.log(this)
+    // console.log(this)
     var selectedVMList = [];
     var visite = function(vm) {
       if (vm.selected) {
@@ -539,10 +554,10 @@ export class Tree extends Node {
   }
 
   removeSubTree(parent_id, node_id) {
-    console.log("removeSubTree(parent_id, node_id) {")
-    console.log(parent_id)
-    console.log(node_id)
-    var parent = this.treeVM.file.nodes[parent_id];
+    // console.log("removeSubTree(parent_id, node_id) {")
+    // console.log(parent_id)
+    // console.log(node_id)
+    var parent = this.file.nodes[parent_id];
     var position = -1;
     for (var i = 0; i < parent.children.length; i++) {
       if (parent.children[i] == node_id) {
@@ -553,39 +568,40 @@ export class Tree extends Node {
 
     parent.children.splice(position, 1);
 
-    var ref = new Firebase(this.common.firebase_url);
-    var authData = ref.getAuth();
-    if (!authData) {
-      console.log("Please login!")
-      return;
-    }
-    var nodesPath = '/notes/users/' + authData.uid +
-      '/files/' + this.file_id + '/nodes';
-      console.log(nodesPath)
-    var nodesRef = ref.child(nodesPath);
-    var parentChildren = [];
-    for (var i = 0; parent.children && i < parent.children.length; i++) {
-      parentChildren.push(parent.children[i])
-    };
-    nodesRef.child(parent_id).child("children").set(parentChildren);
+    // var ref = new Firebase(this.common.firebase_url);
+    // var authData = ref.getAuth();
+    // if (!authData) {
+    //   console.log("Please login!")
+    //   return;
+    // }
+    // var nodesPath = '/notes/users/' + authData.uid +
+    //   '/files/' + this.file_id + '/nodes';
+    //   console.log(nodesPath)
+    // var nodesRef = this.child(nodesPath);
+    // var parentChildren = [];
+    // for (var i = 0; parent.children && i < parent.children.length; i++) {
+    //   parentChildren.push(parent.children[i])
+    // };
+    // this.nodesRef.child(parent_id).child("children").set(parentChildren);
     var that = this;
     var remove_observer = function(vm) {
       Object.unobserve(vm.node, vm.localObserver);
-      nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+      that.nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
       for (var i = 0; i < vm.childVMList.length; i++) {
         remove_observer(vm.childVMList[i]);
       };
     }
     remove_observer(this.childVMList[position]);
     var delete_sub_node = function(node_id) {
-      nodesRef.child(node_id).remove();
+      that.nodesRef.child(node_id).remove();
       for (var i = 0; that.treeVM.file.nodes[node_id].children && i < that.treeVM.file.nodes[node_id].children.length; i++) {
         delete_sub_node(that.treeVM.file.nodes[node_id].children[i]);
       };
     }
 
     delete_sub_node(node_id);
-    // this.doEdit(parent, this.treeVM.file_id, parent.id);
+    // doEdit to prevent the modification, which send back from server.
+    this.doEdit(parent, this.file_id, parent.id);
   }
 
   removeObserver(node) {
