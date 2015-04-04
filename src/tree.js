@@ -21,6 +21,16 @@ export class Tree extends Node {
     this.root_id = null;
     this.file = null;
 
+    this.editing = false;
+    this.updating = false;
+    this.localChangedTime = 0;
+    this.setToRemoteTime = 0;
+    this.receiveRemoteTime = 0;
+    this.localChangeWaitTime = 200;
+    this.localChangeWaitEpsilon = 10;
+    this.remoteChangeWaitTime = 1000;
+    this.remoteChangeWaitEpsilon = 50;
+
 
 
     this.filePath = null;
@@ -60,7 +70,9 @@ export class Tree extends Node {
         // console.log("dataSnapshot.val()")
         that.file = dataSnapshot.val()
         // console.log(that.file);
-        that.loadNodeFromLocalCache(that.root_id);
+        if (that.file) {
+          that.loadNodeFromLocalCache(that.root_id);
+        }
       });
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
@@ -314,7 +326,7 @@ export class Tree extends Node {
     if (0 >= selectedVMList.length && !!this.focusedVM)
       selectedVMList.push(this.focusedVM);
     console.log(selectedVMList)
-    var recordNodeList = [];
+    var nodeRecordList = [];
     for (var i = selectedVMList.length - 1; i >= 0 ; i--) {
       // var positionArray = selectedVMList[i].getPositionArray();
       // var nodeRecord = {
@@ -326,9 +338,19 @@ export class Tree extends Node {
       // recordNodeList.push(nodeRecord)
       // // this.removeNodeAt(positionArray);
       // console.log(selectedVMList[i])
-      this.removeSubTree(selectedVMList[i].parentVM.node.id, selectedVMList[i].node.id);
+      var parentId = selectedVMList[i].parentVM.node.id;
+      var nodeId = selectedVMList[i].node.id;
+      var position = this.removeSubTree(parentId, nodeId);
+      var nodeRecord = {
+        parent_id: parentId,
+        position: position,
+        node_id: nodeId
+      };
+      nodeRecordList.push(nodeRecord);
     };
-    // this.record(recordNodeList, "remove");
+
+    // record
+    this.treeVM.record(nodeRecordList, "remove");
   }
 
   focusNodeAt(positionArray) {
@@ -354,15 +376,23 @@ export class Tree extends Node {
         break;
       }
     };
+    var nodeRecordList = [];
     for (var i = 0; i < copiedSubTreeList.length; i++) {
       var ret = this.cloneSubTree(copiedSubTreeList[i].node_id)
-      console.log("paste position:"+(position+i+1))
-      this.treeVM.insertSubTree(parent.id, position+i+1, ret.nodes, ret.root_id);
+      var insertPosition = position+i+1;
+      this.treeVM.insertSubTree(parent.id, insertPosition, ret.nodes, ret.root_id);
       for (var j = 0; j < ret.nodes.length; j++) {
         var nodeRef = this.nodesRef.child(ret.nodes[j].id)
         nodeRef.set(ret.nodes[j]);
       };
+      var nodeRecord = {
+        parent_id: parent.id,
+        position: insertPosition,
+        node_id: ret.root_id
+      };
+      nodeRecordList.push(nodeRecord);
     };
+    this.record(nodeRecordList, "insert");
 
     // clean children.
     var children = []
@@ -566,6 +596,8 @@ export class Tree extends Node {
       }
     };
 
+    if (-1 == position) return;
+
     parent.children.splice(position, 1);
 
     // var ref = new Firebase(this.common.firebase_url);
@@ -601,7 +633,10 @@ export class Tree extends Node {
 
     delete_sub_node(node_id);
     // doEdit to prevent the modification, which send back from server.
-    this.doEdit(parent, this.file_id, parent.id);
+    this.doEdit(function() {
+      that.setNodeToServer(parent);
+    })
+    return position;
   }
 
   removeObserver(node) {
@@ -660,13 +695,39 @@ export class Tree extends Node {
     var record = this.operationRecordList[this.operationRecordList.cursor];
     if ("insert" == record.operation) {
       for (var i = 0; i < record.nodeList.length; i++) {
-        this.uncollapsed(record.nodeList[i].positionArray);
-        this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        var r = record.nodeList[i];
+        this.insertSubTree(r.parent_id, r.position, [], r.node_id);
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeListToServer(nodeList);
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.treeVM.setToRemoteTime = that.utility.now();
+        });
+        
+        // this.doEdit(this.file.nodes[r.parent_id]);
       }
     } else if ("remove" == record.operation) {
       for (var i = 0; i < record.nodeList.length; i++) {
-        this.uncollapsed(record.nodeList[i].positionArray);
-        this.removeNodeAt(record.nodeList[i].positionArray);
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        // this.removeNodeAt(record.nodeList[i].positionArray);
+        var r = record.nodeList[i];
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        this.removeSubTree(r.parent_id, r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.removeNodeListFromServer(nodeList)
+          that.treeVM.setToRemoteTime = that.utility.now();
+
+        });
+        // this.doEdit(this.file.nodes[r.parent_id]);
       }
     }
   }
@@ -677,14 +738,82 @@ export class Tree extends Node {
     this.operationRecordList.cursor--;
     if ("insert" == record.operation) {
       for (var i = record.nodeList.length - 1; i >= 0; i--) {
-        this.uncollapsed(record.nodeList[i].positionArray);
-        this.removeNodeAt(record.nodeList[i].positionArray);
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        var r = record.nodeList[i];
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        this.removeSubTree(r.parent_id, r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.removeNodeListFromServer(nodeList)
+          
+          that.treeVM.setToRemoteTime = that.utility.now();
+          
+        });
+        // this.doEdit(this.file.nodes[r.parent_id]);
+        // this.removeNodeAt(record.nodeList[i].positionArray);
       }
     } else if ("remove" == record.operation) {
       for (var i = record.nodeList.length - 1; i >= 0 ; i--) {
-        this.uncollapsed(record.nodeList[i].positionArray);
-        this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        var r = record.nodeList[i];
+        this.insertSubTree(r.parent_id, r.position, [], r.node_id);
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeListToServer(nodeList);
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.treeVM.setToRemoteTime = that.utility.now();
+        });
+        // this.doEdit(this.file.nodes[r.parent_id]);
       }
     }
+  }
+
+  getNodeListByRootId(rootId) {
+    var nodeList = [];
+    var that = this;
+    function visit(node_id) {
+      var node = that.file.nodes[node_id];
+      nodeList.push(node);
+      for (var i = 0; i < node.children.length; i++) {
+        visit(node.children[i])
+      };
+    }
+    visit(rootId);
+    return nodeList;
+  }
+
+  setNodeChildrenToServer(node) {
+    var children = [];
+    for (var i = 0; i < node.children.length; i++) {
+      children.push(node.children[i]);
+    };
+    this.nodesRef.child(node.id).child("children").set(children)
+  }
+
+  removeNodeListFromServer(nodeList) {
+    for (var i = 0; i < nodeList.length; i++) {
+      this.nodesRef.child(nodeList[i].id).remove();
+    };
+  }
+
+  setNodeListToServer(nodeList) {
+    for (var i = 0; i < nodeList.length; i++) {
+      // this.doEdit(nodeList[i]);
+      var newNode = new Object();
+      this.utility.copyAttributesWithoutChildren(newNode, nodeList[i])
+      var children = [];
+      for (var j = 0; j < nodeList[i].children.length; j++) {
+        children.push(nodeList[i].children[j]);
+      };
+      newNode.children = children;
+      this.nodesRef.child(nodeList[i].id).set(newNode);
+    };
   }
 }

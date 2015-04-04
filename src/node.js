@@ -9,15 +9,7 @@ export class Node {
 
     this.childVMList = [];
 
-    this.editing = false;
-    this.updating = false;
-    this.localChangedTime = 0;
-    this.setToRemoteTime = 0;
-    this.receiveRemoteTime = 0;
-    this.localChangeWaitTime = 200;
-    this.localChangeWaitEpsilon = 10;
-    this.remoteChangeWaitTime = 1000;
-    this.remoteChangeWaitEpsilon = 50;
+
   }
 
   addChildVM(vm, id) {
@@ -60,13 +52,13 @@ export class Node {
         // console.log(changes)
         // console.log("node")
         // console.log(node)
-        // console.log(that.updating);
+        // console.log(that.treeVM.updating);
         if (!isReallyChange(changes)) return;
-        if (that.updating) return;
-
-
-
-        that.doEdit(node, file_id, node_id);
+        if (that.treeVM.updating) return;
+        // that.doEdit(node);
+        that.doEdit(function() {
+          that.setNodeToServer(node);
+        })
       }
 
       Object.observe(node, this.localObserver);
@@ -74,9 +66,13 @@ export class Node {
 
     if (!this.remoteObserver) {
       this.remoteObserver = function(dataSnapshot) {
-        if (that.editing) return;
-        if (that.utility.now() - that.setToRemoteTime < 1000) return;
-        // console.log("dataSnapshot");
+        if (that.treeVM.editing) return;
+        if (that.utility.now() - that.treeVM.setToRemoteTime < 2000) return;
+        // console.log("remoteObserver");
+        // console.log("that.treeVM.editing:"+that.treeVM.editing)
+        // console.log("that.utility.now() - that.treeVM.setToRemoteTime:")
+        // console.log(that.utility.now())
+        // console.log(that.treeVM.setToRemoteTime);
         // console.log(dataSnapshot.val());
         var newNode = dataSnapshot.val();
         if (!newNode) return;
@@ -93,43 +89,54 @@ export class Node {
     // });
   }
 
-  doEdit(node, file_id, node_id) {
-    var ref = new Firebase(this.common.firebase_url);
-    var authData = ref.getAuth();
-    if (!authData) {
-      console.log("Please login!")
-      return;
-    }
-    var nodePath = '/notes/users/' + authData.uid +
-      '/files/' + file_id + '/nodes/' + node_id;
-    // console.log(nodePath);
-    var nodeRef = ref.child(nodePath);
+  setNodeToServer(node) {
+    var nodeRef = this.treeVM.nodesRef.child(node.id)
+    var newNode = new Object();
+    this.utility.copyAttributesWithoutChildren(newNode, node);
+    newNode.children = [];
+    for (var i = 0; i < node.children.length; i++) {
+      newNode.children.push(node.children[i]);
+    };
+    nodeRef.set(newNode);
+    this.treeVM.editing = false;
+
+    this.treeVM.setToRemoteTime = this.utility.now();
+    console.log("setNodeToServer")
+    // var t = new Date(that.treeVM.setToRemoteTime)
+    // console.log("localObserver:"+t.toLocaleTimeString()+" "+t.getMilliseconds());
+    // console.log(newNode);   
+  }
+
+  doEdit(realEdit) {
+    // var ref = new Firebase(this.common.firebase_url);
+    // var authData = ref.getAuth();
+    // if (!authData) {
+    //   console.log("Please login!")
+    //   return;
+    // }
+    // var nodePath = '/notes/users/' + authData.uid +
+    //   '/files/' + file_id + '/nodes/' + node_id;
+    // // console.log(nodePath);
+    // var nodeRef = ref.child(nodePath);
+
+    
     
     var that = this;
     var edit = function() {
-      if (that.editing && that.utility.now() - that.localChangedTime < that.localChangeWaitTime - that.localChangeWaitEpsilon) {
-        setTimeout(edit, that.localChangeWaitTime);
+      if (that.treeVM.editing &&
+          that.utility.now() - that.treeVM.localChangedTime
+          < that.treeVM.localChangeWaitTime - that.treeVM.localChangeWaitEpsilon) {
+        setTimeout(edit, that.treeVM.localChangeWaitTime);
         // console.log("setTimeout2")
       } else {
-        var newNode = new Object();
-        that.utility.copyAttributesWithoutChildren(newNode, node);
-        newNode.children = [];
-        for (var i = 0; i < node.children.length; i++) {
-          newNode.children.push(node.children[i]);
-        };
-        nodeRef.set(newNode);
-        that.editing = false;
-
-        that.setToRemoteTime = that.utility.now();
-        var t = new Date(that.setToRemoteTime)
-        // console.log("localObserver:"+t.toLocaleTimeString()+" "+t.getMilliseconds());
-        // console.log(newNode);         
+        realEdit();
+        that.treeVM.editing = false;
       }
     }
-    this.localChangedTime = this.utility.now();
-    if (!this.editing) {
-      this.editing = true;
-      setTimeout(edit, that.localChangeWaitTime);
+    this.treeVM.localChangedTime = this.utility.now();
+    if (!this.treeVM.editing) {
+      this.treeVM.editing = true;
+      setTimeout(edit, that.treeVM.localChangeWaitTime);
       // console.log("setTimeout1")
     };
   }
@@ -148,18 +155,19 @@ export class Node {
     // console.log("doUpdate---------------------------------------------------------------------")
     var that = this;
     var update = function() {
-      // console.log("that.receiveRemoteTime")
-      // console.log(that.receiveRemoteTime)
-      if (that.utility.now() - that.receiveRemoteTime < that.remoteChangeWaitTime - that.remoteChangeWaitEpsilon) {
+      // console.log("that.treeVM.receiveRemoteTime")
+      // console.log(that.treeVM.receiveRemoteTime)
+      if (that.utility.now() - that.treeVM.receiveRemoteTime
+          < that.treeVM.remoteChangeWaitTime - that.treeVM.remoteChangeWaitEpsilon) {
         setTimeout(update, that.remoteChangeWaitTime);
       } else {
-        that.updating =false;
-        // console.log("that.updating =false;")
+        that.treeVM.updating =false;
+        // console.log("that.treeVM.updating =false;")
       }
     }
-    if (!this.updating) {
-      this.updating = true;
-      setTimeout(update, that.remoteChangeWaitTime);
+    if (!this.treeVM.updating) {
+      this.treeVM.updating = true;
+      setTimeout(update, that.treeVM.remoteChangeWaitTime);
     };
     // remove observer.
     for (var i = node.children.length - 1; i >= 0; i--) {
@@ -184,7 +192,7 @@ export class Node {
     };
     this.utility.copyAttributes(node, newNode);
     // console.log(this.resize)
-    this.receiveRemoteTime = this.utility.now();
+    this.treeVM.receiveRemoteTime = this.utility.now();
     setTimeout(function() {
       if (that.resize) that.resize();
     }, 0)
@@ -227,6 +235,10 @@ export class Node {
       // console.log("loadNodeFromServer dataSnapshot.val()")
       // console.log(dataSnapshot.val())
       that.node = dataSnapshot.val();
+      if (!that.node) {
+        that.node = that.utility.createNewNode();
+        that.node.id = node_id;
+      }
       if (!that.node.children) {that.node.children = []};
       that.addObserver(that.node, file_id, node_id);
       that.treeVM.file.nodes[that.node.id] = that.node;

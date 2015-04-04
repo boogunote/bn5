@@ -127,6 +127,17 @@ export class TreeNode extends Node {
       console.log(insertPosition);
       this.treeVM.insertSubTree(insertParentNodeId, insertPosition,
           newNodeList, newNode.id);
+      // record
+      var nodeRecordList = [];
+      var nodeRecord = {
+        parent_id: insertParentNodeId,
+        position: insertPosition,
+        node_id: newNode.id
+      };
+      nodeRecordList.push(nodeRecord);
+      this.treeVM.record(nodeRecordList, "insert");
+
+
       updateNode = this.treeVM.file.nodes[insertParentNodeId];
       updateNodeList = newNodeList;
 
