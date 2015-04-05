@@ -1,0 +1,14 @@
+<template>
+  <div class="tree-node-wrapper">
+    <div class="tree-node-icon-container">  
+      <span class="tree-node-expand-button glyphicon ${treeNode.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
+    </div>
+    <a href.bind="url">${fileNode.title}</a>
+  </div>
+    <div class="tree-node-child-list" repeat.for="child of treeNode.children" show.bind="!$parent.treeNode.collapsed">
+      <compose
+        model.bind="{'node':child, 'parentVM':$parent}"
+        view-model="./tree-node">
+      </compose>
+    </div>
+</template>

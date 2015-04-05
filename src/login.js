@@ -78,7 +78,8 @@ export class Login {
             var user_info = {
               email: email,
               name: name,
-              time: Firebase.ServerValue.TIMESTAMP
+              time: Firebase.ServerValue.TIMESTAMP,
+              id: file_id;
             };
             userInfoRef.set(user_info);
           }
