@@ -30,7 +30,8 @@ export class TreeNode extends Node{
     var that = this;
     this.nodeRef = this.treeVM.dirNodesRef.child(this.node_id);
     this.nodeRef.on('value', function(dataSnapshot) {
-      // console.log("activate, model.node_id:"+model.node_id)
+      if (that.treeVM.editing) return;
+      console.log("this.nodeRef.on('value', model.node_id:"+model.node_id)
       var data = dataSnapshot.val();
       console.log(data)
       if (!data) return;
@@ -40,6 +41,7 @@ export class TreeNode extends Node{
 
     this.metaRef = this.treeVM.filesRef.child(this.node_id).child("meta");
     this.metaRef.on('value', function(dataSnapshot) {
+      if (that.treeVM.editing) return;
       var data = dataSnapshot.val();
       if (!data) return;
       that.meta = data;

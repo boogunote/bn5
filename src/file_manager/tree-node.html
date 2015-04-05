@@ -6,6 +6,7 @@
     <a href.bind="url">${meta.name}</a>
     <input show.bind="meta.type=='directory'" type="button" value="New Directory" click.delegate="newDirectory()"></input>
     <input show.bind="meta.type=='directory'" type="button" value="New Tree" click.delegate="newTree()"></input>
+    <input type="button" value="Delete" click.delegate="delete()"></input>
   </div>
     <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.meta.collapsed">
       <compose

@@ -14,6 +14,16 @@ export class Tree extends Node{
     this.node = null;
     this.dirNodesRef = null;
     this.filesRef = null;
+
+    this.editing = false;
+    this.updating = false;
+    this.localChangedTime = 0;
+    this.setToRemoteTime = 0;
+    this.receiveRemoteTime = 0;
+    this.localChangeWaitTime = 200;
+    this.localChangeWaitEpsilon = 10;
+    this.remoteChangeWaitTime = 1000;
+    this.remoteChangeWaitEpsilon = 50;
   }
 
   activate(params, queryString, routeConfig) {
@@ -32,6 +42,7 @@ export class Tree extends Node{
     this.dirNodesRef = ref.child(dirNodesPath);
     var that = this;
     this.dirNodesRef.child('root').on('value', function(dataSnapshot) {
+      if (that.treeVM.editing) return;
       // console.log("dataSnapshot.val()")
       that.node = dataSnapshot.val();
       // console.log(that.node)
