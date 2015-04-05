@@ -91,6 +91,12 @@ export class Node {
       };
       this.treeVM.dirNodesRef.child(this.parentVM.node.id).child("children").set(children);
     };
-    
+  }
+
+  rename() {
+    var name = prompt("Please enter name name", this.meta.name);
+    if (null == name)  return;
+    this.meta.name = name;
+    this.treeVM.filesRef.child(this.node.id).child('meta').child('name').set(name)
   }
 }
