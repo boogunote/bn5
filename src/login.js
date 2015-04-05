@@ -59,19 +59,21 @@ export class Login {
             var file_id = that.utility.getUniqueId();
             var user_notes_skeleton = {
               directories: {
-                root: {
-                  children: [
-                    {
-                      id: file_id,
-                      is_file: true
-                    }
-                  ]
+                nodes: {
+                  root: {
+                    id: "root",
+                    children: [
+                      {
+                        id: file_id,
+                      }
+                    ]
+                  }
                 }
               },
               files: {}
             };
             var new_tree_note_skeleton = that.utility.clone(that.common.new_tree_note_skeleton)
-            new_tree_note_skeleton.meta.time = Firebase.ServerValue.TIMESTAMP;
+            new_tree_note_skeleton.meta.create_time = Firebase.ServerValue.TIMESTAMP;
             user_notes_skeleton.files[file_id] = new_tree_note_skeleton;
             userNotesRef.set(user_notes_skeleton);
             var userInfoRef = ref.child("info").child("users").child(userData.uid);
@@ -79,7 +81,7 @@ export class Login {
               email: email,
               name: name,
               time: Firebase.ServerValue.TIMESTAMP,
-              id: file_id;
+              id: file_id
             };
             userInfoRef.set(user_info);
           }

@@ -4,7 +4,7 @@ export class Common {
     this.new_tree_note_skeleton = {
         meta: {
           type: "tree",
-          title: "New Tree Note"
+          name: "New Tree Note"
         },
         nodes: {
           root: {
@@ -22,5 +22,12 @@ export class Common {
           }
         }
       };
+    this.new_directory = {
+      meta: {
+        type: "directory",
+        name: "New Directory",
+        collapsed: false
+      }
+    }
   }
 }

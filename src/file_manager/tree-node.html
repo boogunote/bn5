@@ -1,13 +1,15 @@
 <template>
   <div class="tree-node-wrapper">
     <div class="tree-node-icon-container">  
-      <span class="tree-node-expand-button glyphicon ${treeNode.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
+      <span class="tree-node-expand-button glyphicon ${meta.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
     </div>
-    <a href.bind="url">${fileNode.title}</a>
+    <a href.bind="url">${meta.name}</a>
+    <input show.bind="meta.type=='directory'" type="button" value="New Directory" click.delegate="newDirectory()"></input>
+    <input show.bind="meta.type=='directory'" type="button" value="New Tree" click.delegate="newTree()"></input>
   </div>
-    <div class="tree-node-child-list" repeat.for="child of treeNode.children" show.bind="!$parent.treeNode.collapsed">
+    <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.meta.collapsed">
       <compose
-        model.bind="{'node':child, 'parentVM':$parent}"
+        model.bind="{'node_id':child, 'parentVM':$parent}"
         view-model="./tree-node">
       </compose>
     </div>

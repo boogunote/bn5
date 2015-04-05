@@ -1,5 +1,6 @@
-import {Common} from './common'
-import {Utility} from './utility';
+import 'firebase';
+import {Common} from '../common'
+import {Utility} from '../utility';
 
 export class Node {
   static inject() { return [Common, Utility]; }
@@ -20,5 +21,41 @@ export class Node {
     if (insertPoint != -1) {
       this.childVMList.splice(insertPoint, 0, vm);
     };
+  }
+
+  newItemInDirectory(newId) {
+
+    this.treeVM.dirNodesRef.child(newId).set({
+      id: newId
+    });
+
+    // this.node.children.push(newId);
+    var children = [];
+    for (var i = 0; this.node.children && i < this.node.children.length; i++) {
+      children.push(this.node.children[i]);
+    };
+    children.push(newId);
+
+    this.treeVM.dirNodesRef.child(this.node.id).child("children").set(children);
+  }
+
+  newDirectory() {
+    var newId = this.utility.getUniqueId();
+    this.newItemInDirectory(newId);
+
+    var newDirectory = this.utility.clone(this.common.new_directory);
+    newDirectory.meta.id = newId;
+    newDirectory.meta.create_time = Firebase.ServerValue.TIMESTAMP;
+    this.treeVM.filesRef.child(newId).set(newDirectory);
+  }
+
+  newTree() {
+    var newId = this.utility.getUniqueId();
+    this.newItemInDirectory(newId);
+
+    var newTree = this.utility.clone(this.common.new_tree_note_skeleton);
+    newTree.meta.id = newId;
+    newTree.meta.create_time = Firebase.ServerValue.TIMESTAMP;
+    this.treeVM.filesRef.child(newId).set(newTree);
   }
 }
