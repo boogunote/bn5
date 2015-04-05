@@ -24,6 +24,10 @@ export class Tree extends Node{
     this.localChangeWaitEpsilon = 10;
     this.remoteChangeWaitTime = 1000;
     this.remoteChangeWaitEpsilon = 50;
+
+    this.selectedVMList = [];
+    this.clippedVMList = [];
+    this.clipping = false;
   }
 
   activate(params, queryString, routeConfig) {
@@ -47,5 +51,28 @@ export class Tree extends Node{
       that.node = dataSnapshot.val();
       // console.log(that.node)
     });
+  }
+
+  cut() {
+    this.clipping = true;
+    this.clippedVMList = [];
+    var copiedFileList = [];
+    for (var i = 0; i < this.selectedVMList.length; i++) {
+      var file = {
+        file_id: this.selectedVMList[i].node.id,
+        node_id: "root"
+      };
+      copiedFileList.push(file);
+      this.clippedVMList.push(this.selectedVMList[i])
+    };
+    this.selectedVMList = [];
+    delete localStorage.clipboardData;
+    localStorage.clipboardData = undefined;
+    localStorage.clipboardData = JSON.stringify(copiedFileList);
+    console.log(localStorage.clipboardData);
+  }
+
+  cleanStatus() {
+    this.clipping = false;
   }
 }

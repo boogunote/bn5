@@ -99,4 +99,50 @@ export class Node {
     this.meta.name = name;
     this.treeVM.filesRef.child(this.node.id).child('meta').child('name').set(name)
   }
+
+  getPositionToParent() {
+    var position = null;
+    for (var i = 0; i < this.parentVM.node.children.length; i++) {
+      if(this.parentVM.node.children[i] == this.node.id) {
+        position = i;
+        break;
+      }
+    };
+
+    return position;
+  }
+
+  paste() {
+    if (this.treeVM.clipping) {
+      for (var i = 0; i < this.treeVM.clippedVMList.length; i++) {
+        this.node.children.push(this.treeVM.clippedVMList[i].node.id);
+        var oldParentPosition = this.treeVM.clippedVMList[i].getPositionToParent();
+        this.treeVM.clippedVMList[i].parentVM.node.children.splice(oldParentPosition, 1);
+      };
+
+      var updateList = [this];
+      for (var i = 0; i < this.treeVM.clippedVMList.length; i++) {
+        var alreadyHere = false;
+        for (var j = 0; j < updateList.length; j++) {
+          if (updateList[j].node.id == this.treeVM.clippedVMList[i].parentVM.node.id) {
+            alreadyHere = true;
+            break;
+          }
+        };
+
+        if (!alreadyHere) updateList.push(this.treeVM.clippedVMList[i].parentVM);
+      };
+
+      for (var i = 0; i < updateList.length; i++) {
+        var children = [];
+        for (var j = 0; j < updateList[i].node.children.length; j++) {
+          children.push(updateList[i].node.children[j]);
+        };
+        this.treeVM.dirNodesRef.child(updateList[i].node.id).child("children").set(children);
+      };
+
+      this.treeVM.clipping = false;
+      this.treeVM.clippedVMList = [];
+    };
+  }
 }

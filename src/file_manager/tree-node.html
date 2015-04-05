@@ -6,6 +6,8 @@
     <a href.bind="url">${meta.name}</a>
     <input show.bind="meta.type=='directory'" type="button" value="New Directory" click.delegate="newDirectory()"></input>
     <input show.bind="meta.type=='directory'" type="button" value="New Tree" click.delegate="newTree()"></input>
+    <input type="button" value="Cut" click.delegate="cut()"></input>
+    <input show.bind="meta.type=='directory'" type="button" value="Paste" click.delegate="paste()"></input>
     <input type="button" value="Rename" click.delegate="rename()"></input>
     <input type="button" value="Delete" click.delegate="delete()"></input>
   </div>

@@ -51,4 +51,9 @@ export class TreeNode extends Node{
       }
     });
   }
+
+  cut() {
+    this.treeVM.selectedVMList.push(this);
+    this.treeVM.cut();
+  }
 }
