@@ -56,4 +56,10 @@ export class TreeNode extends Node{
     this.treeVM.selectedVMList.push(this);
     this.treeVM.cut();
   }
+
+  toggle() {
+    if ("directory" != this.meta.type) return;
+    this.meta.collapsed = !this.meta.collapsed;
+    this.treeVM.filesRef.child(this.node.id).child("/meta/collapsed").set(this.meta.collapsed);
+  }
 }
