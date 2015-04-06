@@ -59,6 +59,16 @@ export class Node {
     this.treeVM.filesRef.child(newId).set(newTree);
   }
 
+  newFlat() {
+    var newId = this.utility.getUniqueId();
+    this.newItemInDirectory(newId);
+
+    var newFlat = this.utility.clone(this.common.new_flat_note_skeleton);
+    newFlat.meta.id = newId;
+    newFlat.meta.create_time = Firebase.ServerValue.TIMESTAMP;
+    this.treeVM.filesRef.child(newId).set(newFlat);
+  }
+
   delete() {
     if (!confirm("Delete?")) return;
     // remove sub-tree.

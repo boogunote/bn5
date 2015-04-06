@@ -1,3 +1,11 @@
 <template>
-<div>${content}</div>
+  <!--script src="./interact-1.2.4.js"></script-->
+  <div id="container">
+    <div repeat.for="child of root.children">
+      <compose
+        model.bind="{'file_id':$parent.file_id, 'root_id':child, 'type': 'online', 'parentVM':$parent}"
+        view-model="tree">
+      </compose>
+    </div>
+  </div>
 </template>
