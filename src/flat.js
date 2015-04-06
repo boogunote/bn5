@@ -40,14 +40,11 @@ export class Tree{
         console.log("Please login!")
         return;
       }
-      var filePath = '/notes/users/' + authData.uid +
-          '/files/' + this.file_id;
-      var fileRef = ref.child(filePath);
       var that = this;
-      fileRef.once('value', function(dataSnapshot) {
-        // console.log("dataSnapshot.val()")
+      this.fileRef.once('value', function(dataSnapshot) {
+        console.log("1111111111111dataSnapshot.val()")
         that.file = dataSnapshot.val()
-        // console.log(that.file);
+        console.log(that.file);
         if (that.file) {
           that.root = that.file.nodes.root;
           that.file_id = that.file.meta.id;
@@ -55,9 +52,56 @@ export class Tree{
           console.log(that.file_id)
           // that.loadNodeFromLocalCache(that.root_id);
           // that.loadTitle(that.root_id);
+          setTimeout(function() {
+            for (var i = 0; i < that.root.children.length; i++) {
+              that.initInteract(that.root.children[i]);
+            };
+          }, 10);
         }
       });
+
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
+  }
+
+  initInteract(id) {
+    interact('#'+id)
+      .draggable({
+        // enable inertial throwing
+        inertia: true,
+        // keep the element within the area of it's parent
+        restrict: {
+          restriction: "parent",
+          endOnly: true,
+          elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+        },
+
+        // call this function on every dragmove event
+        onmove: function (event) {
+          var target = event.target,
+              // keep the dragged position in the data-x/data-y attributes
+              x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+              y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+          // translate the element
+          target.style.webkitTransform =
+          target.style.transform =
+            'translate(' + x + 'px, ' + y + 'px)';
+
+          // update the posiion attributes
+          target.setAttribute('data-x', x);
+          target.setAttribute('data-y', y);
+          console.log(x + " " + y)
+        },
+        // call this function on every dragend event
+        onend: function (event) {
+          var textEl = event.target.querySelector('p');
+
+          textEl && (textEl.textContent =
+            'moved a distance of '
+            + (Math.sqrt(event.dx * event.dx +
+                         event.dy * event.dy)|0) + 'px');
+        }
+      });
   }
 }

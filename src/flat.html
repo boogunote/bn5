@@ -1,9 +1,9 @@
 <template>
-  <!--script src="./interact-1.2.4.js"></script-->
-  <div id="container">
-    <div repeat.for="child of root.children">
+  <script src="../interact-1.2.4.js"></script>
+  <div style="width: ${$parent.file.meta.width}px; height: ${$parent.file.meta.height}px;" repeat.for="child of root.children">
+    <div id.bind="child" style="width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px; border:1px solid #d4d4d4;  overflow-y: auto; overflow-x: hidden;">
       <compose
-        model.bind="{'file_id':$parent.file_id, 'root_id':child, 'type': 'online', 'parentVM':$parent}"
+        model.bind="{'file_id':$parent.file.meta.id, 'root_id':child, 'type': 'online', 'parentVM':$parent}"
         view-model="tree">
       </compose>
     </div>

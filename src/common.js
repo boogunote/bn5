@@ -35,7 +35,9 @@ export class Common {
     this.new_flat_note_skeleton = {
       meta: {
         type: "flat",
-        name: "New Flat Note"
+        name: "New Flat Note",
+        height: 3000,
+        width: 3000
       },
       nodes: {
         root: {
