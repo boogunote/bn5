@@ -89,6 +89,25 @@ export class Node {
     // });
   }
 
+  asyncEdit(realEdit) {
+    var that = this;
+    var edit = function() {
+      if (that.treeVM.editing &&
+          that.utility.now() - that.treeVM.localChangedTime
+          < that.treeVM.localChangeWaitTime - that.treeVM.localChangeWaitEpsilon) {
+        setTimeout(edit, that.treeVM.localChangeWaitTime);
+      } else {
+        realEdit();
+        that.treeVM.editing = false;
+      }
+    }
+    this.treeVM.localChangedTime = this.utility.now();
+    if (!this.treeVM.editing) {
+      this.treeVM.editing = true;
+      setTimeout(edit, that.treeVM.localChangeWaitTime);
+    };
+  }
+
   setNodeToServer(node) {
     var nodeRef = this.treeVM.nodesRef.child(node.id)
     var newNode = new Object();

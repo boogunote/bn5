@@ -20,6 +20,9 @@ export class Tree extends Node {
     this.file_id = null;
     this.root_id = null;
     this.file = null;
+    this.title = null;
+    this.fileRef = null;
+    this.nodesRef = null;
 
     this.editing = false;
     this.updating = false;
@@ -46,12 +49,9 @@ export class Tree extends Node {
       console.log("Please login!")
       return;
     }
-    var nodesPath = '/notes/users/' + authData.uid +
-      '/files/' + this.file_id + '/nodes';
-    this.nodesRef = this.rootRef.child(nodesPath);
-
-
-
+    this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
+      '/files/' + this.file_id);
+    this.nodesRef = this.fileRef.child("nodes");
 
     // console.log("params")
     // console.log(params)
@@ -72,6 +72,7 @@ export class Tree extends Node {
         // console.log(that.file);
         if (that.file) {
           that.loadNodeFromLocalCache(that.root_id);
+          that.loadTitle(that.root_id);
         }
       });
       // this.loadNodeDataById(this.file_id, this.root_id);
@@ -353,6 +354,17 @@ export class Tree extends Node {
     this.treeVM.record(nodeRecordList, "remove");
   }
 
+  editTitle(event) {
+    var that = this;
+    this.asyncEdit(function(){
+      if ("root" == that.root_id) {
+        that.fileRef.child("meta/name").set(that.title);
+      } else {
+        that.nodesRef.child(that.root_id).child("content").set(that.title);
+      }
+    });
+  }
+
   focusNodeAt(positionArray) {
     var vm = this.getVMByPositionArray(positionArray);
     if (vm)
@@ -504,6 +516,24 @@ export class Tree extends Node {
       };
     }
     visite(newNode);
+  }
+
+  loadTitle(root_id) {
+    // console.log("root_id:"+root_id)
+    // console.log(this.file.meta)
+    var that = this;
+    var update = function(dataSnapshot) {
+      that.title = dataSnapshot.val();
+    }
+    var title = $("#title");
+    autosize(title);
+    if ("root" == root_id) {
+      this.title = this.file.meta.name;
+      this.fileRef.child("meta/name").on("value", update);
+    } else {
+      this.title = this.file.nodes[root_id].content;
+      this.nodesRef.child(root_id).child("content").on("value", update);
+    }
   }
 
   onKeyDown(event) {
