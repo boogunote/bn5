@@ -154,3 +154,17 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+.flat-titlebar {
+  display: block;
+  background: cornflowerblue;
+}
+.flat-window {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+}
+.flat-body {
+  width: 100%;
+  flex-grow: 1;
+}
