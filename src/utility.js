@@ -44,6 +44,21 @@ export class Utility {
     }
   }
 
+  createNewFlatNode() {
+    return {
+      id : this.getUniqueId(),
+      content : "",
+      collapsed : false,
+      fold : false,
+      icon : 0,
+      x:100,
+      y:30,
+      width:400,
+      height:247,
+      children : []
+    }
+  }
+
   getUniqueId() {
     function randomString(length, chars) {
       var result = '';
@@ -51,7 +66,15 @@ export class Utility {
       return result;
     }
     // TODO: Replace with Firebase.ServerValue.TIMESTAMP.
-    return new Date().getTime().toString() + "-" + randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    return randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') + "-" + new Date().getTime().toString();
+  }
+
+  getCleanChildren(node) {
+    var children = [];
+    for (var i = 0; i < node.children.length; i++) {
+      children.push(node.children[i]);
+    };
+    return children;
   }
 
   now() {

@@ -36,15 +36,15 @@ export class Common {
       meta: {
         type: "flat",
         name: "New Flat Note",
-        height: 3000,
-        width: 3000
       },
       nodes: {
         root: {
           id: "root",
           children: [
             "first_node"
-          ]
+          ],
+          height: 3000,
+          width: 3000
         },
         first_node: {
           id: "first_node",
@@ -52,8 +52,14 @@ export class Common {
           collapsed: false,
           fold: false,
           icon: 0,
+          x:100,
+          y:30,
+          width:400,
+          height:247
         }
       }
     };
+
+    this.new_flat
   }
 }

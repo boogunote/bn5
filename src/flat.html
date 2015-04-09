@@ -1,7 +1,9 @@
 <template>
+  <script src="./jspm_packages/github/jackmoore/autosize@2.0.0/dest/autosize.js"></script>
   <script src="../interact-1.2.4.js"></script>
-  <div  style="width: ${$parent.file.meta.width}px; height: ${$parent.file.meta.height}px;" repeat.for="child of root.children">
-    <div class="flat-window" id.bind="child" style="width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px; border:1px solid #d4d4d4;  overflow-y: auto; overflow-x: hidden;">
+  <input type="button" value="New" click.delegate="newFlatNode()"></input>
+  <div  style="width: ${root.width}px; height: ${root.height}px;" >
+    <div class="flat-window" id.bind="child" style="width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px; border:1px solid #d4d4d4;  overflow-y: auto; overflow-x: hidden;" repeat.for="child of root.children">
       <span class="flat-titlebar"></span>
       <compose
         class="flat-body"

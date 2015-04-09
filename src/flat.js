@@ -41,7 +41,7 @@ export class Tree{
         return;
       }
       var that = this;
-      this.fileRef.once('value', function(dataSnapshot) {
+      this.fileRef.on('value', function(dataSnapshot) {
         console.log("1111111111111dataSnapshot.val()")
         that.file = dataSnapshot.val()
         console.log(that.file);
@@ -112,5 +112,15 @@ export class Tree{
         target.setAttribute('data-y', y);
         // target.textContent = event.rect.width + '×' + event.rect.height;
       });
+  }
+
+  newFlatNode() {
+    var flatNode = this.utility.createNewFlatNode();
+    this.nodesRef.child(flatNode.id).set(flatNode);
+    var children = this.utility.getCleanChildren(this.root);
+    children.push(flatNode.id);
+    this.nodesRef.child("root/children").set(children);
+    //this.file.nodes[flatNode.id] = flatNode
+    //this.root.children.push(flatNode.id);
   }
 }
