@@ -17,6 +17,7 @@ export class Tree extends Node {
     this.utility = utility;
 
     this.treeVM = this;
+    this.parentVM = null;
     this.file_id = null;
     this.root_id = null;
     this.file = null;
@@ -44,6 +45,7 @@ export class Tree extends Node {
     console.log(params)
     this.file_id = params.file_id;
     this.root_id = params.root_id;
+    this.flatVM = params.flatVM;
     this.rootRef = new Firebase(this.common.firebase_url);
     var authData = this.rootRef.getAuth();
     if (!authData) {
@@ -406,6 +408,9 @@ export class Tree extends Node {
     if (13 == event.keyCode && event.shiftKey) {
       this.createNewNode(this.root_id, 0);
       return false;
+    } else if (event.ctrlKey && 46 == event.keyCode && this.flatVM) {
+      this.flatVM.delete(this.root_id);
+      return false
     }
     return true;
   }

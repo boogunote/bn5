@@ -59,6 +59,14 @@ export class Utility {
     }
   }
 
+  getChildrenPosition(node, id) {
+    for (var i = 0; i < node.children.length; i++) {
+      if (node.children[i] == id) {
+        return i;
+      }
+    };
+  }
+
   getUniqueId() {
     function randomString(length, chars) {
       var result = '';
@@ -66,12 +74,13 @@ export class Utility {
       return result;
     }
     // TODO: Replace with Firebase.ServerValue.TIMESTAMP.
-    return randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') + "-" + new Date().getTime().toString();
+    // Add BN here to prevent the css selector error.
+    return "BN-" + new Date().getTime().toString() + "-" + randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
   }
 
   getCleanChildren(node) {
     var children = [];
-    for (var i = 0; i < node.children.length; i++) {
+    for (var i = 0; node.children && i < node.children.length; i++) {
       children.push(node.children[i]);
     };
     return children;

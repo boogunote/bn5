@@ -161,6 +161,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
   height:10px;
 }
 .flat-window {
+  position: absolute;
   border: 1px solid black;
   display: flex;
   flex-direction: column;

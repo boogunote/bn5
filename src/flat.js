@@ -15,6 +15,16 @@ export class Tree{
     this.nodesRef = null;
 
     this.filePath = null;
+
+    this.editing = false;
+    this.updating = false;
+    this.localChangedTime = 0;
+    this.setToRemoteTime = 0;
+    this.receiveRemoteTime = 0;
+    this.localChangeWaitTime = 200;
+    this.localChangeWaitEpsilon = 10;
+    this.remoteChangeWaitTime = 1000;
+    this.remoteChangeWaitEpsilon = 50;
   }
 
   activate(params, queryString, routeConfig) {
@@ -41,7 +51,7 @@ export class Tree{
         return;
       }
       var that = this;
-      this.fileRef.on('value', function(dataSnapshot) {
+      this.fileRef.once('value', function(dataSnapshot) {
         console.log("1111111111111dataSnapshot.val()")
         that.file = dataSnapshot.val()
         console.log(that.file);
@@ -53,8 +63,10 @@ export class Tree{
           // that.loadNodeFromLocalCache(that.root_id);
           // that.loadTitle(that.root_id);
           setTimeout(function() {
+            if (!that.root.children) that.root.children = [];
             for (var i = 0; i < that.root.children.length; i++) {
               that.initInteract(that.root.children[i]);
+              that.setPosition(that.root.children[i]);
             };
           }, 10);
         }
@@ -62,6 +74,44 @@ export class Tree{
 
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
+  }
+
+  delete(id) {
+    var position = this.utility.getChildrenPosition(this.root, id);
+    this.root.children.splice(position, 1);
+    var children = this.utility.getCleanChildren(this.root);
+    var that = this;
+    this.doEdit(function() {
+      that.nodesRef.child("root/children").set(children);
+      function visit(node) {
+        that.nodesRef.child(id).remove();
+        for (var i = 0; node.children && i < node.children.length; i++) {
+          visit(node.children[i]);
+        };
+      }
+      visit(id);
+    });
+  }
+
+  doEdit(realEdit) {
+    var that = this;
+    var edit = function() {
+      if (that.editing &&
+          that.utility.now() - that.localChangedTime
+          < that.localChangeWaitTime - that.localChangeWaitEpsilon) {
+        setTimeout(edit, that.localChangeWaitTime);
+        // console.log("setTimeout2")
+      } else {
+        realEdit();
+        that.editing = false;
+      }
+    }
+    this.localChangedTime = this.utility.now();
+    if (!this.editing) {
+      this.editing = true;
+      setTimeout(edit, that.localChangeWaitTime);
+      // console.log("setTimeout1")
+    };
   }
 
   initInteract(id) {
@@ -118,9 +168,23 @@ export class Tree{
     var flatNode = this.utility.createNewFlatNode();
     this.nodesRef.child(flatNode.id).set(flatNode);
     var children = this.utility.getCleanChildren(this.root);
-    children.push(flatNode.id);
-    this.nodesRef.child("root/children").set(children);
-    //this.file.nodes[flatNode.id] = flatNode
-    //this.root.children.push(flatNode.id);
+    this.file.nodes[flatNode.id] = flatNode
+    this.root.children.push(flatNode.id);
+    var that = this;
+    setTimeout(function() {
+      that.initInteract(flatNode.id);
+    }, 0);
+
+    this.doEdit(function() {
+      // if (!this.root.children) this.root.children = [];
+      children.push(flatNode.id);
+      that.nodesRef.child("root/children").set(children);
+    });
   }
+
+  setPosition(id) {
+    // $("#"+id).css({left:this.file.nodes[id].x, top:this.file.nodes[id].y});//,
+        // width:this.file.nodes[id].width, height:this.file.nodes[id].height})
+  }
+
 }
