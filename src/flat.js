@@ -65,79 +65,52 @@ export class Tree{
   }
 
   initInteract(id) {
-    // interact('#'+id)
-    //   .draggable({
-    //     // enable inertial throwing
-    //     inertia: true,
-    //     // keep the element within the area of it's parent
-    //     restrict: {
-    //       restriction: "parent",
-    //       endOnly: true,
-    //       elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-    //     },
+    interact('#'+id)
+      .allowFrom(".flat-titlebar")
+      .draggable({
+         onmove:   function dragMoveListener (event) {
+            var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-    //     // call this function on every dragmove event
-    //     onmove: function (event) {
-    //       var target = event.target,
-    //           // keep the dragged position in the data-x/data-y attributes
-    //           x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-    //           y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            // translate the element
+            target.style.webkitTransform =
+            target.style.transform =
+              'translate(' + x + 'px, ' + y + 'px)';
 
-    //       // translate the element
-    //       target.style.webkitTransform =
-    //       target.style.transform =
-    //         'translate(' + x + 'px, ' + y + 'px)';
+            // update the posiion attributes
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+          }
 
-    //       // update the posiion attributes
-    //       target.setAttribute('data-x', x);
-    //       target.setAttribute('data-y', y);
-    //       console.log(x + " " + y)
-    //     },
-    //     // call this function on every dragend event
-    //     onend: function (event) {
-    //       var textEl = event.target.querySelector('p');
-
-    //       textEl && (textEl.textContent =
-    //         'moved a distance of '
-    //         + (Math.sqrt(event.dx * event.dx +
-    //                      event.dy * event.dy)|0) + 'px');
-    //     }
-    //   });
+          // this is used later in the resizing demo
+          // window.dragMoveListener = dragMoveListener;
+      })
+      
     interact('#'+id+" .flat-body")
       .resizable({
-        edges: {
-          left: true,
-          right: true,
-          bottom: true,
-          top: false
-        },
-        square: true
-      })
-      .on("resizemove", function(event) {
-        var target = event.target.parentElement;
-        var dRect = event.deltaRect;
-        var newWidth  = parseFloat(target.style.width ) + dRect.width;
-        var newHeight = parseFloat(target.style.height) + dRect.height;
-        var x = (parseFloat(target.getAttribute('data-x')) || 0) + dRect.left;
-        var y = (parseFloat(target.getAttribute('data-y')) || 0) + dRect.top;
+          edges: { left: true, right: true, bottom: true, top: false }
+        })
+      .on('resizemove', function (event) {
+        var target = event.target.parentElement,
+            x = (parseFloat(target.getAttribute('data-x')) || 0),
+            y = (parseFloat(target.getAttribute('data-y')) || 0);
+
         // update the element's style
-        target.style.width  = newWidth + 'px';
-        target.style.height = newHeight + 'px';
-        target.style.transform = "translate(" + x + "px, " + y + "px)";
+        target.style.width  = event.rect.width + 'px';
+        target.style.height = event.rect.height + $('#'+id+' .flat-titlebar').height() + 'px';
+
+        // translate when resizing from top or left edges
+        x += event.deltaRect.left;
+        y += event.deltaRect.top;
+
+        target.style.webkitTransform = target.style.transform =
+            'translate(' + x + 'px,' + y + 'px)';
+
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
-      })
-    // interact('#'+id+" .flat-window")
-    interact('#'+id)
-      .draggable({})
-      .allowFrom(".flat-titlebar")
-      .on("dragmove", function(event) {
-        var target = event.target;
-        var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-        var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-        target.style.transform = "translate(" + x + "px, " + y + "px)";
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
-      })
+        // target.textContent = event.rect.width + '×' + event.rect.height;
+      });
   }
 }

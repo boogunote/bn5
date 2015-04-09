@@ -158,6 +158,7 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 .flat-titlebar {
   display: block;
   background: cornflowerblue;
+  height:10px;
 }
 .flat-window {
   border: 1px solid black;
