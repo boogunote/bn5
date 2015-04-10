@@ -159,10 +159,12 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
   display: block;
   background: cornflowerblue;
   height:10px;
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 .flat-window {
   position: absolute;
-  border: 1px solid black;
+  border: 1px solid #d4d4d4;
   display: flex;
   flex-direction: column;
 }
@@ -170,4 +172,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
   width: 100%;
   background-color: white;
   flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
