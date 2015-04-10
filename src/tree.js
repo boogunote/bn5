@@ -5,10 +5,11 @@ import {Utility} from './utility';
 import {Common} from './common'
 
 export class Tree extends Node {
-  static inject() { return [DataSource, TreeParams, Common, Utility]; }
-  constructor(dataSource, treeParams, common, utility){
+  static inject() { return [DataSource, Element, TreeParams, Common, Utility]; }
+  constructor(dataSource, element, treeParams, common, utility){
     super();
     this.dataSource = dataSource;
+    this.element = element;
     this.operationRecordList = [];
     this.operationRecordList.cursor = -1;
     this.focusedVM = null;
@@ -276,7 +277,7 @@ export class Tree extends Node {
     function visit(node_id) {
       var node = that.file.nodes[node_id];
       var children = [];
-      for (var i = 0; i < node.children.length; i++) {
+      for (var i = 0; node.children && i < node.children.length; i++) {
         var newChildNode = visit(node.children[i]);
         children.push(newChildNode.id);
       };
@@ -368,6 +369,7 @@ export class Tree extends Node {
         nodeRef.set(updateNodeList[i])
       };
     };
+    return newNode;
   }
 
   delete() {
@@ -404,9 +406,17 @@ export class Tree extends Node {
     this.treeVM.record(nodeRecordList, "remove");
   }
 
+  focusAt(id) {
+    $(this.element).find("#"+id+" textarea").focus();
+  }
+
   onTitleKeyDown(event) {
     if (13 == event.keyCode && event.shiftKey) {
-      this.createNewNode(this.root_id, 0);
+      var node = this.createNewNode(this.root_id, 0);
+      var that = this;
+      setTimeout(function() {
+        that.focusAt(node.id);
+      }, 10);
       return false;
     } else if (event.ctrlKey && 46 == event.keyCode && this.flatVM) {
       this.flatVM.delete(this.root_id);
@@ -587,8 +597,10 @@ export class Tree extends Node {
     var update = function(dataSnapshot) {
       that.title = dataSnapshot.val();
     }
-    var title = $("#title");
-    autosize(title);
+    setTimeout(function() {
+      var title = $(that.element).find("#title");
+      autosize(title);
+    }, 10);
     if ("root" == root_id) {
       this.title = this.file.meta.name;
       this.fileRef.child("meta/name").on("value", update);
@@ -623,7 +635,11 @@ export class Tree extends Node {
         return true;
       }
 
-      this.createNewNode(insertParentNodeId, insertPosition);
+      var node = this.createNewNode(insertParentNodeId, insertPosition);
+      var that = this;
+      setTimeout(function() {
+        that.focusAt(node.id);
+      }, 10);
       return false;
     } else if (event.ctrlKey && 46 == event.keyCode) {
       this.delete();

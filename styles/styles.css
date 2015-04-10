@@ -168,5 +168,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 .flat-body {
   width: 100%;
+  background-color: white;
   flex-grow: 1;
 }
