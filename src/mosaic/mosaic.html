@@ -1,0 +1,11 @@
+<template>
+  <input type="button" value="New Row" click.delegate="newRow()"></input>
+  <div class="mosaic">
+    <div  repeat.for="row of file.rows">
+      <compose
+        model.bind="{'row':row, 'parentVM':$parent}"
+        view-model="./row">
+      </compose>
+    </div>
+  </div>
+</template>

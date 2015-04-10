@@ -60,6 +60,24 @@ export class Common {
       }
     };
 
-    this.new_flat
+    this.new_mosaic_skeleton = {
+      meta: {
+        type: "mosaic",
+        name: "New Mosaic"
+      },
+      rows: [
+        {
+          id: "1",
+          height: 500,
+          tiles: [
+            {
+              id: "1",
+              flex: 1,
+              url: ""
+            }
+          ]
+        }
+      ]
+    }
   }
 }

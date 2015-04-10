@@ -46,8 +46,10 @@ export class TreeNode extends Node{
       if (!data) return;
       that.meta = data;
       console.log(that.meta)
-      if ("directory" != that.meta.type) {
+      if ("tree" == that.meta.type || "flat" == that.meta.type) {
         that.url = "./#" + that.meta.type + "/online/" + that.meta.id + "/root";
+      } else if ("mosaic" == that.meta.type) {
+        that.url = "./#" + that.meta.type + "/online/" + that.meta.id;
       }
     });
   }

@@ -60,7 +60,7 @@ export class Tree extends Node{
     for (var i = 0; i < this.selectedVMList.length; i++) {
       var file = {
         file_id: this.selectedVMList[i].node.id,
-        node_id: "root"
+        node_id: "root",
       };
       copiedFileList.push(file);
       this.clippedVMList.push(this.selectedVMList[i])

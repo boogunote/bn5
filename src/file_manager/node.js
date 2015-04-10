@@ -69,6 +69,16 @@ export class Node {
     this.treeVM.filesRef.child(newId).set(newFlat);
   }
 
+  newMosaic() {
+    var newId = this.utility.getUniqueId();
+    this.newItemInDirectory(newId);
+
+    var newMosaic = this.utility.clone(this.common.new_mosaic_skeleton);
+    newMosaic.meta.id = newId;
+    newMosaic.meta.create_time = Firebase.ServerValue.TIMESTAMP;
+    this.treeVM.filesRef.child(newId).set(newMosaic);
+  }
+
   delete() {
     if (!confirm("Delete?")) return;
     // remove sub-tree.
