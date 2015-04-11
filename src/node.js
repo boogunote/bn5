@@ -134,7 +134,6 @@ export class Node {
       for (var i = 0; i < node.children.length; i++) {
         newNode.children.push(visit(node.children[i]));
       };
-      newNode.create_time = that.utility.now();
       newNode.id = that.utility.getUniqueId();
       nodes.push(newNode);
       return newNode.id;

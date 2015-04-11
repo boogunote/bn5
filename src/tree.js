@@ -343,7 +343,8 @@ export class Tree extends Node {
     var nodeRecord = {
       parent_id: insertParentNodeId,
       position: insertPosition,
-      node_id: newNode.id
+      node_id: newNode.id,
+      subTree: newNode
     };
     nodeRecordList.push(nodeRecord);
     this.record(nodeRecordList, "insert");
@@ -400,11 +401,12 @@ export class Tree extends Node {
       // console.log(selectedVMList[i])
       var parentId = selectedVMList[i].parentVM.node.id;
       var nodeId = selectedVMList[i].node.id;
+      var subTree = this.listToTree(nodeId);
       var position = this.removeSubTree(parentId, nodeId);
       var nodeRecord = {
         parent_id: parentId,
         position: position,
-        node_id: nodeId
+        subTree: subTree
       };
       nodeRecordList.push(nodeRecord);
     };
@@ -480,7 +482,8 @@ export class Tree extends Node {
       var nodeRecord = {
         parent_id: parent.id,
         position: insertPosition,
-        node_id: ret.root_id
+        node_id: ret.root_id,
+        subTree: copiedSubTreeList[i].subTree
       };
       nodeRecordList.push(nodeRecord);
     };
@@ -762,6 +765,7 @@ export class Tree extends Node {
       for (var i = 0; that.treeVM.file.nodes[node_id].children && i < that.treeVM.file.nodes[node_id].children.length; i++) {
         delete_sub_node(that.treeVM.file.nodes[node_id].children[i]);
       };
+      that.file.nodes[node_id] = undefined;
     }
 
     delete_sub_node(node_id);
@@ -831,11 +835,13 @@ export class Tree extends Node {
         // this.uncollapsed(record.nodeList[i].positionArray);
         // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
         var r = record.nodeList[i];
-        this.insertSubTree(r.parent_id, r.position, [], r.node_id);
-        var nodeList = this.getNodeListByRootId(r.node_id);
+        var ret = this.treeToList(r.subTree);
+        this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
+        r.node_id = ret.root_id;
+        // var nodeList = this.getNodeListByRootId(ret.root_id);
         var that = this;
         this.doEdit(function() {
-          that.setNodeListToServer(nodeList);
+          that.setNodeListToServer(ret.nodes);
           that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
           console.log("setNodeChildrenToServer");
           console.log(that.file.nodes[r.parent_id])
@@ -893,11 +899,13 @@ export class Tree extends Node {
         // this.uncollapsed(record.nodeList[i].positionArray);
         // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
         var r = record.nodeList[i];
-        this.insertSubTree(r.parent_id, r.position, [], r.node_id);
-        var nodeList = this.getNodeListByRootId(r.node_id);
+        var ret = this.treeToList(r.subTree);
+        this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
+        r.node_id = ret.root_id;
+        // var nodeList = this.getNodeListByRootId(r.node_id);
         var that = this;
         this.doEdit(function() {
-          that.setNodeListToServer(nodeList);
+          that.setNodeListToServer(ret.nodes);
           that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
           console.log("setNodeChildrenToServer");
           console.log(that.file.nodes[r.parent_id])

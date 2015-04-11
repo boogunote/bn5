@@ -12,7 +12,7 @@ export class Utility {
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
-    var attrList = ["collapsed", "content", "fold", "icon", "id"];
+    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time"];
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
