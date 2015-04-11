@@ -266,7 +266,8 @@ export class Tree extends Node {
     for (var i = 0; i < selectedVMList.length; i++) {
       var newSubTree = {
         file_id: this.file_id,
-        node_id: selectedVMList[i].node.id
+        subTree: this.listToTree(selectedVMList[i].node.id),
+        type: "tree_nodes"
       };
       copiedSubTreeList.push(newSubTree);
     };
@@ -468,7 +469,8 @@ export class Tree extends Node {
     };
     var nodeRecordList = [];
     for (var i = 0; i < copiedSubTreeList.length; i++) {
-      var ret = this.cloneSubTree(copiedSubTreeList[i].node_id)
+      // var ret = this.cloneSubTree(copiedSubTreeList[i].node_id)
+      var ret = this.treeToList(copiedSubTreeList[i].subTree);
       var insertPosition = position+i+1;
       this.treeVM.insertSubTree(parent.id, insertPosition, ret.nodes, ret.root_id);
       for (var j = 0; j < ret.nodes.length; j++) {

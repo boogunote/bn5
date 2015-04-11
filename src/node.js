@@ -108,6 +108,46 @@ export class Node {
     };
   }
 
+  listToTree(root_id) {
+    var that = this;
+    var visit = function(node_id) {
+      var node = that.treeVM.file.nodes[node_id];
+      var newNode = new Object();
+      that.utility.copyAttributesWithoutChildren(newNode, node);
+      newNode.children = [];
+      for (var i = 0; i < node.children.length; i++) {
+        newNode.children.push(visit(node.children[i]));
+      };
+      return newNode;
+    }
+
+    return visit(root_id);
+  }
+
+  treeToList(root) {
+    var nodes = [];
+    var that = this;
+    var visit = function(node) {
+      var newNode = new Object();
+      newNode.children = [];
+      that.utility.copyAttributesWithoutChildren(newNode, node);
+      for (var i = 0; i < node.children.length; i++) {
+        newNode.children.push(visit(node.children[i]));
+      };
+      newNode.create_time = that.utility.now();
+      newNode.id = that.utility.getUniqueId();
+      nodes.push(newNode);
+      return newNode.id;
+    }
+
+    var newRootId = visit(root);
+    return {
+      root_id: newRootId,
+      nodes: nodes
+    }
+
+  }
+
   setNodeToServer(node) {
     var nodeRef = this.treeVM.nodesRef.child(node.id)
     var newNode = new Object();
