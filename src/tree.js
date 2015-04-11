@@ -759,7 +759,8 @@ export class Tree extends Node {
         remove_observer(vm.childVMList[i]);
       };
     }
-    remove_observer(this.childVMList[position]);
+    // remove_observer(this.childVMList[position]);
+    remove_observer(this);
     var delete_sub_node = function(node_id) {
       that.nodesRef.child(node_id).remove();
       for (var i = 0; that.treeVM.file.nodes[node_id].children && i < that.treeVM.file.nodes[node_id].children.length; i++) {
@@ -856,6 +857,7 @@ export class Tree extends Node {
         // this.removeNodeAt(record.nodeList[i].positionArray);
         var r = record.nodeList[i];
         var nodeList = this.getNodeListByRootId(r.node_id);
+        r.subTree = this.utility.listToTree(this.treeVM.file.nodes, r.node_id);
         this.removeSubTree(r.parent_id, r.node_id);
         var that = this;
         this.doEdit(function() {
@@ -880,6 +882,7 @@ export class Tree extends Node {
         // this.uncollapsed(record.nodeList[i].positionArray);
         var r = record.nodeList[i];
         var nodeList = this.getNodeListByRootId(r.node_id);
+        r.subTree = this.utility.listToTree(this.treeVM.file.nodes, r.node_id);
         this.removeSubTree(r.parent_id, r.node_id);
         var that = this;
         this.doEdit(function() {
