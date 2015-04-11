@@ -69,16 +69,22 @@ export class Tree extends Node {
       var filePath = '/notes/users/' + authData.uid +
           '/files/' + this.file_id;
       var fileRef = ref.child(filePath);
-      var that = this;
-      fileRef.once('value', function(dataSnapshot) {
-        // console.log("dataSnapshot.val()")
-        that.file = dataSnapshot.val()
-        // console.log(that.file);
-        if (that.file) {
-          that.loadNodeFromLocalCache(that.root_id);
-          that.loadTitle(that.root_id);
-        }
-      });
+      if (this.flatVM && this.flatVM.file) {
+        this.file = this.flatVM.file;
+        this.loadNodeFromLocalCache(this.root_id);
+        this.loadTitle(this.root_id);
+      } else {
+        var that = this;
+        fileRef.once('value', function(dataSnapshot) {
+          // console.log("dataSnapshot.val()")
+          that.file = dataSnapshot.val()
+          // console.log(that.file);
+          if (that.file) {
+            that.loadNodeFromLocalCache(that.root_id);
+            that.loadTitle(that.root_id);
+          }
+        });
+      }
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
     else if (window.is_nodewebkit) {
@@ -419,7 +425,7 @@ export class Tree extends Node {
       }, 10);
       return false;
     } else if (event.ctrlKey && 46 == event.keyCode && this.flatVM) {
-      this.flatVM.delete(this.root_id);
+      this.flatVM.delete(this.file.nodes[this.root_id]);
       return false
     }
     return true;

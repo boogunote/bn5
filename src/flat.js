@@ -7,6 +7,9 @@ export class Tree{
     this.common = common;
     this.utility = utility;
 
+    this.operationRecordList = [];
+    this.operationRecordList.cursor = -1;
+
     this.file_id = null;
     this.root_id = null;
     this.file = null;
@@ -76,20 +79,20 @@ export class Tree{
     }
   }
 
-  delete(id) {
-    var position = this.utility.getChildrenPosition(this.root, id);
+  delete(node) {
+    var position = this.utility.getChildrenPosition(this.root, node.id);
     this.root.children.splice(position, 1);
     var children = this.utility.getCleanChildren(this.root);
     var that = this;
     this.doEdit(function() {
       that.nodesRef.child("root/children").set(children);
       function visit(node) {
-        that.nodesRef.child(id).remove();
+        that.nodesRef.child(node.id).remove();
         for (var i = 0; node.children && i < node.children.length; i++) {
           visit(node.children[i]);
         };
       }
-      visit(id);
+      visit(node.id);
     });
   }
 
@@ -182,9 +185,61 @@ export class Tree{
     });
   }
 
+  record(nodeDataList, operation) {
+    var record = {};
+    record.operation = operation;
+    record.nodeList = nodeDataList;
+    
+    this.operationRecordList.splice(this.operationRecordList.cursor+1);
+    this.operationRecordList.push(record);
+    this.operationRecordList.cursor++;
+  }
+
   setPosition(id) {
     // $("#"+id).css({left:this.file.nodes[id].x, top:this.file.nodes[id].y});//,
         // width:this.file.nodes[id].width, height:this.file.nodes[id].height})
   }
 
+  undo() {
+    if (this.operationRecordList.cursor < 0) return;
+    var record = this.operationRecordList[this.operationRecordList.cursor];
+    this.operationRecordList.cursor--;
+    if ("insert" == record.operation) {
+      for (var i = record.nodeList.length - 1; i >= 0; i--) {
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        var r = record.nodeList[i];
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        this.removeSubTree(r.parent_id, r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.removeNodeListFromServer(nodeList)
+          
+          that.treeVM.setToRemoteTime = that.utility.now();
+          
+        });
+        // this.doEdit(this.file.nodes[r.parent_id]);
+        // this.removeNodeAt(record.nodeList[i].positionArray);
+      }
+    } else if ("remove" == record.operation) {
+      for (var i = record.nodeList.length - 1; i >= 0 ; i--) {
+        // this.uncollapsed(record.nodeList[i].positionArray);
+        // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
+        var r = record.nodeList[i];
+        this.insertSubTree(r.parent_id, r.position, [], r.node_id);
+        var nodeList = this.getNodeListByRootId(r.node_id);
+        var that = this;
+        this.doEdit(function() {
+          that.setNodeListToServer(nodeList);
+          that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
+          console.log("setNodeChildrenToServer");
+          console.log(that.file.nodes[r.parent_id])
+          that.treeVM.setToRemoteTime = that.utility.now();
+        });
+        // this.doEdit(this.file.nodes[r.parent_id]);
+      }
+    }
+  }
 }
