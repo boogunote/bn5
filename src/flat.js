@@ -1,5 +1,5 @@
 import {Utility} from './utility';
-import {Common} from './common'
+import {Common} from './common';
 
 export class Tree{
   static inject() { return [Common, Utility]; }
@@ -80,6 +80,11 @@ export class Tree{
   }
 
   delete(node) {
+    this.removeSubTree(node)
+    this.listTo
+  }
+
+  removeSubTree(node) {
     var position = this.utility.getChildrenPosition(this.root, node.id);
     this.root.children.splice(position, 1);
     var children = this.utility.getCleanChildren(this.root);

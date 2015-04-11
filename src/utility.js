@@ -86,6 +86,45 @@ export class Utility {
     return children;
   }
 
+  listToTree(nodes, root_id) {
+    var that = this;
+    var visit = function(node_id) {
+      var node = nodes[node_id];
+      var newNode = new Object();
+      that.copyAttributesWithoutChildren(newNode, node);
+      newNode.children = [];
+      for (var i = 0; i < node.children.length; i++) {
+        newNode.children.push(visit(node.children[i]));
+      };
+      return newNode;
+    }
+
+    return visit(root_id);
+  }
+
+  treeToList(root) {
+    var nodes = [];
+    var that = this;
+    var visit = function(node) {
+      var newNode = new Object();
+      newNode.children = [];
+      that.copyAttributesWithoutChildren(newNode, node);
+      for (var i = 0; i < node.children.length; i++) {
+        newNode.children.push(visit(node.children[i]));
+      };
+      newNode.id = that.getUniqueId();
+      nodes.push(newNode);
+      return newNode.id;
+    }
+
+    var newRootId = visit(root);
+    return {
+      root_id: newRootId,
+      nodes: nodes
+    }
+
+  }
+
   now() {
     return new Date().getTime();
   }

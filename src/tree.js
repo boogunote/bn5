@@ -266,7 +266,7 @@ export class Tree extends Node {
     for (var i = 0; i < selectedVMList.length; i++) {
       var newSubTree = {
         file_id: this.file_id,
-        subTree: this.listToTree(selectedVMList[i].node.id),
+        subTree: this.utility.listToTree(this.treeVM.file.nodes, selectedVMList[i].node.id),
         type: "tree_nodes"
       };
       copiedSubTreeList.push(newSubTree);
@@ -401,7 +401,7 @@ export class Tree extends Node {
       // console.log(selectedVMList[i])
       var parentId = selectedVMList[i].parentVM.node.id;
       var nodeId = selectedVMList[i].node.id;
-      var subTree = this.listToTree(nodeId);
+      var subTree = this.utility.listToTree(this.treeVM.file.nodes, nodeId);
       var position = this.removeSubTree(parentId, nodeId);
       var nodeRecord = {
         parent_id: parentId,
@@ -472,7 +472,7 @@ export class Tree extends Node {
     var nodeRecordList = [];
     for (var i = 0; i < copiedSubTreeList.length; i++) {
       // var ret = this.cloneSubTree(copiedSubTreeList[i].node_id)
-      var ret = this.treeToList(copiedSubTreeList[i].subTree);
+      var ret = this.utility.treeToList(copiedSubTreeList[i].subTree);
       var insertPosition = position+i+1;
       this.treeVM.insertSubTree(parent.id, insertPosition, ret.nodes, ret.root_id);
       for (var j = 0; j < ret.nodes.length; j++) {
@@ -835,7 +835,7 @@ export class Tree extends Node {
         // this.uncollapsed(record.nodeList[i].positionArray);
         // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
         var r = record.nodeList[i];
-        var ret = this.treeToList(r.subTree);
+        var ret = this.utility.treeToList(r.subTree);
         this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
         r.node_id = ret.root_id;
         // var nodeList = this.getNodeListByRootId(ret.root_id);
@@ -899,7 +899,7 @@ export class Tree extends Node {
         // this.uncollapsed(record.nodeList[i].positionArray);
         // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
         var r = record.nodeList[i];
-        var ret = this.treeToList(r.subTree);
+        var ret = this.utility.treeToList(r.subTree);
         this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
         r.node_id = ret.root_id;
         // var nodeList = this.getNodeListByRootId(r.node_id);
