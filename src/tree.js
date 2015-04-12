@@ -635,7 +635,7 @@ export class Tree extends Node {
   }
 
   onKeyDown(event) {
-    // console.log(event);
+     console.log(event);
     if (13 == event.keyCode) {
       var currNodePosition = -1;
       for (var i = 0; i < this.focusedVM.parentVM.node.children.length; i++) {
@@ -684,10 +684,9 @@ export class Tree extends Node {
     } else if (83 == event.keyCode && event.ctrlKey) {
       this.save();
       return false;
-    } else if (70 == event.keyCode && event.altKey) {
-      if (this.focusedVM) {
+    } else if (83 == event.keyCode && event.altKey) {
+      if (this.focusedVM)
         this.focusedVM.fold();
-      }
     } else if (90 == event.keyCode && event.ctrlKey && event.shiftKey) {
       this.undo();
       return false;
@@ -695,10 +694,12 @@ export class Tree extends Node {
       this.redo();
       return false;
     } else if (187 == event.keyCode && event.altKey) {
-      this.stepIcon(true);
+      if (this.focusedVM)
+        this.focusedVM.stepIcon(true);
       return false;
     } else if (189 == event.keyCode && event.altKey) {
-      this.stepIcon(false);
+      if (this.focusedVM)
+        this.focusedVM.stepIcon(false);
       return false;
     }
     return true;
@@ -776,16 +777,6 @@ export class Tree extends Node {
   removeObserver(node) {
     Object.unobserve(node, node.observer);
     Object.unobserve(node.children, node.children_observer);
-  }
-
-  stepIcon(direction) {
-    if (!this.focusedVM) return;
-    if (direction)
-      this.focusedVM.node.icon++;
-    else
-      this.focusedVM.node.icon--;
-    if (this.focusedVM.node.icon > 7) this.focusedVM.node.icon = 0;
-    if (this.focusedVM.node.icon < 0) this.focusedVM.node.icon = 7;
   }
 
   uncollapsed(positionArray) {

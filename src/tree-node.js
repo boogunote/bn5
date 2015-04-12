@@ -65,6 +65,17 @@ export class TreeNode extends Node {
   fold() {
     this.node.fold = !this.node.fold;
     this.foldNode(this.node.fold);
+    this.setNodeToServer(this.node.id);
+  }
+
+  stepIcon(direction) {
+    if (direction)
+      this.node.icon++;
+    else
+      this.node.icon--;
+    if (this.node.icon > 7) this.node.icon = 0;
+    if (this.node.icon < 0) this.node.icon = 7;
+    this.setNodeToServer(this.node.id);
   }
 
   toggle() {
