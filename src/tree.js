@@ -565,24 +565,6 @@ export class Tree extends Node {
     return selectedVMList;
   }
 
-  insertSubTree(parent_id, insertPosition, sub_tree, root_id) {
-    var parent = this.rootVM.file.nodes[parent_id];
-    for (var i = 0; i < sub_tree.length; i++) {
-      this.rootVM.file.nodes[sub_tree[i].id] = sub_tree[i];
-    };
-
-    if (!parent.children) {parent.children = []};
-    parent.children.splice(insertPosition, 0, root_id);
-    // this.doEdit(parent, this.rootVM.file_id, parent.id);
-
-    // Do not use doEdit(). Set it directly. It's not text editing.
-    this.setNodeListToServer(sub_tree);
-    this.setNodeChildrenToServer(this.file.nodes[parent_id]);
-    console.log("setNodeChildrenToServer");
-    console.log(this.file.nodes[parent_id])
-    this.rootVM.setToRemoteTime = this.utility.now();
-  }
-
   insertNodeAt(positionArray, node) {
     console.log("insertNodeAt")
     var positionArray = JSON.parse(JSON.stringify(positionArray)); //clone object
@@ -737,43 +719,6 @@ export class Tree extends Node {
     }, 0);
   }
 
-  removeSubTree(parent_id, node_id) {
-    // console.log("removeSubTree(parent_id, node_id) {")
-    // console.log(parent_id)
-    // console.log(node_id)
-    var parent = this.file.nodes[parent_id];
-    var position = -1;
-    for (var i = 0; i < parent.children.length; i++) {
-      if (parent.children[i] == node_id) {
-        position = i;
-        break;
-      }
-    };
-
-    if (-1 == position) return;
-
-    parent.children.splice(position, 1);
-    var nodeList = this.getNodeListByRootId(node_id);
-    for (var i = 0; i < nodeList.length; i++) {
-      this.rootVM.file.nodes[nodeList[i].id] = undefined;
-    };
-
-    // doEdit to prevent the modification, which send back from server.
-    // var that = this;
-    // this.doEdit(function() {
-    //   that.setNodeToServer(parent);
-    // })
-
-    // Do not use doEdit(). Set it directly. It's not text editing.
-    this.setNodeChildrenToServer(this.file.nodes[parent_id]);
-    console.log("setNodeChildrenToServer");
-    console.log(this.file.nodes[parent_id])
-    this.removeNodeListFromServer(nodeList);
-    this.rootVM.setToRemoteTime = this.utility.now();
-
-    return position;
-  }
-
   removeObserver(node) {
     Object.unobserve(node, node.observer);
     Object.unobserve(node.children, node.children_observer);
@@ -785,16 +730,6 @@ export class Tree extends Node {
       node.collapsed = false;
       node = node.children[positionArray[i]]
     };
-  }
-
-  record(nodeDataList, operation) {
-    var record = {};
-    record.operation = operation;
-    record.nodeList = nodeDataList;
-    
-    this.operationRecordList.splice(this.operationRecordList.cursor+1);
-    this.operationRecordList.push(record);
-    this.operationRecordList.cursor++;
   }
 
   save() {
@@ -809,92 +744,6 @@ export class Tree extends Node {
   select(positionArray) {
     var vm = getVMByPositionArray(positionArray);
     vm.select();
-  }
-
-  redo() {
-    console.log("redo")
-    // console.log($scope.$operationRecordList)
-    if (this.operationRecordList.cursor >= this.operationRecordList.length-1) return;
-
-    this.operationRecordList.cursor++;
-    var record = this.operationRecordList[this.operationRecordList.cursor];
-    if ("insert" == record.operation) {
-      for (var i = 0; i < record.nodeList.length; i++) {
-        // this.uncollapsed(record.nodeList[i].positionArray);
-        // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
-        var r = record.nodeList[i];
-        var ret = this.utility.treeToList(r.subTree);
-        this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
-        r.node_id = ret.root_id;
-        // // var nodeList = this.getNodeListByRootId(ret.root_id);
-        // var that = this;
-        // this.doEdit(function() {
-        //   that.setNodeListToServer(ret.nodes);
-        //   that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
-        //   console.log("setNodeChildrenToServer");
-        //   console.log(that.file.nodes[r.parent_id])
-        //   that.rootVM.setToRemoteTime = that.utility.now();
-        // });
-        
-        // // this.doEdit(this.file.nodes[r.parent_id]);
-      }
-    } else if ("remove" == record.operation) {
-      for (var i = 0; i < record.nodeList.length; i++) {
-        // this.uncollapsed(record.nodeList[i].positionArray);
-        // this.removeNodeAt(record.nodeList[i].positionArray);
-        var r = record.nodeList[i];
-        var nodeList = this.getNodeListByRootId(r.node_id);
-        r.subTree = this.utility.listToTree(this.rootVM.file.nodes, r.node_id);
-        this.removeSubTree(r.parent_id, r.node_id);
-
-        // this.doEdit(this.file.nodes[r.parent_id]);
-      }
-    }
-  }
-
-  undo() {
-    if (this.operationRecordList.cursor < 0) return;
-    var record = this.operationRecordList[this.operationRecordList.cursor];
-    this.operationRecordList.cursor--;
-    if ("insert" == record.operation) {
-      for (var i = record.nodeList.length - 1; i >= 0; i--) {
-        // this.uncollapsed(record.nodeList[i].positionArray);
-        var r = record.nodeList[i];
-        r.subTree = this.utility.listToTree(this.rootVM.file.nodes, r.node_id);
-        this.removeSubTree(r.parent_id, r.node_id);
-        // var that = this;
-        // this.doEdit(function() {
-        //   that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
-        //   console.log("setNodeChildrenToServer");
-        //   console.log(that.file.nodes[r.parent_id])
-        //   that.removeNodeListFromServer(nodeList)
-          
-        //   that.rootVM.setToRemoteTime = that.utility.now();
-          
-        // });
-        // this.doEdit(this.file.nodes[r.parent_id]);
-        // this.removeNodeAt(record.nodeList[i].positionArray);
-      }
-    } else if ("remove" == record.operation) {
-      for (var i = record.nodeList.length - 1; i >= 0 ; i--) {
-        // this.uncollapsed(record.nodeList[i].positionArray);
-        // this.insertNodeAt(record.nodeList[i].positionArray, record.nodeList[i].node);
-        var r = record.nodeList[i];
-        var ret = this.utility.treeToList(r.subTree);
-        this.insertSubTree(r.parent_id, r.position, ret.nodes, ret.root_id);
-        r.node_id = ret.root_id;
-        // // var nodeList = this.getNodeListByRootId(r.node_id);
-        // var that = this;
-        // this.doEdit(function() {
-        //   that.setNodeListToServer(ret.nodes);
-        //   that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
-        //   console.log("setNodeChildrenToServer");
-        //   console.log(that.file.nodes[r.parent_id])
-        //   that.rootVM.setToRemoteTime = that.utility.now();
-        // });
-        // // this.doEdit(this.file.nodes[r.parent_id]);
-      }
-    }
   }
 
   getNodeListByRootId(rootId) {
