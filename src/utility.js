@@ -12,7 +12,8 @@ export class Utility {
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
-    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time"];
+    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
+        "x", "y", "width", "height"];
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
@@ -22,7 +23,8 @@ export class Utility {
     function copyAttributes(newNode, node, attrName) {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
-    var attrList = ["collapsed", "content", "fold", "icon", "id"];
+    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
+        "x", "y", "width", "height"];
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
@@ -84,6 +86,26 @@ export class Utility {
       children.push(node.children[i]);
     };
     return children;
+  }
+
+  isSameNode(node1, node2) {
+    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time"];
+    for (var i = 0; i < attrList.length; i++) {
+      if (node1[attrList[i]] != node2[attrList[i]])
+        return false;
+    };
+
+    if (node1.children && node2.children) return true;
+    if (node1.children && !node2.children) return false;
+    if (!node1.children && node2.children) return false;
+    if (node1.children.length != node2.children.length) false;
+
+    for (var i = 0; i < node1.children.length; i++) {
+      if (node1.children[i] != node2.children[i])
+        return false;
+    };
+
+    return true;
   }
 
   listToTree(nodes, root_id) {

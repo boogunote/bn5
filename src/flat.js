@@ -1,7 +1,8 @@
 import {Utility} from './utility';
 import {Common} from './common';
+import {Node} from './node';
 
-export class Tree{
+export class Tree {
   static inject() { return [Common, Utility]; }
   constructor(common, utility){
     this.common = common;
@@ -80,26 +81,66 @@ export class Tree{
   }
 
   delete(node) {
-    this.removeSubTree(node)
-    this.listTo
+    this.removeSubTree(this.file.nodes.root.id, node.id);
+    // this.listTo
   }
 
-  removeSubTree(node) {
-    var position = this.utility.getChildrenPosition(this.root, node.id);
-    this.root.children.splice(position, 1);
-    var children = this.utility.getCleanChildren(this.root);
-    var that = this;
-    this.doEdit(function() {
-      that.nodesRef.child("root/children").set(children);
-      function visit(node) {
-        that.nodesRef.child(node.id).remove();
-        for (var i = 0; node.children && i < node.children.length; i++) {
-          visit(node.children[i]);
-        };
+  removeSubTree(parent_id, node_id) {
+    var parent = this.file.nodes[parent_id];
+    var position = -1;
+    for (var i = 0; i < parent.children.length; i++) {
+      if (parent.children[i] == node_id) {
+        position = i;
+        break;
       }
-      visit(node.id);
-    });
+    };
+
+    if (-1 == position) return;
+
+    parent.children.splice(position, 1);
+
+    var that = this;
+    var remove_observer = function(vm) {
+      Object.unobserve(vm.node, vm.localObserver);
+      that.nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+      for (var i = 0; i < vm.childVMList.length; i++) {
+        remove_observer(vm.childVMList[i]);
+      };
+    }
+    // remove_observer(this.childVMList[position]);
+    remove_observer(this);
+    var delete_sub_node = function(node_id) {
+      that.nodesRef.child(node_id).remove();
+      for (var i = 0; that.rootVM.file.nodes[node_id].children && i < that.rootVM.file.nodes[node_id].children.length; i++) {
+        delete_sub_node(that.rootVM.file.nodes[node_id].children[i]);
+      };
+      that.file.nodes[node_id] = undefined;
+    }
+
+    delete_sub_node(node_id);
+    // doEdit to prevent the modification, which send back from server.
+    this.doEdit(function() {
+      that.setNodeToServer(parent);
+    })
+    return position;
   }
+
+  // removeSubTree(node) {
+  //   var position = this.utility.getChildrenPosition(this.root, node.id);
+  //   this.root.children.splice(position, 1);
+  //   var children = this.utility.getCleanChildren(this.root);
+  //   var that = this;
+  //   this.doEdit(function() {
+  //     that.nodesRef.child("root/children").set(children);
+  //     function visit(node) {
+  //       that.nodesRef.child(node.id).remove();
+  //       for (var i = 0; node.children && i < node.children.length; i++) {
+  //         visit(node.children[i]);
+  //       };
+  //     }
+  //     visit(node.id);
+  //   });
+  // }
 
   doEdit(realEdit) {
     var that = this;
@@ -222,7 +263,7 @@ export class Tree{
           console.log(that.file.nodes[r.parent_id])
           that.removeNodeListFromServer(nodeList)
           
-          that.treeVM.setToRemoteTime = that.utility.now();
+          that.rootVM.setToRemoteTime = that.utility.now();
           
         });
         // this.doEdit(this.file.nodes[r.parent_id]);
@@ -241,7 +282,7 @@ export class Tree{
           that.setNodeChildrenToServer(that.file.nodes[r.parent_id]);
           console.log("setNodeChildrenToServer");
           console.log(that.file.nodes[r.parent_id])
-          that.treeVM.setToRemoteTime = that.utility.now();
+          that.rootVM.setToRemoteTime = that.utility.now();
         });
         // this.doEdit(this.file.nodes[r.parent_id]);
       }

@@ -19,14 +19,14 @@ export class TreeNode extends Node {
   }
 
   activate(model){
-    // console.log("TreeNode activate");
+     console.log("TreeNode activate");
     // console.log(model)
     // this.node = model.node;
     this.parentVM = model.parentVM;
-    this.treeVM = model.parentVM.treeVM;
+    this.rootVM = model.parentVM.rootVM;
     this.parentVM.addChildVM(this, model.node_id);
-    this.loadNodeFromLocalCache(model.node_id);
-    // this.loadNodeDataById(this.treeVM.file_id, model.node_id);
+    this.loadNode(model.node_id);
+    // this.loadNodeDataById(this.rootVM.file_id, model.node_id);
   }
 
   foldNode() {
@@ -53,7 +53,18 @@ export class TreeNode extends Node {
 
   deactivate() {
     console.log("deactivate")
+
+  }
+
+  detached() {
+    console.log("detached");
+    this.removeObserver(this.node.id);
     this.parentVM.removeChildVM(this);
+  }
+
+  fold() {
+    this.node.fold = !this.node.fold;
+    this.foldNode(this.node.fold);
   }
 
   toggle() {
@@ -77,7 +88,7 @@ export class TreeNode extends Node {
   }
 
   onBlur(event) {
-    this.treeVM.focusedVM = null;
+    this.rootVM.focusedVM = null;
   }
 
   onClick(event) {
@@ -88,110 +99,57 @@ export class TreeNode extends Node {
   }
 
   onFocus(event) {
-    this.treeVM.focusedVM = this;
+    this.rootVM.focusedVM = this;
   }
 
   onKeyDown(event) {
-     // console.log(event);
-    // if (13 == event.keyCode) {
-    //   var before = null;
-    //   var child = false;
-    //   // var positionArray = this.getPositionArray();
-    //   var updateNode = null;
-    //   var updateNodeList = null;
-    //   var currNodePosition = -1;
-    //   for (var i = 0; i < this.parentVM.node.children.length; i++) {
-    //     if (this.node.id == this.parentVM.node.children[i]) {
-    //       currNodePosition = i;
-    //       break;
-    //     }
-    //   };
-    //   var insertParentNodeId = -1;
-    //   var insertPosition = -1;
-    //   if (event.altKey) {
-    //     insertParentNodeId = this.parentVM.node.id;
-    //     insertPosition = currNodePosition;
-    //   } else if (event.ctrlKey) {
-    //     insertParentNodeId = this.parentVM.node.id;
-    //     insertPosition = currNodePosition + 1;
-    //   } else if (event.shiftKey) {
-    //     insertParentNodeId = this.node.id;
-    //     insertPosition = 0;
-    //   } else {
-    //     return true;
-    //   }
+    var keyList = [
+      {start:9, end:9},
+      {start:19, end:27},
+      {start:33, end:40},
+      {start:144, end:145},
+    ]
+    var combindKeyList = [
+      {key:13, alt:true, ctrl:false, shift:false},
+      {key:13, alt:false, ctrl:true, shift:false},
+      {key:13, alt:false, ctrl:false, shift:true},
+      {key:46, alt:false, ctrl:true, shift:false},
+      {key:27, alt:false, ctrl:false, shift:false},
+      {key:67, alt:false, ctrl:true, shift:true},
+      {key:88, alt:false, ctrl:true, shift:true},
+      {key:86, alt:false, ctrl:true, shift:true},
+      {key:83, alt:false, ctrl:true, shift:false},
+      {key:70, alt:true, ctrl:false, shift:false},
+      {key:90, alt:false, ctrl:true, shift:true},
+      {key:89, alt:false, ctrl:true, shift:true},
+      {key:187, alt:true, ctrl:false, shift:false},
+      {key:189, alt:true, ctrl:false, shift:false}
+    ]
 
-    //   var newNode = this.utility.createNewNode();
-    //   var newNodeList = [newNode];
-    //   console.log("insertPosition");
-    //   console.log(insertPosition);
-    //   this.treeVM.insertSubTree(insertParentNodeId, insertPosition,
-    //       newNodeList, newNode.id);
-    //   // record
-    //   var nodeRecordList = [];
-    //   var nodeRecord = {
-    //     parent_id: insertParentNodeId,
-    //     position: insertPosition,
-    //     node_id: newNode.id
-    //   };
-    //   nodeRecordList.push(nodeRecord);
-    //   this.treeVM.record(nodeRecordList, "insert");
+    var needUpdate = true;
+    for (var i = 0; i < keyList.length; i++) {
+      if(event.keyCode >= keyList[i].start && event.keyCode <= keyList[i].end){
+        needUpdate = false;
+        break;
+      }
+    };
 
-
-    //   updateNode = this.treeVM.file.nodes[insertParentNodeId];
-    //   updateNodeList = newNodeList;
-
-    //   // Sync to server
-    //   if (updateNode && updateNodeList) {
-    //     var ref = new Firebase(this.common.firebase_url);
-    //     var authData = ref.getAuth();
-    //     if (!authData) {
-    //       console.log("Please login!")
-    //       return;
-    //     }
-    //     var childrenPath = '/notes/users/' + authData.uid + '/files/' + this.treeVM.file_id + 
-    //         "/nodes/" + updateNode.id + "/children";
-    //     var childrenRef = ref.child(childrenPath);
-    //     // clean children;
-    //     var children = []
-    //     for (var i = 0; i < updateNode.children.length; i++) {
-    //       children.push(updateNode.children[i]);
-    //     };
-    //     childrenRef.set(children);
-    //     for (var i = 0; i < updateNodeList.length; i++) {
-    //       var nodePath = '/notes/users/' + authData.uid + '/files/' + this.treeVM.file_id + 
-    //           "/nodes/" + updateNodeList[i].id;
-    //       var nodeRef = ref.child(nodePath);
-    //       nodeRef.set(updateNodeList[i])
-    //     };
-    //   };
-    //   // console.log(positionArray);
-      
-    //   // this.treeVM.insertNodeAt(positionArray, newNode);
-    //   // var nodeRecord = {
-    //   //   positionArray : positionArray,
-    //   //   node : newNode
-    //   // }
-    //   // this.treeVM.record([nodeRecord], "insert");
-    //   // var that = this;
-    //   // setTimeout(function() {
-    //   //   that.treeVM.focusNodeAt(positionArray);
-    //   // }, 0);
-
-    //   return false;
-      
-    //   // if (child) {
-    //   //   positionArray.push(0);
-    //   //   this.addChild();
-    //   // } else {
-    //   //   this.parentVM.addChild(this.node.id, before);
-    //   // }
-    //   // return false;
-    // } else 
-    if (83 == event.keyCode && event.altKey) {
-      this.node.fold = !this.node.fold;
-      this.foldNode(this.node.fold);
+    if (needUpdate) {
+      for (var i = 0; i < combindKeyList.length; i++) {
+        if (event.keyCode == combindKeyList[i].key &&
+            event.altKey == combindKeyList[i].alt &&
+            event.ctrlKey == combindKeyList[i].ctrl &&
+            event.shiftKey == combindKeyList[i].shift) {
+          needUpdate = false;
+          break;
+        }
+      };
     }
+
+    if (needUpdate) {
+      this.setNodeToServer(this.node.id);
+    };
+
     return true;
   }
 

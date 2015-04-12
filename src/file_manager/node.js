@@ -25,7 +25,7 @@ export class Node {
 
   newItemInDirectory(newId) {
 
-    this.treeVM.dirNodesRef.child(newId).set({
+    this.rootVM.dirNodesRef.child(newId).set({
       id: newId
     });
 
@@ -36,7 +36,7 @@ export class Node {
     };
     children.push(newId);
 
-    this.treeVM.dirNodesRef.child(this.node.id).child("children").set(children);
+    this.rootVM.dirNodesRef.child(this.node.id).child("children").set(children);
   }
 
   newDirectory() {
@@ -46,7 +46,7 @@ export class Node {
     var newDirectory = this.utility.clone(this.common.new_directory);
     newDirectory.meta.id = newId;
     newDirectory.meta.create_time = Firebase.ServerValue.TIMESTAMP;
-    this.treeVM.filesRef.child(newId).set(newDirectory);
+    this.rootVM.filesRef.child(newId).set(newDirectory);
   }
 
   newTree() {
@@ -56,7 +56,7 @@ export class Node {
     var newTree = this.utility.clone(this.common.new_tree_note_skeleton);
     newTree.meta.id = newId;
     newTree.meta.create_time = Firebase.ServerValue.TIMESTAMP;
-    this.treeVM.filesRef.child(newId).set(newTree);
+    this.rootVM.filesRef.child(newId).set(newTree);
   }
 
   newFlat() {
@@ -66,7 +66,7 @@ export class Node {
     var newFlat = this.utility.clone(this.common.new_flat_note_skeleton);
     newFlat.meta.id = newId;
     newFlat.meta.create_time = Firebase.ServerValue.TIMESTAMP;
-    this.treeVM.filesRef.child(newId).set(newFlat);
+    this.rootVM.filesRef.child(newId).set(newFlat);
   }
 
   newMosaic() {
@@ -76,7 +76,7 @@ export class Node {
     var newMosaic = this.utility.clone(this.common.new_mosaic_skeleton);
     newMosaic.meta.id = newId;
     newMosaic.meta.create_time = Firebase.ServerValue.TIMESTAMP;
-    this.treeVM.filesRef.child(newId).set(newMosaic);
+    this.rootVM.filesRef.child(newId).set(newMosaic);
   }
 
   delete() {
@@ -90,8 +90,8 @@ export class Node {
         visit(vm.childVMList[i]);
       };
       console.log(vm.node.id);
-      that.treeVM.dirNodesRef.child(vm.node.id).remove();
-      that.treeVM.filesRef.child(vm.node.id).remove();
+      that.rootVM.dirNodesRef.child(vm.node.id).remove();
+      that.rootVM.filesRef.child(vm.node.id).remove();
     }
     visit(this);
     
@@ -109,7 +109,7 @@ export class Node {
       for (var i = 0; this.parentVM.node.children && i < this.parentVM.node.children.length; i++) {
         children.push(this.parentVM.node.children[i]);
       };
-      this.treeVM.dirNodesRef.child(this.parentVM.node.id).child("children").set(children);
+      this.rootVM.dirNodesRef.child(this.parentVM.node.id).child("children").set(children);
     };
   }
 
@@ -117,7 +117,7 @@ export class Node {
     var name = prompt("Please enter name name", this.meta.name);
     if (null == name)  return;
     this.meta.name = name;
-    this.treeVM.filesRef.child(this.node.id).child('meta').child('name').set(name)
+    this.rootVM.filesRef.child(this.node.id).child('meta').child('name').set(name)
   }
 
   getPositionToParent() {
@@ -133,24 +133,24 @@ export class Node {
   }
 
   paste() {
-    if (this.treeVM.clipping) {
-      for (var i = 0; i < this.treeVM.clippedVMList.length; i++) {
-        this.node.children.push(this.treeVM.clippedVMList[i].node.id);
-        var oldParentPosition = this.treeVM.clippedVMList[i].getPositionToParent();
-        this.treeVM.clippedVMList[i].parentVM.node.children.splice(oldParentPosition, 1);
+    if (this.rootVM.clipping) {
+      for (var i = 0; i < this.rootVM.clippedVMList.length; i++) {
+        this.node.children.push(this.rootVM.clippedVMList[i].node.id);
+        var oldParentPosition = this.rootVM.clippedVMList[i].getPositionToParent();
+        this.rootVM.clippedVMList[i].parentVM.node.children.splice(oldParentPosition, 1);
       };
 
       var updateList = [this];
-      for (var i = 0; i < this.treeVM.clippedVMList.length; i++) {
+      for (var i = 0; i < this.rootVM.clippedVMList.length; i++) {
         var alreadyHere = false;
         for (var j = 0; j < updateList.length; j++) {
-          if (updateList[j].node.id == this.treeVM.clippedVMList[i].parentVM.node.id) {
+          if (updateList[j].node.id == this.rootVM.clippedVMList[i].parentVM.node.id) {
             alreadyHere = true;
             break;
           }
         };
 
-        if (!alreadyHere) updateList.push(this.treeVM.clippedVMList[i].parentVM);
+        if (!alreadyHere) updateList.push(this.rootVM.clippedVMList[i].parentVM);
       };
 
       for (var i = 0; i < updateList.length; i++) {
@@ -158,11 +158,11 @@ export class Node {
         for (var j = 0; j < updateList[i].node.children.length; j++) {
           children.push(updateList[i].node.children[j]);
         };
-        this.treeVM.dirNodesRef.child(updateList[i].node.id).child("children").set(children);
+        this.rootVM.dirNodesRef.child(updateList[i].node.id).child("children").set(children);
       };
 
-      this.treeVM.clipping = false;
-      this.treeVM.clippedVMList = [];
+      this.rootVM.clipping = false;
+      this.rootVM.clippedVMList = [];
     };
   }
 }

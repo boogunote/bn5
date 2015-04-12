@@ -10,7 +10,7 @@ export class Tree extends Node{
     this.element = element;
     this.utility = utility;
 
-    this.treeVM = this;
+    this.rootVM = this;
     this.node = null;
     this.dirNodesRef = null;
     this.filesRef = null;
@@ -46,7 +46,7 @@ export class Tree extends Node{
     this.dirNodesRef = ref.child(dirNodesPath);
     var that = this;
     this.dirNodesRef.child('root').on('value', function(dataSnapshot) {
-      if (that.treeVM.editing) return;
+      if (that.rootVM.editing) return;
       // console.log("dataSnapshot.val()")
       that.node = dataSnapshot.val();
       // console.log(that.node)

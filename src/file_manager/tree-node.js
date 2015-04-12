@@ -24,13 +24,13 @@ export class TreeNode extends Node{
     // console.log("activate, model.node_id:"+model.node_id)
     this.node_id = model.node_id;
     this.parentVM = model.parentVM;
-    this.treeVM = model.parentVM.treeVM;
+    this.rootVM = model.parentVM.rootVM;
     this.parentVM.addChildVM(this, this.node_id);
 
     var that = this;
-    this.nodeRef = this.treeVM.dirNodesRef.child(this.node_id);
+    this.nodeRef = this.rootVM.dirNodesRef.child(this.node_id);
     this.nodeRef.on('value', function(dataSnapshot) {
-      if (that.treeVM.editing) return;
+      if (that.rootVM.editing) return;
       console.log("this.nodeRef.on('value', model.node_id:"+model.node_id)
       var data = dataSnapshot.val();
       console.log(data)
@@ -39,9 +39,9 @@ export class TreeNode extends Node{
       if (!that.node.children) that.node.children = [];
     });
 
-    this.metaRef = this.treeVM.filesRef.child(this.node_id).child("meta");
+    this.metaRef = this.rootVM.filesRef.child(this.node_id).child("meta");
     this.metaRef.on('value', function(dataSnapshot) {
-      if (that.treeVM.editing) return;
+      if (that.rootVM.editing) return;
       var data = dataSnapshot.val();
       if (!data) return;
       that.meta = data;
@@ -55,13 +55,13 @@ export class TreeNode extends Node{
   }
 
   cut() {
-    this.treeVM.selectedVMList.push(this);
-    this.treeVM.cut();
+    this.rootVM.selectedVMList.push(this);
+    this.rootVM.cut();
   }
 
   toggle() {
     if ("directory" != this.meta.type) return;
     this.meta.collapsed = !this.meta.collapsed;
-    this.treeVM.filesRef.child(this.node.id).child("/meta/collapsed").set(this.meta.collapsed);
+    this.rootVM.filesRef.child(this.node.id).child("/meta/collapsed").set(this.meta.collapsed);
   }
 }
