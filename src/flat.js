@@ -83,8 +83,16 @@ export class Tree extends Node {
   }
 
   delete(node) {
-    this.removeSubTree(this.file.nodes.root.id, node.id);
-    // this.listTo
+    var nodeRecordList = [];
+    var subTree = this.utility.listToTree(this.rootVM.file.nodes, node.id);
+    var position = this.removeSubTree(this.file.nodes.root.id, node.id);
+    var nodeRecord = {
+      parent_id: this.root_id,
+      position: position,
+      subTree: subTree
+    };
+    nodeRecordList.push(nodeRecord);
+    this.rootVM.record(nodeRecordList, "remove");
   }
 
   // removeSubTree(parent_id, node_id) {
@@ -196,6 +204,17 @@ export class Tree extends Node {
     //   children.push(flatNode.id);
     //   that.nodesRef.child("root/children").set(children);
     // });
+
+    // record
+    var nodeRecordList = [];
+    var nodeRecord = {
+      parent_id: this.root_id,
+      position: children.length-1,
+      node_id: flatNode.id,
+      subTree: flatNode
+    };
+    nodeRecordList.push(nodeRecord);
+    this.record(nodeRecordList, "insert");
   }
 
   setPosition(id) {
