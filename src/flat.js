@@ -68,12 +68,13 @@ export class Tree extends Node {
           console.log(that.file_id)
           that.loadNode(that.root_id, true);
           // that.loadTitle(that.root_id);
-          setTimeout(function() {
-            if (!that.node.children) that.node.children = [];
-            for (var i = 0; i < that.node.children.length; i++) {
-              that.setPosition(that.node.children[i]);
-            };
-          }, 10);
+          if (!that.node.children) that.node.children = [];
+          // setTimeout(function() {
+            
+          //   for (var i = 0; i < that.node.children.length; i++) {
+          //     that.setPosition(that.node.children[i]);
+          //   };
+          // }, 10);
         }
       });
 
@@ -166,8 +167,25 @@ export class Tree extends Node {
     this.record(nodeRecordList, "insert");
   }
 
-  setPosition(id) {
-    // $("#"+id).css({left:this.file.nodes[id].x, top:this.file.nodes[id].y});//,
-        // width:this.file.nodes[id].width, height:this.file.nodes[id].height})
+  setPositionToRemoteServer(id) {
+    var element = $("#"+id);
+    // console.log(element.left())
+    // console.log(element.top())
+    // console.log(element.width())
+    // console.log(element.height())
+    // var newNode = new Object();
+    // this.utility.copyAttributes(newNode, this.file.nodes[id]);
+    
+    var that = this;
+    this.doEdit(function() {
+      // console.log("setNodeToServer")
+      var newNode = new Object();
+      that.utility.copyAttributes(newNode, that.rootVM.file.nodes[id])
+      newNode.x = element.position().left;
+      newNode.y = element.position().top;
+      newNode.width = element.width();
+      newNode.height = element.height();
+      that.nodesRef.child(id).set(newNode);
+    });
   }
 }

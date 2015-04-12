@@ -88,7 +88,7 @@ export class Utility {
     return children;
   }
 
-  initInteract(id) {
+  initInteract(id, vm) {
     interact('#'+id)
       .allowFrom(".flat-titlebar")
       .draggable({
@@ -106,8 +106,8 @@ export class Utility {
             // update the posiion attributes
             target.setAttribute('data-x', x);
             target.setAttribute('data-y', y);
+            vm.setPositionToRemoteServer(id);
           }
-
           // this is used later in the resizing demo
           // window.dragMoveListener = dragMoveListener;
       })
@@ -135,6 +135,7 @@ export class Utility {
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
         // target.textContent = event.rect.width + '×' + event.rect.height;
+        vm.setPositionToRemoteServer(id);
       });
   }
 

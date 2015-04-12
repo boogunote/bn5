@@ -67,7 +67,7 @@ export class Tree extends Node {
         this.loadNode(this.root_id, false);
         this.loadTitle(this.root_id);
         this.flatVM.addChildVM(this, this.root_id);
-        this.utility.initInteract(this.root_id);
+        this.utility.initInteract(this.root_id, this.flatVM);
       } else {
         var that = this;
         this.fileRef.once('value', function(dataSnapshot) {
