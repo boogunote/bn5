@@ -64,18 +64,21 @@ export class Node {
     var that = this;
     if (!this.remoteObserver) {
       this.remoteObserver = function(dataSnapshot) {
+        // console.log("remoteObserver")
+        // console.log(dataSnapshot.val())
         if (that.rootVM.editing) return;
         if (that.utility.now() - that.rootVM.setToRemoteTime < 2000) return;
         var newNode = dataSnapshot.val();
         if (!newNode) return;
         if (that.utility.isSameNode(that.node, newNode)) return;
-        that.doUpdate(that.node, newNode, that.rootVM.file_id, node.id);
+        that.doUpdate(newNode);
       }
       this.rootVM.nodesRef.child(node.id).on("value", this.remoteObserver);  
     }
   }
 
   removeObserver() {
+    // console.log("removeObserver")
     if (this.localObserver)
       Object.unobserve(this.node, this.localObserver);
     if (this.remoteObserver)
@@ -159,7 +162,7 @@ export class Node {
     };
   }
 
-  doUpdate(node, newNode, file_id, node_id) {
+  doUpdate(newNode) {
     // var ref = new Firebase(this.common.firebase_url);
     // var authData = ref.getAuth();
     // if (!authData) {
@@ -188,10 +191,10 @@ export class Node {
       setTimeout(update, that.rootVM.remoteChangeWaitTime);
     };
     // remove observer.
-    for (var i = node.children.length - 1; i >= 0; i--) {
+    for (var i = this.node.children.length - 1; i >= 0; i--) {
       var removed = true
       for (var j = 0; newNode.children && j < newNode.children.length; j++) {
-        if (node.children[i] == newNode.children[j]) {
+        if (this.node.children[i] == newNode.children[j]) {
           removed = false;
           break;
         }
@@ -199,8 +202,10 @@ export class Node {
       if (removed) {
         // var that = this;
         var remove_observer = function(vm) {
-          Object.unobserve(vm.node, vm.localObserver);
-          that.rootVM.nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+          // Object.unobserve(vm.node, vm.localObserver);
+          // that.rootVM.nodesRef.child(vm.node.id).off("value", vm.remoteObserver);
+          // vm.remoteObserver = undefined;
+          vm.removeObserver();
           for (var i = 0; i < vm.childVMList.length; i++) {
             remove_observer(vm.childVMList[i]);
           };
@@ -208,8 +213,9 @@ export class Node {
         remove_observer(this.childVMList[i]);
       };
     };
-    this.utility.copyAttributes(node, newNode);
+    this.utility.copyAttributes(this.node, newNode);
     // console.log(this.resize)
+    // this.node = newNode;
     this.rootVM.receiveRemoteTime = this.utility.now();
     setTimeout(function() {
       if (that.resize) that.resize();

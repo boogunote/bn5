@@ -95,10 +95,10 @@ export class Utility {
         return false;
     };
 
-    if (node1.children && node2.children) return true;
+    if (!node1.children && !node2.children) return true;
     if (node1.children && !node2.children) return false;
     if (!node1.children && node2.children) return false;
-    if (node1.children.length != node2.children.length) false;
+    if (node1.children.length != node2.children.length) return false;
 
     for (var i = 0; i < node1.children.length; i++) {
       if (node1.children[i] != node2.children[i])

@@ -81,6 +81,7 @@ export class TreeNode extends Node {
   toggle() {
     // console.log("toggle")
     this.node.collapsed = !this.node.collapsed;
+    this.setNodeToServer(this.node.id);
   }
 
   getPositionArray() {

@@ -440,7 +440,7 @@ export class Tree extends Node {
 
   onTitleKeyUp(event) {
     var that = this;
-    this.asyncEdit(function(){
+    this.doEdit(function(){
       if ("root" == that.root_id) {
         that.fileRef.child("meta/name").set(that.title);
       } else {
@@ -635,7 +635,7 @@ export class Tree extends Node {
   }
 
   onKeyDown(event) {
-     console.log(event);
+     // console.log(event);
     if (13 == event.keyCode) {
       var currNodePosition = -1;
       for (var i = 0; i < this.focusedVM.parentVM.node.children.length; i++) {
