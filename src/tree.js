@@ -447,7 +447,7 @@ export class Tree extends Node {
         that.fileRef.child("meta/name").set(that.title);
       } else {
         that.nodesRef.child(that.root_id).child("content").set(that.title);
-        that.nodes[that.root_id].content = that.title;
+        that.file.nodes[that.root_id].content = that.title;
       }
     });
     return true;

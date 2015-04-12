@@ -139,7 +139,7 @@ export class Tree extends Node {
     var flatNode = this.utility.createNewFlatNode();
     this.nodesRef.child(flatNode.id).set(flatNode);
     var children = this.utility.getCleanChildren(this.node);
-    this.file.nodes[flatNode.id] = flatNode
+    this.file.nodes[flatNode.id] = flatNode;
     this.node.children.push(flatNode.id);
     // var that = this;
     // setTimeout(function() {
