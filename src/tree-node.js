@@ -20,7 +20,7 @@ export class TreeNode extends Node {
 
   activate(model){
      console.log("TreeNode activate");
-    // console.log(model)
+     console.log(model.node_id)
     // this.node = model.node;
     this.parentVM = model.parentVM;
     this.rootVM = model.parentVM.rootVM;
@@ -57,7 +57,7 @@ export class TreeNode extends Node {
   }
 
   detached() {
-    console.log("detached");
+    // console.log("detached: "+this.node.content+" "+this.node.id);
     this.removeObserver(this.node.id);
     this.parentVM.removeChildVM(this);
   }
@@ -114,7 +114,7 @@ export class TreeNode extends Node {
     this.rootVM.focusedVM = this;
   }
 
-  onKeyDown(event) {
+  onKeyUp(event) {
     var keyList = [
       {start:9, end:9},
       {start:16, end:27},

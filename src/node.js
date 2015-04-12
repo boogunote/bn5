@@ -64,8 +64,8 @@ export class Node {
     var that = this;
     if (!this.remoteObserver) {
       this.remoteObserver = function(dataSnapshot) {
-        // console.log("remoteObserver")
-        // console.log(dataSnapshot.val())
+        console.log("remoteObserver")
+        console.log(dataSnapshot.val())
         if (that.rootVM.editing) return;
         if (that.utility.now() - that.rootVM.setToRemoteTime < 2000) return;
         var newNode = dataSnapshot.val();
@@ -79,6 +79,7 @@ export class Node {
 
   removeObserver() {
     // console.log("removeObserver")
+    if (!this.node) return;
     if (this.localObserver)
       Object.unobserve(this.node, this.localObserver);
     if (this.remoteObserver)
@@ -150,7 +151,6 @@ export class Node {
         setTimeout(edit, that.rootVM.localChangeWaitTime);
         console.log("setTimeout2")
       } else {
-        realEdit();
         that.rootVM.editing = false;
       }
     }
@@ -160,6 +160,7 @@ export class Node {
       setTimeout(edit, that.rootVM.localChangeWaitTime);
       console.log("setTimeout1")
     };
+    realEdit();
   }
 
   doUpdate(newNode) {
@@ -213,6 +214,10 @@ export class Node {
         remove_observer(this.childVMList[i]);
       };
     };
+
+    console.log("this.utility.copyAttributes(this.node, newNode);")
+    console.log(this.node);
+    console.log(newNode)
     this.utility.copyAttributes(this.node, newNode);
     // console.log(this.resize)
     // this.node = newNode;
@@ -254,6 +259,7 @@ export class Node {
   }
 
   loadNodeFromServer(node_id) {
+    console.log("loadNodeFromServer: "+node_id)
     // var ref = new Firebase(this.common.firebase_url);
     // var authData = ref.getAuth();
     // if (!authData) {
@@ -270,6 +276,8 @@ export class Node {
       // console.log("loadNodeFromServer dataSnapshot.val()")
       // console.log(dataSnapshot.val())
       that.node = dataSnapshot.val();
+      console.log("loadNodeFromServer: ")
+      console.log(that.node);
       if (!that.node) {
         that.node = that.utility.createNewNode();
         that.node.id = node_id;
@@ -331,10 +339,11 @@ export class Node {
     // })
 
     // Do not use doEdit(). Set it directly. It's not text editing.
-    this.setNodeChildrenToServer(this.file.nodes[parent_id]);
+    
     console.log("setNodeChildrenToServer");
     console.log(this.file.nodes[parent_id])
     this.removeNodeListFromServer(nodeList);
+    this.setNodeChildrenToServer(this.file.nodes[parent_id]);
     this.rootVM.setToRemoteTime = this.utility.now();
 
     return position;

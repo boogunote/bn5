@@ -143,25 +143,24 @@ export class Tree {
   // }
 
   doEdit(realEdit) {
-    // var that = this;
-    // var edit = function() {
-    //   if (that.editing &&
-    //       that.utility.now() - that.localChangedTime
-    //       < that.localChangeWaitTime - that.localChangeWaitEpsilon) {
-    //     setTimeout(edit, that.localChangeWaitTime);
-    //     // console.log("setTimeout2")
-    //   } else {
-    //     realEdit();
-    //     that.editing = false;
-    //   }
-    // }
-    realEdit();
+    var that = this;
+    var edit = function() {
+      if (that.editing &&
+          that.utility.now() - that.localChangedTime
+          < that.localChangeWaitTime - that.localChangeWaitEpsilon) {
+        setTimeout(edit, that.localChangeWaitTime);
+        // console.log("setTimeout2")
+      } else {
+        realEdit();
+        that.editing = false;
+      }
+    }
     this.localChangedTime = this.utility.now();
-    // if (!this.editing) {
-    //   this.editing = true;
-    //   setTimeout(edit, that.localChangeWaitTime);
-    //   // console.log("setTimeout1")
-    // };
+    if (!this.editing) {
+      this.editing = true;
+      setTimeout(edit, that.localChangeWaitTime);
+      // console.log("setTimeout1")
+    };
   }
 
   initInteract(id) {
