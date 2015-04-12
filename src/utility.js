@@ -92,20 +92,44 @@ export class Utility {
     interact('#'+id)
       .allowFrom(".flat-titlebar")
       .draggable({
+          onstart: function(event) {
+            var target = event.target;
+            target.setAttribute('start-x', vm.file.nodes[id].x);
+            target.setAttribute('start-y', vm.file.nodes[id].y);
+          },
          onmove:   function dragMoveListener (event) {
+          console.log(event)
             var target = event.target,
                 // keep the dragged position in the data-x/data-y attributes
-                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                dx = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                dy = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-            // translate the element
-            target.style.webkitTransform =
-            target.style.transform =
-              'translate(' + x + 'px, ' + y + 'px)';
+            vm.file.nodes[id].x = (parseFloat(target.getAttribute('start-x')) || 0) + dx;
+            vm.file.nodes[id].y = (parseFloat(target.getAttribute('start-y')) || 0) + dy;
+            // // translate the element
+            // target.style.webkitTransform =
+            // target.style.transform =
+            //   'translate(' + dx + 'px, ' + dy + 'px)';
 
             // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
+            target.setAttribute('data-x', dx);
+            target.setAttribute('data-y', dy);
+          },
+          onend: function(event) {
+            var target = event.target;
+            target.setAttribute('data-x', 0);
+            target.setAttribute('data-y', 0);
+            // var target = event.target;
+            // target.style.webkitTransform =
+            // target.style.transform = "translate(0px, 0px)";
+            // var element = $("#"+id);
+            // setTimeout(function() {
+            //   vm.file.nodes[id].x = element.position().left +
+            //       (parseFloat(target.getAttribute('data-x')) || 0);
+            //   vm.file.nodes[id].y = element.position().top + 
+            //       (parseFloat(target.getAttribute('data-y')) || 0) ;
+            // }, 0);
+            
             vm.setPositionToRemoteServer(id);
           }
           // this is used later in the resizing demo
@@ -117,30 +141,34 @@ export class Utility {
           edges: { left: true, right: true, bottom: true, top: false }
         })
       .on('resizemove', function (event) {
-        var target = event.target.parentElement,
-            x = (parseFloat(target.getAttribute('data-x')) || 0),
-            y = (parseFloat(target.getAttribute('data-y')) || 0);
+        var target = event.target.parentElement;
+            // x = (parseFloat(target.getAttribute('data-x')) || 0),
+            // y = (parseFloat(target.getAttribute('data-y')) || 0);
 
         // update the element's style
         target.style.width  = event.rect.width + 'px';
         target.style.height = event.rect.height + $('#'+id+' .flat-titlebar').height() + 'px';
 
         // translate when resizing from top or left edges
-        x += event.deltaRect.left;
-        y += event.deltaRect.top;
+        // x += event.deltaRect.left;
+        // y += event.deltaRect.top;
 
-        target.style.webkitTransform = target.style.transform =
-            'translate(' + x + 'px,' + y + 'px)';
+        // target.style.webkitTransform = target.style.transform =
+        //     'translate(' + x + 'px,' + y + 'px)';
 
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
-        // target.textContent = event.rect.width + '×' + event.rect.height;
+        // target.setAttribute('data-x', x);
+        // target.setAttribute('data-y', y);
+        // // target.textContent = event.rect.width + '×' + event.rect.height;
+        // vm.setPositionToRemoteServer(id);
+      })
+      .on('resizeend', function (event) {
         vm.setPositionToRemoteServer(id);
       });
   }
 
   isSameNode(node1, node2) {
-    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time"];
+    var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
+        "x", "y", "width", "height"];
     for (var i = 0; i < attrList.length; i++) {
       if (node1[attrList[i]] != node2[attrList[i]])
         return false;
