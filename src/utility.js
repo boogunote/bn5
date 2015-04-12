@@ -88,6 +88,56 @@ export class Utility {
     return children;
   }
 
+  initInteract(id) {
+    interact('#'+id)
+      .allowFrom(".flat-titlebar")
+      .draggable({
+         onmove:   function dragMoveListener (event) {
+            var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+            // translate the element
+            target.style.webkitTransform =
+            target.style.transform =
+              'translate(' + x + 'px, ' + y + 'px)';
+
+            // update the posiion attributes
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+          }
+
+          // this is used later in the resizing demo
+          // window.dragMoveListener = dragMoveListener;
+      })
+      
+    interact('#'+id+" .flat-body")
+      .resizable({
+          edges: { left: true, right: true, bottom: true, top: false }
+        })
+      .on('resizemove', function (event) {
+        var target = event.target.parentElement,
+            x = (parseFloat(target.getAttribute('data-x')) || 0),
+            y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+        // update the element's style
+        target.style.width  = event.rect.width + 'px';
+        target.style.height = event.rect.height + $('#'+id+' .flat-titlebar').height() + 'px';
+
+        // translate when resizing from top or left edges
+        x += event.deltaRect.left;
+        y += event.deltaRect.top;
+
+        target.style.webkitTransform = target.style.transform =
+            'translate(' + x + 'px,' + y + 'px)';
+
+        target.setAttribute('data-x', x);
+        target.setAttribute('data-y', y);
+        // target.textContent = event.rect.width + '×' + event.rect.height;
+      });
+  }
+
   isSameNode(node1, node2) {
     var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time"];
     for (var i = 0; i < attrList.length; i++) {

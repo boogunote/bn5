@@ -71,7 +71,6 @@ export class Tree extends Node {
           setTimeout(function() {
             if (!that.node.children) that.node.children = [];
             for (var i = 0; i < that.node.children.length; i++) {
-              that.initInteract(that.node.children[i]);
               that.setPosition(that.node.children[i]);
             };
           }, 10);
@@ -135,66 +134,16 @@ export class Tree extends Node {
   //   return position;
   // }
 
-  initInteract(id) {
-    interact('#'+id)
-      .allowFrom(".flat-titlebar")
-      .draggable({
-         onmove:   function dragMoveListener (event) {
-            var target = event.target,
-                // keep the dragged position in the data-x/data-y attributes
-                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-            // translate the element
-            target.style.webkitTransform =
-            target.style.transform =
-              'translate(' + x + 'px, ' + y + 'px)';
-
-            // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-          }
-
-          // this is used later in the resizing demo
-          // window.dragMoveListener = dragMoveListener;
-      })
-      
-    interact('#'+id+" .flat-body")
-      .resizable({
-          edges: { left: true, right: true, bottom: true, top: false }
-        })
-      .on('resizemove', function (event) {
-        var target = event.target.parentElement,
-            x = (parseFloat(target.getAttribute('data-x')) || 0),
-            y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-        // update the element's style
-        target.style.width  = event.rect.width + 'px';
-        target.style.height = event.rect.height + $('#'+id+' .flat-titlebar').height() + 'px';
-
-        // translate when resizing from top or left edges
-        x += event.deltaRect.left;
-        y += event.deltaRect.top;
-
-        target.style.webkitTransform = target.style.transform =
-            'translate(' + x + 'px,' + y + 'px)';
-
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
-        // target.textContent = event.rect.width + '×' + event.rect.height;
-      });
-  }
-
   newFlatNode() {
     var flatNode = this.utility.createNewFlatNode();
     this.nodesRef.child(flatNode.id).set(flatNode);
     var children = this.utility.getCleanChildren(this.node);
     this.file.nodes[flatNode.id] = flatNode
     this.node.children.push(flatNode.id);
-    var that = this;
-    setTimeout(function() {
-      that.initInteract(flatNode.id);
-    }, 0);
+    // var that = this;
+    // setTimeout(function() {
+    //   that.utility.initInteract(flatNode.id);
+    // }, 0);
 
     children.push(flatNode.id);
     this.nodesRef.child("root/children").set(children);
