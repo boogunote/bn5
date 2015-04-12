@@ -105,7 +105,7 @@ export class TreeNode extends Node {
   onKeyDown(event) {
     var keyList = [
       {start:9, end:9},
-      {start:19, end:27},
+      {start:16, end:27},
       {start:33, end:40},
       {start:144, end:145},
     ]

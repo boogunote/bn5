@@ -27,7 +27,7 @@ export class Node {
     // console.log(this.childVMList)
   }
 
-  addObserver(node, node_id) {
+  addObserver(node) {
     // console.log("addObserver-----------------------------------------------")
     // function isReallyChange (changes) {
     //   var  really = true;
@@ -69,9 +69,9 @@ export class Node {
         var newNode = dataSnapshot.val();
         if (!newNode) return;
         if (that.utility.isSameNode(that.node, newNode)) return;
-        that.doUpdate(that.node, newNode, this.rootVM.file_id, node_id);
+        that.doUpdate(that.node, newNode, that.rootVM.file_id, node.id);
       }
-      this.rootVM.nodesRef.child(node_id).on("value", this.remoteObserver);  
+      this.rootVM.nodesRef.child(node.id).on("value", this.remoteObserver);  
     }
   }
 
@@ -82,24 +82,24 @@ export class Node {
       this.rootVM.nodesRef.child(this.node.id).off("value", this.remoteObserver);
   }
 
-  asyncEdit(realEdit) {
-    var that = this;
-    var edit = function() {
-      if (that.rootVM.editing &&
-          that.utility.now() - that.rootVM.localChangedTime
-          < that.rootVM.localChangeWaitTime - that.rootVM.localChangeWaitEpsilon) {
-        setTimeout(edit, that.rootVM.localChangeWaitTime);
-      } else {
-        realEdit();
-        that.rootVM.editing = false;
-      }
-    }
-    this.rootVM.localChangedTime = this.utility.now();
-    if (!this.rootVM.editing) {
-      this.rootVM.editing = true;
-      setTimeout(edit, that.rootVM.localChangeWaitTime);
-    };
-  }
+  // asyncEdit(realEdit) {
+  //   var that = this;
+  //   var edit = function() {
+  //     if (that.rootVM.editing &&
+  //         that.utility.now() - that.rootVM.localChangedTime
+  //         < that.rootVM.localChangeWaitTime - that.rootVM.localChangeWaitEpsilon) {
+  //       setTimeout(edit, that.rootVM.localChangeWaitTime);
+  //     } else {
+  //       realEdit();
+  //       that.rootVM.editing = false;
+  //     }
+  //   }
+  //   this.rootVM.localChangedTime = this.utility.now();
+  //   if (!this.rootVM.editing) {
+  //     this.rootVM.editing = true;
+  //     setTimeout(edit, that.rootVM.localChangeWaitTime);
+  //   };
+  // }
 
   setNodeToServer(node_id) {
     var nodeRef = this.rootVM.nodesRef.child(node_id)
@@ -221,7 +221,7 @@ export class Node {
       this.node = this.rootVM.file.nodes[node_id];
       if (this.node) {
         if (!this.node.children) this.node.children = [];
-        this.addObserver(this.node, this.rootVM.file_id, this.node.id);
+        this.addObserver(this.node);
       } else {
         this.loadNodeFromServer(node_id);
       }
@@ -250,7 +250,7 @@ export class Node {
         that.node.id = node_id;
       }
       if (!that.node.children) {that.node.children = []};
-      that.addObserver(that.node, node_id);
+      that.addObserver(that.node);
       that.rootVM.file.nodes[that.node.id] = that.node;
       if (that.node.id != that.rootVM.root_id) {
         if (that.element.children[0].children[1])
