@@ -64,8 +64,9 @@ export class Tree extends Node {
       if (this.flatVM && this.flatVM.file) {
         // this.rootVM = this.flatVM;
         this.file = this.flatVM.file;
-        this.loadNode(this.root_id);
+        this.loadNode(this.root_id, false);
         this.loadTitle(this.root_id);
+        this.flatVM.addChildVM(this, this.root_id);
       } else {
         var that = this;
         this.fileRef.once('value', function(dataSnapshot) {
@@ -73,7 +74,7 @@ export class Tree extends Node {
           that.file = dataSnapshot.val()
           // console.log(that.file);
           if (that.file) {
-            that.loadNode(that.root_id);
+            that.loadNode(that.root_id, false);
             // that.addObserver(that.node, that.file_id, that.node.id);
             that.loadTitle(that.root_id);
           }
@@ -611,7 +612,7 @@ export class Tree extends Node {
       this.title = this.file.meta.name;
       this.fileRef.child("meta/name").on("value", this.titleUpdate);
     } else {
-      this.title = this.file.nodes[root_id].content;
+      // this.title = this.file.nodes[root_id].content;
       this.nodesRef.child(root_id).child("content").on("value", this.titleUpdate);
     }
   }
@@ -719,10 +720,10 @@ export class Tree extends Node {
     }, 0);
   }
 
-  removeObserver(node) {
-    Object.unobserve(node, node.observer);
-    Object.unobserve(node.children, node.children_observer);
-  }
+  // removeObserver(node) {
+  //   Object.unobserve(node, node.observer);
+  //   Object.unobserve(node.children, node.children_observer);
+  // }
 
   uncollapsed(positionArray) {
     var node = this.node;
@@ -744,47 +745,5 @@ export class Tree extends Node {
   select(positionArray) {
     var vm = getVMByPositionArray(positionArray);
     vm.select();
-  }
-
-  getNodeListByRootId(rootId) {
-    var nodeList = [];
-    var that = this;
-    function visit(node_id) {
-      var node = that.file.nodes[node_id];
-      nodeList.push(node);
-      for (var i = 0; i < node.children.length; i++) {
-        visit(node.children[i])
-      };
-    }
-    visit(rootId);
-    return nodeList;
-  }
-
-  setNodeChildrenToServer(node) {
-    var children = [];
-    for (var i = 0; i < node.children.length; i++) {
-      children.push(node.children[i]);
-    };
-    this.nodesRef.child(node.id).child("children").set(children)
-  }
-
-  removeNodeListFromServer(nodeList) {
-    for (var i = 0; i < nodeList.length; i++) {
-      this.nodesRef.child(nodeList[i].id).remove();
-    };
-  }
-
-  setNodeListToServer(nodeList) {
-    for (var i = 0; i < nodeList.length; i++) {
-      // this.doEdit(nodeList[i]);
-      var newNode = new Object();
-      this.utility.copyAttributesWithoutChildren(newNode, nodeList[i])
-      var children = [];
-      for (var j = 0; j < nodeList[i].children.length; j++) {
-        children.push(nodeList[i].children[j]);
-      };
-      newNode.children = children;
-      this.nodesRef.child(nodeList[i].id).set(newNode);
-    };
   }
 }

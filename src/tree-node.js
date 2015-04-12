@@ -19,13 +19,13 @@ export class TreeNode extends Node {
   }
 
   activate(model){
-     console.log("TreeNode activate");
-     console.log(model.node_id)
+     // console.log("TreeNode activate");
+     // console.log(model.node_id)
     // this.node = model.node;
     this.parentVM = model.parentVM;
     this.rootVM = model.parentVM.rootVM;
     this.parentVM.addChildVM(this, model.node_id);
-    this.loadNode(model.node_id);
+    this.loadNode(model.node_id, false);
     // this.loadNodeDataById(this.rootVM.file_id, model.node_id);
   }
 
