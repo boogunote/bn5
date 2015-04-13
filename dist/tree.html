@@ -1,0 +1,12 @@
+<template>
+  <script src="./jspm_packages/github/jackmoore/autosize@2.0.0/dest/autosize.js"></script>
+  <textarea rows='1' class="tree-title" id="title" value.bind="title" keydown.delegate="onTitleKeyDown($event)" keyup.delegate="onTitleKeyUp($event)"></textarea>
+  <div keydown.delegate="onKeyDown($event)">
+    <div repeat.for="child of node.children">
+      <compose
+        model.bind="{'node_id':child, 'parentVM':$parent}"
+        view-model="tree-node">
+      </compose>
+    </div>
+  </div>
+</template>

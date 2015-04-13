@@ -1,0 +1,16 @@
+<template>
+  <div id.bind="node.id" class="tree-node-wrapper">
+    <div class="tree-node-icon-container">  
+      <span class="tree-node-expand-button glyphicon ${node.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
+      <span class="glyphicon tree-node-icon ${0==node.icon?'hidden':1==node.icon?'glyphicon-flag':2==node.icon?'glyphicon-ok':3==node.icon?'glyphicon-remove':4==node.icon?'glyphicon-star':5==node.icon?'glyphicon-question-sign':6==node.icon?'glyphicon-warning-sign':7==node.icon?'glyphicon-fire':''}"></span>
+    </div>
+  
+    <textarea rows='1' class="tree-textarea ${selected?'tree-node-selected':''} ${node.fold?'tree-textarea-fold':''}" value.bind="node.content" keyup.delegate="onKeyUp($event)" click.delegate="onClick($event)" focus.delegate="onFocus($event)" blur.delegate="onBlur($event)"></textarea>
+  </div>
+    <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.node.collapsed">
+      <compose
+        model.bind="{'node_id':child, 'parentVM':$parent}"
+        view-model="tree-node">
+      </compose>
+    </div>
+</template>
