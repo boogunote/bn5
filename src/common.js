@@ -43,8 +43,8 @@ export class Common {
           children: [
             "first_node"
           ],
-          height: 3000,
-          width: 3000
+          height: 2000,
+          width: 2000
         },
         first_node: {
           id: "first_node",

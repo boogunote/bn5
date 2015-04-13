@@ -178,6 +178,69 @@ export class Tree extends Node {
     this.record(nodeRecordList, "insert");
   }
 
+  onClick(event) {
+    console.log(event);
+    var delta = 100;
+    if (!event.ctrlKey) {
+      var y = event.pageY;
+      var expand = null;
+      if (!event.shiftKey) {
+        expand = true;
+      } else {
+        expand = false;
+      }
+
+      for (var i = 0; i < this.node.children.length; i++) {
+        var node = this.file.nodes[this.node.children[i]];
+        if (node.y > y) {
+          if (expand) {
+            node.y += delta;
+          } else {
+            node.y -= delta;
+          }
+
+          this.nodesRef.child(node.id+"/y").set(node.y);
+        }
+      };
+
+      if (expand) {
+        this.node.height += delta;
+      } else {
+        this.node.height -= delta;
+      }
+      this.nodesRef.child(this.node.id+"/height").set(this.node.height);
+    } else {
+      var x = event.pageX;
+      var expand = null;
+      if (!event.shiftKey) {
+        expand = true;
+      } else {
+        expand = false;
+      }
+
+      for (var i = 0; i < this.node.children.length; i++) {
+        var node = this.file.nodes[this.node.children[i]];
+        if (node.x > x) {
+          if (expand) {
+            node.x += delta;
+          } else {
+            node.x -= delta;
+          }
+        }
+        this.nodesRef.child(node.id+"/y").set(node.y);
+      }
+
+      if (expand) {
+        this.node.width += delta;
+      } else {
+        this.node.width -= delta;
+      }
+      this.nodesRef.child(this.node.id+"/width").set(this.node.width);
+    }
+
+    return false;
+  }
+
   setPositionToRemoteServer(id) {
     var element = $("#"+id);
     // console.log(element.left())

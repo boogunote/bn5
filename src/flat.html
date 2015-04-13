@@ -1,7 +1,7 @@
 <template>
   <script src="./jspm_packages/github/jackmoore/autosize@2.0.0/dest/autosize.js"></script>
   <script src="../interact-1.2.4.js"></script>
-  <div  style="width: ${node.width}px; height: ${node.height}px;" >
+  <div  style="width: ${node.width}px; height: ${node.height}px;" contextmenu.delegate="onClick($event)">
     <input type="button" value="New" click.delegate="newFlatNode()"></input>
     <input type="button" value="Undo" click.delegate="undo()"></input>
     <input type="button" value="Redo" click.delegate="redo()"></input>
