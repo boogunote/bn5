@@ -171,12 +171,12 @@ export class Utility {
         var target = event.target;
         var dx = (parseFloat(target.getAttribute('data-x')) || 0);
         var dy = (parseFloat(target.getAttribute('data-y')) || 0);
-        console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
+        // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
         vm.file.nodes[id].x += dx;
         vm.file.nodes[id].y += dy;
         vm.file.nodes[id].width = target.style.width;
         vm.file.nodes[id].height = target.style.height;
-        console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
+        // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
         target.setAttribute('data-x', 0);
         target.setAttribute('data-y', 0);
         vm.setPositionToRemoteServer(id);
