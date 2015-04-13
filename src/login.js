@@ -1,17 +1,21 @@
 import 'firebase';
 import {Common} from './common';
 import {Utility} from './utility';
+import {Parent} from 'aurelia-framework';
+import {Router} from 'aurelia-router';
 
 export class Login {
-  static inject() { return [Common, Utility]; }
-  constructor(common, utility){
+  static inject() { return [Common, Utility, Parent.of(Router)]; }
+  constructor(common, utility, router){
     this.common = common;
     this.utility = utility;
+    this.router = router;
   }
 
   login() {
     console.log("login");
     // var hash = window.location.hash;
+    var that = this;
     var ref = new Firebase(this.common.firebase_url);
     ref.authWithPassword({
       email    : $("#login-username").val(),
@@ -23,6 +27,9 @@ export class Login {
       } else if (authData) {
         // user authenticated with Firebase
         console.log("Logged In! User ID: " + authData.uid);
+        window.location.href = window.location.origin+"/#fm";
+        // window.location.href = window.location.origin + "/#fm";
+        // that.router.navigate("fm")
         // if (hash.length > 2) {
         //     window.location.replace("index.html" + hash);
         // } else {
@@ -63,15 +70,17 @@ export class Login {
                   root: {
                     id: "root",
                     children: [
-                      {
-                        id: file_id,
-                      }
+                      file_id
                     ]
                   }
                 }
               },
               files: {}
             };
+            var file_item = {
+              id: file_id
+            }
+            user_notes_skeleton.directories.nodes[file_id] = file_item;
             var new_tree_note_skeleton = that.utility.clone(that.common.new_tree_note_skeleton)
             new_tree_note_skeleton.meta.create_time = Firebase.ServerValue.TIMESTAMP;
             user_notes_skeleton.files[file_id] = new_tree_note_skeleton;
@@ -84,6 +93,9 @@ export class Login {
               id: file_id
             };
             userInfoRef.set(user_info);
+            window.location.href = window.location.origin+"/#fm";
+            // window.location.href = window.location.origin + "/#fm";
+            // that.router.navigate("fm")
           }
         });
       }

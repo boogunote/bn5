@@ -19,7 +19,7 @@ export class App {
 
     this.router = router;
     this.router.configure(config => {
-      config.title = 'Aurelia';
+      config.title = 'BooguNote5';
       config.map([
         {route: ['index'],  moduleId: 'index', nav: true},
         // {route: ['flat/:id'],  moduleId: 'flat', nav: true},

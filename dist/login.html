@@ -47,9 +47,8 @@
                             <div class="col-md-12 control">
                                 <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
                                     Don't have an account! 
-                                    <a href="#" onClick="$('#loginbox').hide(); $('#signupbox').show()">
-                                        Sign Up Here
-                                    </a>
+                                    <input type="button" value="Sign Up" onClick="$('#loginbox').hide(); $('#signupbox').show()">
+                                    </input>
                                 </div>
                             </div>
                         </div>    
@@ -61,7 +60,7 @@
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <div class="panel-title">Sign Up</div>
-                    <div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="signinlink" href="#" onclick="$('#signupbox').hide(); $('#loginbox').show()">Sign In</a></div>
+                    <div style="float:right; font-size: 85%; position: relative; top:-10px"><input type="button" value="Sign in" id="signinlink" onclick="$('#signupbox').hide(); $('#loginbox').show()"></button></div>
                 </div>  
                 <div class="panel-body" >
                     <form id="signupform" class="form-horizontal" role="form">
