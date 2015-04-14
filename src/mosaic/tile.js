@@ -48,8 +48,11 @@ export class Tile extends Node{
 
   updateTile() {
     var position =  this.getRowAndColomeById(this.tile.id);
-    this.rootVM.fileRef
-        .child("rows/"+position.row+"/tiles/"+position.column)
-        .set(this.getCleanTile(this.tile));
+    var that = this;
+    this.doEdit(function() {
+      that.rootVM.fileRef
+          .child("rows/"+position.row+"/tiles/"+position.column)
+          .set(that.getCleanTile(that.tile));
+    });
   }
 }

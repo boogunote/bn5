@@ -53,4 +53,25 @@ export class Node{
       rows: rows
     }
   }
+
+  doEdit(realEdit) {
+    var that = this;
+    var edit = function() {
+      if (that.rootVM.editing &&
+          that.utility.now() - that.rootVM.localChangedTime
+          < that.rootVM.localChangeWaitTime - that.rootVM.localChangeWaitEpsilon) {
+        setTimeout(edit, that.rootVM.localChangeWaitTime);
+        // console.log("setTimeout2")
+      } else {
+        that.rootVM.editing = false;
+      }
+    }
+    this.rootVM.localChangedTime = this.utility.now();
+    if (!this.rootVM.editing) {
+      this.rootVM.editing = true;
+      setTimeout(edit, that.rootVM.localChangeWaitTime);
+      // console.log("setTimeout1")
+    };
+    realEdit();
+  }
 }

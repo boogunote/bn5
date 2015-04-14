@@ -16,7 +16,7 @@ export class Mosaic extends Node{
     this.localChangedTime = 0;
     this.setToRemoteTime = 0;
     this.receiveRemoteTime = 0;
-    this.localChangeWaitTime = 200;
+    this.localChangeWaitTime = 2000;
     this.localChangeWaitEpsilon = 10;
     this.remoteChangeWaitTime = 1000;
     this.remoteChangeWaitEpsilon = 50;
@@ -62,6 +62,8 @@ export class Mosaic extends Node{
 
       var that = this;
       this.fileRef.on('value', function(dataSnapshot) {
+         console.log("dataSnapshot.val() " + that.rootVM.editing)
+        if (that.rootVM.editing) return;
         // console.log("dataSnapshot.val()")
         var file = dataSnapshot.val()
         // console.log(that.file);
@@ -108,6 +110,9 @@ export class Mosaic extends Node{
   }
 
   updateFile() {
-    this.fileRef.set(this.getCleanMosaic(this.file))
+    var that = this;
+    this.doEdit(function() {
+      that.fileRef.set(that.getCleanMosaic(that.file));
+    })
   }
 }

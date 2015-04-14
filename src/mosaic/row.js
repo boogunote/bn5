@@ -67,8 +67,11 @@ export class Tile extends Node{
       }
     };
 
-    this.rootVM.fileRef
-        .child("rows/"+position)
-        .set(this.getCleanRow(this.row));
+    var that = this;
+    this.doEdit(function() {
+      that.rootVM.fileRef
+          .child("rows/"+position)
+          .set(that.getCleanRow(that.row));
+    });
   }
 }
