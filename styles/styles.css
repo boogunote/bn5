@@ -122,7 +122,6 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
 }
 
 .tree-textarea-fold {
-    color: #6E6E6E;
     font-style: italic;
 }
 
