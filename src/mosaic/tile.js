@@ -50,9 +50,10 @@ export class Tile extends Node{
     var position =  this.getRowAndColomeById(this.tile.id);
     var that = this;
     this.doEdit(function() {
-      that.rootVM.fileRef
-          .child("rows/"+position.row+"/tiles/"+position.column)
-          .set(that.getCleanTile(that.tile));
+      if (that.rootVM.fileRef)
+        that.rootVM.fileRef
+            .child("rows/"+position.row+"/tiles/"+position.column)
+            .set(that.getCleanTile(that.tile));
     });
   }
 }

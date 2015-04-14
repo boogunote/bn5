@@ -49,35 +49,39 @@ export class Mosaic extends Node{
   }
 
   activate(params){
-    this.file_id = params.file_id;
-    if ('online' == params.type) {
-      this.rootRef = new Firebase(this.common.firebase_url);
-      var authData = this.rootRef.getAuth();
-      if (!authData) {
-        console.log("Please login!")
-        return;
-      }
-      this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
-        '/files/' + this.file_id);
-
-      var that = this;
-      this.fileRef.on('value', function(dataSnapshot) {
-         console.log("dataSnapshot.val() " + that.rootVM.editing)
-        if (that.rootVM.editing) return;
-        // console.log("dataSnapshot.val()")
-        var file = dataSnapshot.val()
-        // console.log(that.file);
-        if (file) {
-          if (!file.rows) file.rows = [];
-          for (var i = 0; i < file.rows.length; i++) {
-            if (!file.rows[i].tiles) file.rows[i].tiles = [];
-            // for (var j = 0; j < that.file.rows[i].tiles.length; j++) {
-            //   that.file.rows[i].tiles[j]
-            // };
-          };
-          that.file = file;
+    if (!params.file_id) {
+      this.file = this.utility.clone(this.common.new_mosaic_skeleton);
+    } else {
+      this.file_id = params.file_id;
+      if ('online' == params.type) {
+        this.rootRef = new Firebase(this.common.firebase_url);
+        var authData = this.rootRef.getAuth();
+        if (!authData) {
+          console.log("Please login!")
+          return;
         }
-      });
+        this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
+          '/files/' + this.file_id);
+
+        var that = this;
+        this.fileRef.on('value', function(dataSnapshot) {
+           console.log("dataSnapshot.val() " + that.rootVM.editing)
+          if (that.rootVM.editing) return;
+          // console.log("dataSnapshot.val()")
+          var file = dataSnapshot.val()
+          // console.log(that.file);
+          if (file) {
+            if (!file.rows) file.rows = [];
+            for (var i = 0; i < file.rows.length; i++) {
+              if (!file.rows[i].tiles) file.rows[i].tiles = [];
+              // for (var j = 0; j < that.file.rows[i].tiles.length; j++) {
+              //   that.file.rows[i].tiles[j]
+              // };
+            };
+            that.file = file;
+          }
+        });
+      }
     }
   }
 
@@ -97,6 +101,10 @@ export class Mosaic extends Node{
     this.updateFile();
   }
 
+  newTemporaryMosaic() {
+    window.open(window.location.origin + "#mosaic");
+  }
+
   removeRow(id) {
     var position = -1;
     for (var i = 0; i < this.file.rows.length; i++) {
@@ -112,7 +120,8 @@ export class Mosaic extends Node{
   updateFile() {
     var that = this;
     this.doEdit(function() {
-      that.fileRef.set(that.getCleanMosaic(that.file));
+      if (that.fileRef)
+        that.fileRef.set(that.getCleanMosaic(that.file));
     })
   }
 }
