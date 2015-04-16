@@ -7,6 +7,21 @@ var sourcemaps = require('gulp-sourcemaps');
 var paths = require('../paths');
 var compilerOptions = require('../babel-options');
 var assign = Object.assign || require('object.assign');
+var shell = require('gulp-shell');
+
+var bundles = [
+    {
+        module: 'main',
+        name: 'bundled'
+    }
+];
+
+gulp.task('build-bundles',
+  shell.task(
+    bundles.map(function (bundle) {
+      return 'jspm bundle ' + bundle.module + ' ' + bundle.name + '.js --inject';
+    }))
+)
 
 // transpiles changed es6 files to SystemJS format
 // the plumber() call prevents 'pipe breaking' caused
@@ -37,6 +52,7 @@ gulp.task('build', function(callback) {
   return runSequence(
     'clean',
     ['build-system', 'build-html'],
+    'build-bundles',
     callback
   );
 });

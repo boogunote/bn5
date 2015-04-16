@@ -4,6 +4,12 @@ System.config({
     "github:*": "jspm_packages/github/*.js",
     "npm:*": "jspm_packages/npm/*.js",
     "aurelia-skeleton-navigation/*": "dist/*.js"
+  },
+  "bundles": {
+    "dist\\bundled": [
+    "github:aurelia/logging-console@0.2.4/system/index",
+      "github:aurelia/logging-console@0.2.4",
+    ]
   }
 });
 
