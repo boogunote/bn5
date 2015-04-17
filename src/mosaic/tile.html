@@ -2,8 +2,8 @@
   <input type="text" value.bind="showUrl"></input>
   <input type="button" value="Go" click.delegate="loadUrl()"></input>
   <input type="button" value="Out" click.delegate="out()"></input>
-  <input type="button" value="Wider" click.delegate="wider()"></input>
-  <input type="button" value="Smaller" click.delegate="smaller()"></input>
-  <input type="button" value="Remove" click.delegate="remove()"></input>
-  <iframe class="mosaic-tile" src.bind="tile.url" style="height:${parentVM.row.height}px"></iframe>
+  <input type="button" value="+" click.delegate="wider()"></input>
+  <input type="button" value="-" click.delegate="smaller()"></input>
+  <input type="button" value="X" click.delegate="remove()"></input>
+  <iframe id.bind="iframe_id" class="mosaic-tile" src.bind="tile.url" style="height:${parentVM.row.height}px"></iframe>
 </template>

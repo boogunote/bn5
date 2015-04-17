@@ -49,13 +49,9 @@ export class Tile extends Node{
     this.updateRow();
   }
 
-  setHeight() {
-    var height = prompt("Row height", this.row.height);
-
-    if (height != null) {
-      this.row.height = parseInt(height);
-      this.updateRow();
-    }
+  setHeight(increase) {
+    this.row.height += increase ? 100 : -100;
+    this.updateRow();
   }
 
   updateRow() {

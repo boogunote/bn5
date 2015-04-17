@@ -3,10 +3,13 @@ import {Common} from '../common';
 import {Node} from './node';
 
 export class Tile extends Node{
-  static inject() { return [Common, Utility]; }
-  constructor(common, utility){
+  static inject() { return [Common, Element, Utility]; }
+  constructor(common, element, utility){
     this.common = common;
+    this.element = element;
     this.utility = utility;
+
+    this.iframe_id = this.utility.getUniqueId();
   }
 
   activate(model){
@@ -18,11 +21,18 @@ export class Tile extends Node{
 
   loadUrl() {
     this.tile.url = this.showUrl;
+    // console.log($("#"+this.iframe_id))
+    document.querySelector("#"+this.iframe_id).contentWindow.location.reload(true);
+    // $("#"+this.iframe_id).load();
     // var position =  this.getRowAndColomeById(this.tile.id);
     // this.rootVM.fileRef
     //     .child("rows/"+position.row+"/tiles/"+position.column+"/url")
     //     .set(this.tile.url)
     this.updateTile();
+  }
+
+  out() {
+    window.open(this.tile.url);
   }
 
   remove() {

@@ -1,8 +1,9 @@
 <template>
   <input type="button" value="New Tile" click.delegate="newTile()"></input>
-  <input type="button" value="Set Height" click.delegate="setHeight()"></input>
+  <input type="button" value="+" click.delegate="setHeight(true)"></input>
+  <input type="button" value="-" click.delegate="setHeight(false)"></input>
   <input type="button" value="Reset Row" click.delegate="resetRow()"></input>
-  <input type="button" value="Remove Row" click.delegate="removeRow()"></input>
+  <input type="button" value="X" click.delegate="removeRow()"></input>
   <div class="mosaic-row">
     <div class="mosaic-row-item" style="flex:${tile.flex}" repeat.for="tile of row.tiles">
       <compose
