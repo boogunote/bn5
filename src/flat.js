@@ -179,7 +179,8 @@ export class Tree extends Node {
   }
 
   onClick(event) {
-    console.log(event);
+    // console.log(event);
+    // event.bubbles = false;
     var delta = 100;
     if (!event.ctrlKey) {
       var y = event.pageY;
@@ -238,6 +239,11 @@ export class Tree extends Node {
       this.nodesRef.child(this.node.id+"/width").set(this.node.width);
     }
 
+    return false;
+  }
+
+  onWindowClick(event) {
+    event.stopPropagation();
     return false;
   }
 
