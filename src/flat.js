@@ -227,7 +227,7 @@ export class Tree extends Node {
             node.x -= delta;
           }
         }
-        this.nodesRef.child(node.id+"/y").set(node.y);
+        this.nodesRef.child(node.id+"/x").set(node.x);
       }
 
       if (expand) {
