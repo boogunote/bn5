@@ -1,22 +1,22 @@
 {
-  "name": "aurelia-skeleton-navigation",
-  "version": "0.11.0",
-  "description": "A starter kit for building a standard navigation-style app with Aurelia.",
+  "name": "bn5",
+  "version": "5.0.0",
+  "description": "Notes Application",
   "keywords": [
-    "aurelia",
-    "navigation",
-    "skeleton"
+    "notes",
+    "boogunote",
+    "outline"
   ],
-  "homepage": "http://aurelia.io",
+  "homepage": "http://boogunote.io",
   "bugs": {
-    "url": "https://github.com/aurelia/skeleton-navigation/issues"
+    "url": "https://github.com/boogunote/bn5/issues"
   },
   "license": "MIT",
   "author": "Rob Eisenberg <rob@bluespire.com> (http://robeisenberg.com/)",
   "main": "dist/commonjs/index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/aurelia/skeleton-navigation"
+    "url": "http://github.com/boogunote/bn5"
   },
   "devDependencies": {
     "aurelia-tools": "^0.1.0",
