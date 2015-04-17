@@ -436,6 +436,8 @@ export class Tree extends Node {
     } else if (event.ctrlKey && 46 == event.keyCode && this.flatVM) {
       this.flatVM.delete(this.file.nodes[this.root_id]);
       return false
+    } else if (event.ctrlKey && 192 == event.keyCode) {
+      this.openSubTreeInNewWindow(this.node.id);
     }
     return true;
   }

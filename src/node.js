@@ -310,6 +310,12 @@ export class Node {
     });
   }
 
+  openSubTreeInNewWindow(node_id) {
+    var url = "#tree/online/" + this.rootVM.file_id +
+        "/" + this.node.id;
+    window.open(url);
+  }
+
   removeChildVM(vm) {
     var insertPoint = -1;
     for (var i = 0; i < this.node.children.length; i++) {

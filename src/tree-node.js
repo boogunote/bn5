@@ -114,6 +114,15 @@ export class TreeNode extends Node {
     this.rootVM.focusedVM = this;
   }
 
+  onKeyDown(event) {
+    if (event.ctrlKey && 192 == event.keyCode) {
+      this.openSubTreeInNewWindow(this.node.id);
+      return false;
+    }
+
+    return true;
+  }
+
   onKeyUp(event) {
     var keyList = [
       {start:9, end:9},
