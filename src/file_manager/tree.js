@@ -75,4 +75,8 @@ export class Tree extends Node{
   cleanStatus() {
     this.clipping = false;
   }
+
+  newTemporaryMosaic() {
+    window.open(window.location.origin + "#mosaic");
+  }
 }

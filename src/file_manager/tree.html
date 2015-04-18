@@ -6,6 +6,7 @@
     <input type="button" value="New Mosaic" click.delegate="newMosaic()"></input>
     <input type="button" value="Paste" click.delegate="paste()"></input>
     <input type="button" value="Clean Status" click.delegate="cleanStatus()"></input>
+    <input type="button" value="New Temporary Mosaic" click.delegate="newTemporaryMosaic()"></input>
     <div repeat.for="child of node.children">
       <compose
         model.bind="{'node_id':child, 'parentVM':$parent}"

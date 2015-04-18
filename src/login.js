@@ -12,6 +12,10 @@ export class Login {
     this.router = router;
   }
 
+  canDeactivate() {
+    return true;
+  }
+
   login() {
     console.log("login");
     // var hash = window.location.hash;

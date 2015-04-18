@@ -64,6 +64,9 @@ export class Tree extends Node {
         if (that.file) {
           that.node = that.file.nodes.root;
           that.file_id = that.file.meta.id;
+          that.routeConfig.navModel.title = that.file.meta.name;
+          that.routeConfig.title = that.file.meta.name;
+          that.routeConfig.name = that.file.meta.name;
           console.log(that.node)
           console.log(that.file_id)
           that.loadNode(that.root_id, true);
@@ -91,6 +94,12 @@ export class Tree extends Node {
 
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
+  }
+
+  canActivate(params, queryString, routeConfig) {
+    this.routeConfig = routeConfig;
+    // this.routeConfig.navModel.title = "wawaw";
+    return true;
   }
 
   delete(node) {
@@ -176,6 +185,10 @@ export class Tree extends Node {
     };
     nodeRecordList.push(nodeRecord);
     this.record(nodeRecordList, "insert");
+  }
+
+  newTemporaryMosaic() {
+    window.open(window.location.origin + "#mosaic");
   }
 
   onClick(event) {

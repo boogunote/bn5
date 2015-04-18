@@ -6,6 +6,7 @@
     <input type="button" value="New" click.delegate="newFlatNode()"></input>
     <input type="button" value="Undo" click.delegate="undo()"></input>
     <input type="button" value="Redo" click.delegate="redo()"></input>
+    <input type="button" value="New Temporary Mosaic" click.delegate="newTemporaryMosaic()"></input>
     <div class="flat-window" id.bind="child" style="left: ${$parent.file.nodes[child].x}px; top: ${$parent.file.nodes[child].y}px; width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px;" repeat.for="child of node.children" contextmenu.delegate="$parent.onWindowClick($event)">
       <span class="flat-titlebar"></span>
       <compose
