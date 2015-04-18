@@ -1,0 +1,19 @@
+jspm unbundle
+
+jspm  bundle file_manager/* + \
+      mosaic/* + \
+      common + \
+      app + \
+      data-source + \
+      flat + \
+      login + \
+      node + \
+      tree-node + \
+      tree-params + \
+      tree + \
+      utility + \
+      aurelia-bootstrapper + \
+      aurelia-http-client + \
+      aurelia-dependency-injection + \
+      aurelia-router \
+      dist/app-bundle.js --inject --minify

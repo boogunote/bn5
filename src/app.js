@@ -1,7 +1,8 @@
 import 'firebase';
 
 import {Router} from 'aurelia-router';
-import bootstrap from 'bootstrap';
+// import 'bootstrap';
+// import 'bootstrap/css/bootstrap.css!';
 
 export class App {
   static inject() { return [Router]; }
