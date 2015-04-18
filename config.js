@@ -112,7 +112,27 @@ System.config({
       "github:aurelia/framework@0.9.0/index",
       "github:aurelia/framework@0.9.0",
       "github:aurelia/bootstrapper@0.10.0/index",
-      "github:aurelia/bootstrapper@0.10.0"
+      "github:aurelia/bootstrapper@0.10.0",
+      "github:firebase/firebase-bower@2.2.3/firebase",
+      "github:firebase/firebase-bower@2.2.3",
+      "utility",
+      "data-source",
+      "common",
+      "tree-params",
+      "node",
+      "tree",
+      "github:jackmoore/autosize@2.0.0/dest/autosize",
+      "github:jackmoore/autosize@2.0.0",
+      "tree-node",
+      "login",
+      "flat",
+      "mosaic/node",
+      "mosaic/tile",
+      "mosaic/row",
+      "mosaic/mosaic",
+      "file_manager/node",
+      "file_manager/tree",
+      "file_manager/tree-node"
     ]
   }
 });

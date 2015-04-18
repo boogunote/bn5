@@ -5,19 +5,16 @@ import {Parent} from 'aurelia-framework';
 import {Router} from 'aurelia-router';
 
 export class Login {
-  static inject() { return [Common, Utility, Parent.of(Router)]; }
+  static inject() { return [Common, Utility, Router]; }
   constructor(common, utility, router){
     this.common = common;
     this.utility = utility;
     this.router = router;
   }
 
-  canDeactivate() {
-    return true;
-  }
-
   login() {
     console.log("login");
+    // window.location.href = "/#fm";
     // var hash = window.location.hash;
     var that = this;
     var ref = new Firebase(this.common.firebase_url);
@@ -31,9 +28,9 @@ export class Login {
       } else if (authData) {
         // user authenticated with Firebase
         console.log("Logged In! User ID: " + authData.uid);
-        window.location.href = window.location.origin+"/#fm";
+        // window.location.href = "/#fm";
         // window.location.href = window.location.origin + "/#fm";
-        // that.router.navigate("fm")
+        that.router.navigate("fm")
         // if (hash.length > 2) {
         //     window.location.replace("index.html" + hash);
         // } else {
