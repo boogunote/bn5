@@ -27,7 +27,7 @@ export class App {
         {route: ['tree/:type/:file_id/:root_id'],     moduleId: 'tree', nav: true},
         {route: ['','login'],     moduleId: 'login', nav: true},
         {route: ['fm'],     moduleId: './file_manager/tree', nav: true},
-        {route: ['flat/:type/:file_id/:root_id'],     moduleId: 'flat', nav: true, title:"aaaa"},
+        {route: ['flat/:type/:file_id/:root_id'],     moduleId: 'flat', nav: true},
         {route: ['mosaic/:type/:file_id', 'mosaic'],     moduleId: 'mosaic/mosaic', nav: true}
       ]);
     });

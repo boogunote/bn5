@@ -2,7 +2,8 @@ import {DataSource} from './data-source';
 import {Node} from './node';
 import {TreeParams} from './tree-params';
 import {Utility} from './utility';
-import {Common} from './common'
+import {Common} from './common';
+import 'jquery';
 
 export class Tree extends Node {
   static inject() { return [DataSource, Element, TreeParams, Common, Utility]; }
