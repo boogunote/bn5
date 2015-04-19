@@ -1,6 +1,8 @@
 import {Utility} from './utility';
 import {Common} from './common';
 import {Node} from './node';
+import 'jquery';
+import autosize from 'jquery-autosize';
 
 export class Tree extends Node {
   static inject() { return [Common, Utility]; }

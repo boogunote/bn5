@@ -3,7 +3,6 @@ import 'firebase';
 import {Router} from 'aurelia-router';
 // import 'bootstrap';
 import 'bootstrap/css/bootstrap.css!';
-import 'font-awesome/css/font-awesome.css!';
 
 export class App {
   static inject() { return [Router]; }

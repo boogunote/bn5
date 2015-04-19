@@ -160,7 +160,6 @@ System.config({
       "bn5/login",
       "bn5/flat",
       "github:twbs/bootstrap@3.3.2/css/bootstrap.css!github:systemjs/plugin-css@0.1.9",
-      "npm:font-awesome@4.3.0/css/font-awesome.css!github:systemjs/plugin-css@0.1.9",
       "bn5/app",
       "common",
       "mosaic/node",

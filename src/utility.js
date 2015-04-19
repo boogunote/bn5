@@ -98,7 +98,7 @@ export class Utility {
             target.setAttribute('start-y', vm.file.nodes[id].y);
           },
          onmove:   function dragMoveListener (event) {
-          console.log(event)
+          // console.log(event)
             var target = event.target,
                 // keep the dragged position in the data-x/data-y attributes
                 dx = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,

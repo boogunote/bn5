@@ -4,7 +4,7 @@ import {TreeParams} from './tree-params';
 import {Utility} from './utility';
 import {Common} from './common';
 import 'jquery';
-import 'jquery-autosize';
+import autosize from 'jquery-autosize';
 
 export class Tree extends Node {
   static inject() { return [DataSource, Element, TreeParams, Common, Utility]; }

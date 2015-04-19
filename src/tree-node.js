@@ -3,7 +3,7 @@ import {Common} from './common'
 import {DataSource} from './data-source';
 import {Node} from './node';
 import {Utility} from './utility';
-import 'jquery-autosize';
+import autosize from 'jquery-autosize';
 
 export class TreeNode extends Node {
   static inject() { return [Common, Element, DataSource, Utility]; }
