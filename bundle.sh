@@ -1,17 +1,18 @@
 jspm unbundle
 
-jspm  bundle file_manager/* + \
-      mosaic/* + \
-      app + \
-      common + \
-      data-source + \
-      flat + \
-      login + \
-      node + \
-      tree-node + \
-      tree-params + \
-      tree + \
-      utility + \
+jspm  bundle \
+      bn5/file_manager/* + \
+      bn5/mosaic/* + \
+      bn5/app + \
+      bn5/common + \
+      bn5/data-source + \
+      bn5/flat + \
+      bn5/login + \
+      bn5/node + \
+      bn5/tree-node + \
+      bn5/tree-params + \
+      bn5/tree + \
+      bn5/utility + \
       aurelia-bootstrapper + \
       aurelia-http-client + \
       aurelia-dependency-injection + \
@@ -27,4 +28,6 @@ jspm  bundle file_manager/* + \
       github:aurelia/history-browser@0.2.5 + \
       github:components/jquery@2.1.3 + \
       github:jspm/nodelibs-events@0.1.0  \
-      dist/app-bundle.js --inject --minify
+      app-bundle.js --inject --minify
+
+mv app-bundle.js* ./dist/
