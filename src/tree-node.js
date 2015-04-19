@@ -49,6 +49,7 @@ export class TreeNode extends Node {
       this.ta = this.element.children[0].children[1];
     if (this.ta && this.node)
       this.foldNode();
+    console.log(this.ta)
   }
 
   deactivate() {

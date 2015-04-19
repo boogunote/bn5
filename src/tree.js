@@ -4,6 +4,7 @@ import {TreeParams} from './tree-params';
 import {Utility} from './utility';
 import {Common} from './common';
 import 'jquery';
+import 'jquery-autosize';
 
 export class Tree extends Node {
   static inject() { return [DataSource, Element, TreeParams, Common, Utility]; }
@@ -605,14 +606,17 @@ export class Tree extends Node {
   loadTitle(root_id) {
     // console.log("root_id:"+root_id)
     // console.log(this.file.meta)
+    this.titleElement = $(this.element).find("#title")[0];
+    autosize(this.titleElement);
     var that = this;
     this.titleUpdate = function(dataSnapshot) {
       that.title = dataSnapshot.val();
+      setTimeout(function() {
+        var ta = $(that.element).find("#title")[0];
+        autosize(ta);
+      }, 0);
     }
-    setTimeout(function() {
-      var title = $(that.element).find("#title");
-      autosize(title);
-    }, 10);
+
     if ("root" == root_id) {
       this.title = this.file.meta.name;
       this.fileRef.child("meta/name").on("value", this.titleUpdate);
