@@ -19,7 +19,7 @@ export class Tile extends Node{
     var tile = {
       id: this.utility.getUniqueId(),
       flex: 1,
-      url: ""
+      url: "#fm"
     }
     this.row.tiles.push(tile);
     this.updateRow();
