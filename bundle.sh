@@ -1,8 +1,13 @@
 jspm unbundle
 
 jspm  bundle \
-      bn5/file_manager/* + \
-      bn5/mosaic/* + \
+      bn5/file_manager/node + \
+      bn5/file_manager/tree + \
+      bn5/file_manager/tree-node + \
+      bn5/mosaic/mosaic + \
+      bn5/mosaic/node + \
+      bn5/mosaic/row + \
+      bn5/mosaic/tile + \
       bn5/app + \
       bn5/common + \
       bn5/data-source + \

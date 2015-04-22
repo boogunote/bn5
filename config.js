@@ -161,15 +161,13 @@ System.config({
       "bn5/flat",
       "github:twbs/bootstrap@3.3.2/css/bootstrap.css!github:systemjs/plugin-css@0.1.9",
       "bn5/app",
-      "common",
-      "mosaic/node",
-      "utility",
-      "mosaic/tile",
-      "mosaic/row",
-      "mosaic/mosaic",
-      "file_manager/node",
-      "file_manager/tree",
-      "file_manager/tree-node"
+      "bn5/mosaic/node",
+      "bn5/mosaic/tile",
+      "bn5/mosaic/row",
+      "bn5/mosaic/mosaic",
+      "bn5/file_manager/node",
+      "bn5/file_manager/tree-node",
+      "bn5/file_manager/tree"
     ]
   }
 });
