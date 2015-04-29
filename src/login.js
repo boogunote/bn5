@@ -1,4 +1,5 @@
 import 'firebase';
+import 'jquery';
 import {Common} from './common';
 import {Utility} from './utility';
 import {Parent} from 'aurelia-framework';

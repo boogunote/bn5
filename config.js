@@ -3,7 +3,8 @@ System.config({
     "*": "dist/*.js",
     "github:*": "jspm_packages/github/*.js",
     "npm:*": "jspm_packages/npm/*.js",
-    "bn5/*": "dist/*.js"
+    "bn5/*": "dist/*.js",
+    "amd/*": "amd/*.js"
   },
   "bundles": {
     "app-bundle": [
@@ -162,8 +163,9 @@ System.config({
       "github:twbs/bootstrap@3.3.2/css/bootstrap.css!github:systemjs/plugin-css@0.1.9",
       "bn5/app",
       "common",
-      "mosaic/node",
       "utility",
+      "timeline/timeline",
+      "mosaic/node",
       "mosaic/tile",
       "mosaic/row",
       "mosaic/mosaic",

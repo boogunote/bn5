@@ -3,6 +3,7 @@ jspm unbundle
 jspm  bundle \
       bn5/file_manager/* + \
       bn5/mosaic/* + \
+      bn5/timeline/* + \
       bn5/app + \
       bn5/common + \
       bn5/data-source + \
