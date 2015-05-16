@@ -75,6 +75,10 @@ export class Timeline{
             return date;
           },
 
+          order: function(item1, item2) {
+            return (item1.start.getTime()-item1.end.getTime()) - (item2.start.getTime()-item2.end.getTime());
+          },
+
           onAdd: function (item, callback) {
             item.content = prompt('Enter text content for new item:', item.content);
             if (item.content != null) {
@@ -204,6 +208,7 @@ export class Timeline{
           var newItem = itemSnapshot.val()
           newItem.id = id;
           newItem.group = groupId;
+          newItem.title = that.utility.millisecondsToString(newItem.end - newItem.start);
           if (oldItem) {
             dataSet.update(newItem)
           } else {
@@ -233,6 +238,7 @@ export class Timeline{
   }
 
   moveItem(item) {
+    item.title = this.utility.millisecondsToString(item.end - item.start);
     this.dataRef.child(item.group).child(item.id).child("start").set(item.start.getTime());
     if (typeof item.end != "undefined") {
       this.dataRef.child(item.group).child(item.id).child("end").set(item.end.getTime());
