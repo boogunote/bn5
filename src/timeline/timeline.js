@@ -31,6 +31,7 @@ export class Timeline{
 
   addItem(item) {
     var remoteItem = {
+      id: item.id,
       content: item.content,
       start: item.start.getTime()
     }
@@ -38,15 +39,14 @@ export class Timeline{
       remoteItem.end = item.end.getTime();
     };
     this.setToRemoteTime = this.utility.now();
-    this.dataRef.child(item.group).push(remoteItem);
+    this.dataRef.child(item.group).child(remoteItem.id).set(remoteItem);
   }
 
   attached() {
     var nowTimestamp = this.utility.now();
     this.startTimestamp = nowTimestamp - 3*60*60*1000;
     this.endTimestamp = nowTimestamp + 9*60*60*1000;
-    this.qureyStartTimestamp = this.startTimestamp - 24*60*60*1000;
-    this.qureyEndTimestamp = this.endTimestamp + 24*60*60*1000;
+    this.queryEpsilon = 24*60*60*1000;
 
         // console.log(VIS().canActivate())
     var that = this;
@@ -71,6 +71,9 @@ export class Timeline{
           end: that.endTimestamp,
           orientation: "top",
           editable: true,
+          snap: function (date, scale, step) {
+            return date;
+          },
 
           onAdd: function (item, callback) {
             item.content = prompt('Enter text content for new item:', item.content);
@@ -129,7 +132,10 @@ export class Timeline{
         that.timeline = new vis.Timeline(container, new vis.DataSet([]), options);
         that.timeline.on("rangechanged", function(event) {
           for (var i = 0; i < that.groups.length; i++) {
-            that.dataRef.child(that.groups[i].id).orderByChild("start").startAt(that.startTimestamp).endAt(that.endTimestamp).off("value");
+            that.dataRef.child(that.groups[i].id).orderByChild("start")
+                .startAt(that.startTimestamp-that.queryEpsilon)
+                .endAt(that.endTimestamp+that.queryEpsilon)
+                .off("value");
           }
           that.startTimestamp = event.start.getTime();
           that.endTimestamp = event.end.getTime();
@@ -171,7 +177,10 @@ export class Timeline{
     for (var i = 0; i < that.groups.length; i++) {
       console.log(that.groups[i].id)
       var groupId = that.groups[i].id;
-      that.dataRef.child(groupId).orderByChild("start").startAt(that.startTimestamp).endAt(that.endTimestamp).on("value", function(dataSnapshot) {
+      that.dataRef.child(groupId).orderByChild("start")
+          .startAt(that.startTimestamp-that.queryEpsilon)
+          .endAt(that.endTimestamp+that.queryEpsilon)
+          .on("value", function(dataSnapshot) {
         console.log(dataSnapshot.val());
         if (that.utility.now() - that.setToRemoteTime < 2000) return;
 
