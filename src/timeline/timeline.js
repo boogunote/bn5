@@ -76,7 +76,10 @@ export class Timeline{
           },
 
           order: function(item1, item2) {
-            return (item1.start.getTime()-item1.end.getTime()) - (item2.start.getTime()-item2.end.getTime());
+            if (typeof item1.end != "undefined" && typeof item2.end != "undefined") {
+              return (item1.start.getTime()-item1.end.getTime()) - (item2.start.getTime()-item2.end.getTime());
+            } else
+              return -1;
           },
 
           onAdd: function (item, callback) {
@@ -208,7 +211,8 @@ export class Timeline{
           var newItem = itemSnapshot.val()
           newItem.id = id;
           newItem.group = groupId;
-          newItem.title = that.utility.millisecondsToString(newItem.end - newItem.start);
+          if (typeof newItem.end != "undefined")
+            newItem.title = that.utility.millisecondsToString(newItem.end - newItem.start);
           if (oldItem) {
             dataSet.update(newItem)
           } else {
@@ -238,7 +242,8 @@ export class Timeline{
   }
 
   moveItem(item) {
-    item.title = this.utility.millisecondsToString(item.end - item.start);
+    if (typeof item.end != "undefined")
+      item.title = this.utility.millisecondsToString(item.end - item.start);
     this.dataRef.child(item.group).child(item.id).child("start").set(item.start.getTime());
     if (typeof item.end != "undefined") {
       this.dataRef.child(item.group).child(item.id).child("end").set(item.end.getTime());

@@ -58,7 +58,6 @@
       "font-awesome": "npm:font-awesome@^4.3.0",
       "jquery": "github:components/jquery@2.1.3",
       "jquery-autosize": "github:jackmoore/autosize@^2.0.0"
-    },
-    "devDependencies": {}
+    }
   }
 }
