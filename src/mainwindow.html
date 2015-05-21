@@ -1,0 +1,30 @@
+<template>
+  <input type="button" value="Open File Manager" click.delegate="openFileManager()"></input>
+  <div>
+    <ul class="nav nav-tabs">
+      <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
+      <li class="${tab.id == $parent.active_id?'active':''}" repeat.for="tab of info.mainwindow.tabs">
+        <a id.bind="'tab-'+tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
+      </li>
+    </ul>
+    <div id.bind="'page-'+tab.id" repeat.for="tab of info.mainwindow.tabs">
+      <div show.bind="tab.id == $parent.active_id">
+        <compose
+          if.bind="tab.type=='tree'"
+          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
+          view-model="./tree">
+        </compose>
+        <compose
+          if.bind="tab.type=='flat'"
+          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
+          view-model="./flat">
+        </compose>
+        <compose
+          if.bind="tab.type=='mosaic'"
+          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
+          view-model="./mosaic">
+        </compose>
+      </div>
+    </div>
+  </div>
+</template>

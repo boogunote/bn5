@@ -154,6 +154,10 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
     box-sizing: border-box;
 }
 
+.flat-mainwindow {
+  position: relative;
+}
+
 .flat-titlebar {
   display: block;
   background: cornflowerblue;

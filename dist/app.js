@@ -1,5 +1,5 @@
 System.register(["firebase", "aurelia-router", "bootstrap/css/bootstrap.css!"], function (_export) {
-  var Router, _prototypeProperties, _classCallCheck, App;
+  var Router, _createClass, _classCallCheck, App;
 
   return {
     setters: [function (_firebase) {}, function (_aureliaRouter) {
@@ -8,7 +8,7 @@ System.register(["firebase", "aurelia-router", "bootstrap/css/bootstrap.css!"], 
     execute: function () {
       "use strict";
 
-      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+      _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
       _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
@@ -32,17 +32,15 @@ System.register(["firebase", "aurelia-router", "bootstrap/css/bootstrap.css!"], 
             config.title = "BooguNote5";
             config.map([{ route: ["index"], moduleId: "index", nav: true },
             // {route: ['flat/:id'],  moduleId: 'flat', nav: true},
-            { route: ["tree/:type/:file_id/:root_id"], moduleId: "tree", nav: true }, { route: ["", "login"], moduleId: "login", nav: true }, { route: ["fm"], moduleId: "./file_manager/tree", nav: true }, { route: ["flat/:type/:file_id/:root_id"], moduleId: "flat", nav: true }, { route: ["mosaic/:type/:file_id", "mosaic"], moduleId: "mosaic/mosaic", nav: true }, { route: ["timeline"], moduleId: "timeline/timeline", nav: true }]);
+            { route: ["tree/:type/:file_id/:root_id"], moduleId: "tree", nav: true }, { route: ["", "login"], moduleId: "login", nav: true }, { route: ["fm"], moduleId: "./file_manager/tree", nav: true }, { route: ["flat/:type/:file_id/:root_id"], moduleId: "flat", nav: true }, { route: ["mosaic/:type/:file_id", "mosaic"], moduleId: "mosaic/mosaic", nav: true }, { route: ["mainwindow"], moduleId: "mainwindow", nav: true }, { route: ["timeline"], moduleId: "timeline/timeline", nav: true }]);
           });
         }
 
-        _prototypeProperties(App, {
+        _createClass(App, null, {
           inject: {
             value: function inject() {
               return [Router];
-            },
-            writable: true,
-            configurable: true
+            }
           }
         });
 
@@ -53,4 +51,4 @@ System.register(["firebase", "aurelia-router", "bootstrap/css/bootstrap.css!"], 
 });
 
 // import 'bootstrap';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO01BRVEsTUFBTSx5Q0FJRCxHQUFHOzs7O0FBSlIsWUFBTSxrQkFBTixNQUFNOzs7Ozs7Ozs7QUFJRCxTQUFHO0FBRUgsaUJBRkEsR0FBRyxDQUVGLE1BQU07Z0NBRlAsR0FBRzs7QUFHWixnQkFBTSxDQUFDLGFBQWEsR0FBSSxPQUFPLE9BQU8sSUFBSSxRQUFRLEFBQUMsQ0FBQztBQUNwRCxjQUFJLE1BQU0sQ0FBQyxhQUFhLEVBQUU7QUFDeEIsa0JBQU0sQ0FBQyxPQUFPLEdBQUcsVUFBUyxVQUFVLEVBQUU7QUFDcEMsa0JBQUksR0FBRyxHQUFHLE1BQU0sQ0FBQyxNQUFNLENBQUM7QUFDeEIsb0JBQU0sQ0FBQyxNQUFNLEdBQUcsTUFBTSxDQUFDLFdBQVcsQ0FBQztBQUNuQyxrQkFBSSxNQUFNLEdBQUcsTUFBTSxDQUFDLE1BQU0sQ0FBQyxPQUFPLENBQUMsVUFBVSxDQUFDLENBQUM7QUFDL0Msb0JBQU0sQ0FBQyxNQUFNLEdBQUcsR0FBRyxDQUFDO0FBQ3BCLHFCQUFPLE1BQU0sQ0FBQzthQUNmLENBQUE7V0FDRjs7QUFFRCxjQUFJLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQztBQUNyQixjQUFJLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxVQUFBLE1BQU0sRUFBSTtBQUM5QixrQkFBTSxDQUFDLEtBQUssR0FBRyxZQUFZLENBQUM7QUFDNUIsa0JBQU0sQ0FBQyxHQUFHLENBQUMsQ0FDVCxFQUFDLEtBQUssRUFBRSxDQUFDLE9BQU8sQ0FBQyxFQUFHLFFBQVEsRUFBRSxPQUFPLEVBQUUsR0FBRyxFQUFFLElBQUksRUFBQzs7QUFFakQsY0FBQyxLQUFLLEVBQUUsQ0FBQyw4QkFBOEIsQ0FBQyxFQUFNLFFBQVEsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLElBQUksRUFBQyxFQUMxRSxFQUFDLEtBQUssRUFBRSxDQUFDLEVBQUUsRUFBQyxPQUFPLENBQUMsRUFBTSxRQUFRLEVBQUUsT0FBTyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUMsRUFDdkQsRUFBQyxLQUFLLEVBQUUsQ0FBQyxJQUFJLENBQUMsRUFBTSxRQUFRLEVBQUUscUJBQXFCLEVBQUUsR0FBRyxFQUFFLElBQUksRUFBQyxFQUMvRCxFQUFDLEtBQUssRUFBRSxDQUFDLDhCQUE4QixDQUFDLEVBQU0sUUFBUSxFQUFFLE1BQU0sRUFBRSxHQUFHLEVBQUUsSUFBSSxFQUFDLEVBQzFFLEVBQUMsS0FBSyxFQUFFLENBQUMsdUJBQXVCLEVBQUUsUUFBUSxDQUFDLEVBQU0sUUFBUSxFQUFFLGVBQWUsRUFBRSxHQUFHLEVBQUUsSUFBSSxFQUFDLEVBQ3RGLEVBQUMsS0FBSyxFQUFFLENBQUMsVUFBVSxDQUFDLEVBQUUsUUFBUSxFQUFFLG1CQUFtQixFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUMsQ0FDaEUsQ0FBQyxDQUFDO1dBQ0osQ0FBQyxDQUFDO1NBQ0o7OzZCQTVCVSxHQUFHO0FBQ1AsZ0JBQU07bUJBQUEsa0JBQUc7QUFBRSxxQkFBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDO2FBQUU7Ozs7OztlQUR6QixHQUFHIiwiZmlsZSI6ImFwcC5qcyIsInNvdXJjZVJvb3QiOiIvc3JjLyJ9
+//# sourceMappingURL=data:application/json;base64,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

@@ -92,6 +92,9 @@ export class Utility {
     interact('#'+id)
       .allowFrom(".flat-titlebar")
       .draggable({
+          restrict: {
+            restriction: 'parent',
+          },
           onstart: function(event) {
             var target = event.target;
             target.setAttribute('start-x', vm.file.nodes[id].x);
@@ -117,12 +120,32 @@ export class Utility {
           },
           onend: function(event) {
             var target = event.target;
-            var dx = (parseFloat(target.getAttribute('data-x')) || 0);
-            var dy = (parseFloat(target.getAttribute('data-y')) || 0);
-            console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
-            vm.file.nodes[id].x += dx;
-            vm.file.nodes[id].y += dy;
-            console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
+            var left = $(target).position().left;
+            var top = $(target).position().top;
+            // var dx = (parseFloat(target.getAttribute('data-x')) || 0);
+            // var dy = (parseFloat(target.getAttribute('data-y')) || 0);
+            console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            console.log($(target).position().left+" "+$(target).position().top+" "+$(target).height()+" "+$(target).width())
+            target.style.webkitTransform =
+            target.style.transform =
+              'translate(0px, 0px)';
+            console.log($(target).position().left+" "+$(target).position().top+" "+$(target).height()+" "+$(target).width())
+            $(target).css({top:top, left:left});
+            vm.file.nodes[id].x = left;
+            vm.file.nodes[id].y = top;
+            // vm.nodesRef.child(id).set(newNode);
+            // target.style.left = left;
+            // target.style.top = top;
+            console.log($(target).position().left+" "+$(target).position().top+" "+$(target).height()+" "+$(target).width())
+            // var element = $("#"+id);
+            // console.log("1- "+element.position().left+" "+element.position().top+" "+element.width()+" "+element.height())
+            // var pos = $(target).position()
+            // vm.file.nodes[id].x = pos.left;
+            // vm.file.nodes[id].y = pos.top;
+            // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
+            // vm.file.nodes[id].x += dx;
+            // vm.file.nodes[id].y += dy;
+            // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
             target.setAttribute('data-x', 0);
             target.setAttribute('data-y', 0);
             // // var target = event.target;
@@ -135,8 +158,13 @@ export class Utility {
             // //   vm.file.nodes[id].y = element.position().top + 
             // //       (parseFloat(target.getAttribute('data-y')) || 0) ;
             // // }, 0);
-            
+            // console.log(target)
+            // var element = $("#"+id);
+            // console.log("1- "+element.position().left+" "+element.position().top+" "+element.width()+" "+element.height())
+            // setTimeout(function() {vm.setPositionToRemoteServer(id);}, 10);
             vm.setPositionToRemoteServer(id);
+
+            
           }
           // this is used later in the resizing demo
           // window.dragMoveListener = dragMoveListener;

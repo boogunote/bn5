@@ -263,23 +263,21 @@ export class Tree extends Node {
   }
 
   setPositionToRemoteServer(id) {
-    var element = $("#"+id);
+    // var element = $("#"+id);
     // console.log(element.left())
     // console.log(element.top())
     // console.log(element.width())
     // console.log(element.height())
     // var newNode = new Object();
     // this.utility.copyAttributes(newNode, this.file.nodes[id]);
+    // console.log("2- "+element.position().left+" "+element.position().top+" "+element.width()+" "+element.height())
     
     var that = this;
     this.doEdit(function() {
-      // console.log("setNodeToServer")
+      // console.log("3- "+element.position().left+" "+element.position().top+" "+element.width()+" "+element.height())
+      // // console.log("setNodeToServer")
       var newNode = new Object();
       that.utility.copyAttributes(newNode, that.rootVM.file.nodes[id])
-      newNode.x = element.position().left;
-      newNode.y = element.position().top;
-      newNode.width = element.width();
-      newNode.height = element.height();
       that.nodesRef.child(id).set(newNode);
     });
   }

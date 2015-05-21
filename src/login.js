@@ -26,6 +26,7 @@ export class Login {
     }, function(err, authData) {
       console.log(err);
       if (err) {
+        $('#btn-login').text('Login')
         alert("Login Error: " + err.code);
       } else if (authData) {
         // user authenticated with Firebase

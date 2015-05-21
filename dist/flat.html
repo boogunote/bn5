@@ -1,6 +1,6 @@
 <template>
   <script src="../interact-1.2.4.min.js"></script>
-  <div  style="width: ${node.width}px; height: ${node.height}px;" contextmenu.delegate="onClick($event)">
+  <div class="flat-mainwindow" style="width: ${node.width}px; height: ${node.height}px;" contextmenu.delegate="onClick($event)">
     <div>${file.meta.name}</div>
     <input type="button" value="New" click.delegate="newFlatNode()"></input>
     <input type="button" value="Undo" click.delegate="undo()"></input>
