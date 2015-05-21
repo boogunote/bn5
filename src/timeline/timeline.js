@@ -30,6 +30,8 @@ export class Timeline{
   }
 
   addItem(item) {
+    if (typeof item.end != "undefined")
+      item.title = this.utility.millisecondsToString(item.end - item.start);
     var remoteItem = {
       id: item.id,
       content: item.content,
