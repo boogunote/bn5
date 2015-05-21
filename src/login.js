@@ -15,6 +15,7 @@ export class Login {
 
   login() {
     console.log("login");
+    $('#btn-login').text('Waiting...')
     // window.location.href = "/#fm";
     // var hash = window.location.hash;
     var that = this;
@@ -39,6 +40,14 @@ export class Login {
         // }
       }
     });
+  }
+
+  onKeyDown(event) {
+    console.log(event)
+    if (13 == event.keyCode) {
+      this.login();
+    };
+    return true;
   }
 
   signUp() {
