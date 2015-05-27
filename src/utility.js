@@ -176,34 +176,38 @@ export class Utility {
         })
       .on('resizemove', function (event) {
         var target = event.target.parentElement,
-            x = (parseFloat(target.getAttribute('data-x')) || 0),
-            y = (parseFloat(target.getAttribute('data-y')) || 0);
+            dx = (parseFloat(target.getAttribute('data-x')) || 0),
+            dy = (parseFloat(target.getAttribute('data-y')) || 0);
 
         // // update the element's style
-        target.style.width  = event.rect.width + 'px';
-        target.style.height = event.rect.height + $('#'+id+' .flat-titlebar').height() + 'px';
+        target.style.width  = event.rect.width + 2 + 'px';
+        target.style.height = event.rect.height + 2 + $('#'+id+' .flat-titlebar').height() + 'px';
+        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        console.log(target)
 
         // translate when resizing from top or left edges
-        x += event.deltaRect.left;
-        y += event.deltaRect.top;
+        dx += event.deltaRect.left;
+        dy += event.deltaRect.top;
 
         target.style.webkitTransform = target.style.transform =
-            'translate(' + x + 'px,' + y + 'px)';
+            'translate(' + dx + 'px,' + dy + 'px)';
 
-        target.setAttribute('data-x', x);
-        target.setAttribute('data-y', y);
+        target.setAttribute('data-x', dx);
+        target.setAttribute('data-y', dy);
         // // target.textContent = event.rect.width + '×' + event.rect.height;
         // vm.setPositionToRemoteServer(id);
       })
       .on('resizeend', function (event) {
-        var target = event.target;
-        var dx = (parseFloat(target.getAttribute('data-x')) || 0);
-        var dy = (parseFloat(target.getAttribute('data-y')) || 0);
+        var target = event.target.parentElement,
+            dx = (parseFloat(target.getAttribute('data-x')) || 0),
+            dy = (parseFloat(target.getAttribute('data-y')) || 0);
         // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
         vm.file.nodes[id].x += dx;
         vm.file.nodes[id].y += dy;
-        vm.file.nodes[id].width = target.style.width;
-        vm.file.nodes[id].height = target.style.height;
+        console.log("dddddddddddddddddddddddddddddddddddddddd")
+        console.log(target)
+        vm.file.nodes[id].width = parseInt(target.style.width.slice(0, -2));
+        vm.file.nodes[id].height = parseInt(target.style.height.slice(0, -2));
         // console.log("dx:"+dx+" dy:"+dy+" vm.file.nodes[id].x:"+vm.file.nodes[id].x+" vm.file.nodes[id].y:"+vm.file.nodes[id].y)
         target.setAttribute('data-x', 0);
         target.setAttribute('data-y', 0);

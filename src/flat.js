@@ -215,6 +215,8 @@ export class Tree extends Node {
             node.y -= delta;
           }
 
+          if (node.y < 0) node.y = 0;
+
           this.nodesRef.child(node.id+"/y").set(node.y);
         }
       };
@@ -243,6 +245,7 @@ export class Tree extends Node {
             node.x -= delta;
           }
         }
+        if (node.x < 0) node.x = 0;
         this.nodesRef.child(node.id+"/x").set(node.x);
       }
 
