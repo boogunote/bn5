@@ -1,9 +1,15 @@
 <template>
-  <input type="button" value="File Manager" click.delegate="openFileManager()"></input>
+  <input type="button" value="File Manager" click.delegate="toggleFileManager()"></input>
+  <input type="button" value="Timeline" click.delegate="toggleTimeline()"></input>
   <div show.bind="showFileManager">
     <compose
       model.bind="{'frameVM': frameVM}"
       view-model="./file_manager/tree">
+    </compose>
+  </div>
+  <div show.bind="showTimeline">
+    <compose
+      view-model="./timeline/timeline">
     </compose>
   </div>
   <ul class="nav nav-tabs">

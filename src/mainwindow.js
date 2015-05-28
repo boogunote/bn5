@@ -19,6 +19,7 @@ export class MainWindow {
 
     this.active_id = "";
     this.showFileManager = false;
+    this.showTimeline = false;
     this.lockTime = 0;
     this.localTabList = [];
   }
@@ -135,8 +136,12 @@ export class MainWindow {
     this.setRemoteData();
   }
 
-  openFileManager() {
+  toggleFileManager() {
     this.showFileManager = !this.showFileManager;
+  }
+
+  toggleTimeline() {
+    this.showTimeline = !this.showTimeline;
   }
 
   onMouseEnter(event) {
