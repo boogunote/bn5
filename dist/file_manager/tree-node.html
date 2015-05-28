@@ -3,7 +3,7 @@
     <div class="tree-node-icon-container">  
       <span class="tree-node-expand-button glyphicon ${meta.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
     </div>
-    <a href.bind="url">${meta.name}</a>
+    <span href.bind="url" click.delegate="open($event)">${meta.name}</span>
     <input show.bind="meta.type=='directory'" type="button" value="New Directory" click.delegate="newDirectory()"></input>
     <input show.bind="meta.type=='directory'" type="button" value="New Tree" click.delegate="newTree()"></input>
     <input type="button" value="Cut" click.delegate="cut()"></input>

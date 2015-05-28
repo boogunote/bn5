@@ -180,6 +180,11 @@ textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
   padding: 5px;
 }
 
+.mainwindow-content {
+  overflow: auto;
+  width: 100%;
+}
+
 .mosaic {
   display: -webkit-box;
   display: -moz-box;

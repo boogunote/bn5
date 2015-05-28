@@ -1,12 +1,18 @@
 <template>
-  <input type="button" value="Open File Manager" click.delegate="openFileManager()"></input>
-  <div>
-    <ul class="nav nav-tabs">
-      <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
-      <li class="${tab.id == $parent.active_id?'active':''}" repeat.for="tab of info.mainwindow.tabs">
-        <a id.bind="'tab-'+tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
-      </li>
-    </ul>
+  <input type="button" value="File Manager" click.delegate="openFileManager()"></input>
+  <div show.bind="showFileManager">
+    <compose
+      model.bind="{'frameVM': frameVM}"
+      view-model="./file_manager/tree">
+    </compose>
+  </div>
+  <ul class="nav nav-tabs">
+    <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
+    <li class="${tab.id == $parent.active_id?'active':''}" repeat.for="tab of info.mainwindow.tabs">
+      <a id.bind="'tab-'+tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
+    </li>
+  </ul>
+  <div class="mainwindow-content">
     <div id.bind="'page-'+tab.id" repeat.for="tab of info.mainwindow.tabs">
       <div show.bind="tab.id == $parent.active_id">
         <compose

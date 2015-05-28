@@ -15,7 +15,10 @@ export class MainWindow {
     this.utility = utility;
     this.router = router;
 
+    this.frameVM = this;
+
     this.active_id = "";
+    this.showFileManager = false;
   }
 
   activate(model){
@@ -47,7 +50,10 @@ export class MainWindow {
               for (var i = 0; i < that.info.mainwindow.tabs.length; i++) {
                 var meta = metaSnapshot.val();
                 if (that.info.mainwindow.tabs[i].id == meta.id) {
-                  that.info.mainwindow.tabs[i] = meta;
+                  if (that.info.mainwindow.tabs[i].type != meta.type)
+                    that.info.mainwindow.tabs[i].type = meta.type;
+                  if (that.info.mainwindow.tabs[i].name != meta.name)
+                    that.info.mainwindow.tabs[i].name = meta.name;
                   break;
                 }
               };
@@ -57,8 +63,22 @@ export class MainWindow {
     })
   }
 
-  openFileManager() {
+  open(meta) {
+    var opened = false;
+    for (var i = 0; i < this.info.mainwindow.tabs.length; i++) {
+      if (this.info.mainwindow.tabs[i].id == meta.id) {
+        opened = true;
+        break;
+      }
+    };
+    if (!opened) {
+      this.info.mainwindow.tabs.push(meta);
+    }
+    this.active_id = meta.id;
+  }
 
+  openFileManager() {
+    this.showFileManager = !this.showFileManager;
   }
 
   onSwitchTab(event) {

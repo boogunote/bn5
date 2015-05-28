@@ -59,6 +59,20 @@ export class TreeNode extends Node{
     this.rootVM.cut();
   }
 
+  open(event) {
+    console.log(event)
+    event.cancelBubble = true;
+    event.stopPropagation();
+    if (!this.url) return;
+
+    if (this.rootVM.frameVM) {
+      this.rootVM.frameVM.open(this.meta);
+    } else {
+      window.open(this.url);
+    }
+    return true;
+  }
+
   toggle() {
     if ("directory" != this.meta.type) return;
     this.meta.collapsed = !this.meta.collapsed;

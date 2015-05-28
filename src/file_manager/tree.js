@@ -51,6 +51,10 @@ export class Tree extends Node{
       that.node = dataSnapshot.val();
       // console.log(that.node)
     });
+
+    if (params.frameVM) {
+      this.frameVM = params.frameVM;
+    };
   }
 
   cut() {
