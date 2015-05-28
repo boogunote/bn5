@@ -1,6 +1,7 @@
 import 'firebase';
 import 'jquery';
 import autosize from 'jquery-autosize';
+import 'bootstrap';
 import 'bootstrap/css/bootstrap.css!';
 
 
@@ -22,6 +23,7 @@ export class MainWindow {
     this.showTimeline = false;
     this.lockTime = 0;
     this.localTabList = [];
+    this.dialogMessage = "";
   }
 
   activate(model){
@@ -47,8 +49,11 @@ export class MainWindow {
         that.localTabList.push({id: that.info.mainwindow.tabs[i].id});
       };
       
-      if (that.info.mainwindow.tabs.length > 0)
+      if (that.info.mainwindow.tabs.length > 0) {
         that.active_id = that.info.mainwindow.tabs[0].id;
+        // this line should be commented out. first activated page also needs resize.
+        // that.info.mainwindow.tabs[0].resized = true;
+      }
       for (var i = 0; i < that.info.mainwindow.tabs.length; i++) {
         that.rootRef.child('notes').child('users')
             .child(authData.uid).child('files')
@@ -158,16 +163,37 @@ export class MainWindow {
     if (this.active_id != id) {
       this.active_id = id;
       console.log(id)
-      setTimeout(function() {
-        var taList = $('#page-'+id).find("textarea");
-        console.log(taList)
-        for (var i = 0; i < taList.length; i++) {
-          taList[i].removeAttribute('data-autosize-on');
-          autosize(taList[i]);
-        };
-      }, 10);
+      for (var i = 0; i < this.info.mainwindow.tabs.length; i++) {
+        if (this.info.mainwindow.tabs[i].id == id) {
+          if (!this.info.mainwindow.tabs[i].resized) {
+            this.resizeAllTextareas(id);
+            this.info.mainwindow.tabs[i].resized = true;
+          }
+          break;
+        }
+      };
     }
     
+  }
+
+  resizeAllTextareas(id) {
+    console.log("resizeAllTextareas")
+    setTimeout(function() {
+      var taList = $('#page-'+id).find("textarea");
+      // console.log(taList)
+      for (var i = 0; i < taList.length; i++) {
+        taList[i].removeAttribute('data-autosize-on');
+        if ($(taList).hasClass("tree-textarea-fold")) {
+          // var evt = document.createEvent('Event');
+          // evt.initEvent('autosize.destroy', true, false);
+          // taList[i].dispatchEvent(evt);
+          // autosize(taList[i]);
+          taList[i].style.height = "24px";//taList[i].scrollHeight+"px";
+        } else {
+          autosize(taList[i]);
+        }
+      };
+    }, 0);
   }
 
   setRemoteData() {
@@ -181,5 +207,9 @@ export class MainWindow {
 
     this.infoRef.child('mainwindow/tabs').set(list);
     this.lockTime = this.utility.now() + 5*1000;
+  }
+
+  showModalDialog() {
+    
   }
 }
