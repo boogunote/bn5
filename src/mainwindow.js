@@ -19,6 +19,8 @@ export class MainWindow {
 
     this.active_id = "";
     this.showFileManager = false;
+    this.lockTime = 0;
+    this.localTabList = [];
   }
 
   activate(model){
@@ -33,12 +35,17 @@ export class MainWindow {
 
     var that = this;
     this.infoRef.on('value', function(dataSnapshot) {
+      if (that.utility.now() < that.lockTime) return;
+
       that.info = dataSnapshot.val();
       console.log(that.info)
       if (typeof that.info.mainwindow.tabs == 'undefined')
         that.info.mainwindow.tabs = [];
-      var tabs = that.info.mainwindow.tabs
-      console.log(tabs)
+      // copy to local tab list
+      for (var i = 0; i < that.info.mainwindow.tabs.length; i++) {
+        that.localTabList.push({id: that.info.mainwindow.tabs[i].id});
+      };
+      
       if (that.info.mainwindow.tabs.length > 0)
         that.active_id = that.info.mainwindow.tabs[0].id;
       for (var i = 0; i < that.info.mainwindow.tabs.length; i++) {
@@ -47,8 +54,8 @@ export class MainWindow {
             .child(that.info.mainwindow.tabs[i].id).child('meta')
             .on('value', function(metaSnapshot) {
               console.log(metaSnapshot.val())
+              var meta = metaSnapshot.val();
               for (var i = 0; i < that.info.mainwindow.tabs.length; i++) {
-                var meta = metaSnapshot.val();
                 if (that.info.mainwindow.tabs[i].id == meta.id) {
                   if (that.info.mainwindow.tabs[i].type != meta.type)
                     that.info.mainwindow.tabs[i].type = meta.type;
@@ -57,10 +64,46 @@ export class MainWindow {
                   break;
                 }
               };
+
+              for (var i = 0; i < that.localTabList.length; i++) {
+                if (that.localTabList[i].id == meta.id) {
+                  if (that.localTabList[i].type != meta.type)
+                    that.localTabList[i].type = meta.type;
+                  if (that.localTabList[i].name != meta.name)
+                    that.localTabList[i].name = meta.name;
+                  break;
+                }
+                
+              };
             })
         that.info[i];
       };
     })
+  }
+
+  close(event) {
+    var index = -1;
+    for (var i = 0; i < this.info.mainwindow.tabs.length; i++) {
+      if (this.info.mainwindow.tabs[i].id == event.target.file_id) {
+        index = i;
+        break;
+      }
+    };
+    if (-1 != index) {
+      this.info.mainwindow.tabs.splice(index,1);
+      if (this.info.mainwindow.tabs.length > 0) {
+        if (index < this.info.mainwindow.tabs.length) {
+          this.active_id = this.info.mainwindow.tabs[index].id;
+        } else {
+          this.active_id = this.info.mainwindow.tabs[0].id;
+        }
+      } else {
+        this.active_id = "";
+        this.localTabList = [];
+      }
+    };
+    
+    this.setRemoteData();
   }
 
   open(meta) {
@@ -72,18 +115,41 @@ export class MainWindow {
       }
     };
     if (!opened) {
-      this.info.mainwindow.tabs.push(meta);
+      this.info.mainwindow.tabs.push({
+        id: meta.id,
+        type: meta.type,
+        name: meta.name
+      });
+
+      this.localTabList.push({
+        id: meta.id,
+        type: meta.type,
+        name: meta.name
+      });
     }
-    this.active_id = meta.id;
+    var that = this;
+    setTimeout(function() {
+      that.active_id = meta.id;
+    }, 10);
+
+    this.setRemoteData();
   }
 
   openFileManager() {
     this.showFileManager = !this.showFileManager;
   }
 
+  onMouseEnter(event) {
+    $(event.target).find('input').show();
+  }
+
+  onMouseLeave(event) {
+    $(event.target).find('input').hide();
+  }
+
   onSwitchTab(event) {
     console.log(event)
-    var id = event.target.id.slice(4)
+    var id = event.target.file_id
     if (this.active_id != id) {
       this.active_id = id;
       console.log(id)
@@ -97,5 +163,18 @@ export class MainWindow {
       }, 10);
     }
     
+  }
+
+  setRemoteData() {
+    var list = []
+    for (var i = 0; i < this.info.mainwindow.tabs.length; i++) {
+      var item = {
+        id: this.info.mainwindow.tabs[i].id
+      }
+      list.push(item);
+    };
+
+    this.infoRef.child('mainwindow/tabs').set(list);
+    this.lockTime = this.utility.now() + 5*1000;
   }
 }

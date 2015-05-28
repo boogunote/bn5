@@ -33,7 +33,7 @@ export class Login {
         console.log("Logged In! User ID: " + authData.uid);
         // window.location.href = "/#fm";
         // window.location.href = window.location.origin + "/#fm";
-        that.router.navigate("fm")
+        that.router.navigate("mainwindow")
         // if (hash.length > 2) {
         //     window.location.replace("index.html" + hash);
         // } else {
@@ -105,7 +105,7 @@ export class Login {
               id: file_id
             };
             userInfoRef.set(user_info);
-            window.location.href = window.location.origin+"/#fm";
+            that.router.navigate("mainwindow")
             // window.location.href = window.location.origin + "/#fm";
             // that.router.navigate("fm")
           }

@@ -8,12 +8,13 @@
   </div>
   <ul class="nav nav-tabs">
     <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
-    <li class="${tab.id == $parent.active_id?'active':''}" repeat.for="tab of info.mainwindow.tabs">
-      <a id.bind="'tab-'+tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
+    <li class="${tab.id == $parent.active_id?'active':''}" mouseenter.delegate="$parent.onMouseEnter($event)"  mouseleave.delegate="$parent.onMouseLeave($event)" repeat.for="tab of info.mainwindow.tabs">
+      <a style="display:block; float:left" file_id.bind="tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
+      <input style="display:none" file_id.bind="tab.id" type="button" value="x" click.delegate="$parent.close($event)"></input>
     </li>
   </ul>
   <div class="mainwindow-content">
-    <div id.bind="'page-'+tab.id" repeat.for="tab of info.mainwindow.tabs">
+    <div id.bind="'page-'+tab.id" repeat.for="tab of localTabList">
       <div show.bind="tab.id == $parent.active_id">
         <compose
           if.bind="tab.type=='tree'"
