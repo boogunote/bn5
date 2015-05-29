@@ -90,7 +90,7 @@ export class Utility {
 
   initInteract(id, vm) {
     System.import('amd/interact.min').then( (interact) => {
-      interact('#'+id)
+      interact('#' + vm.file_id + ' #'+id)
         .allowFrom(".flat-titlebar")
         .draggable({
             restrict: {
@@ -171,7 +171,7 @@ export class Utility {
             // window.dragMoveListener = dragMoveListener;
         })
         
-      interact('#'+id+" .flat-body")
+      interact('#' + vm.file_id + ' #'+id+" .flat-body")
         .resizable({
             edges: { left: true, right: true, bottom: true, top: false }
           })
