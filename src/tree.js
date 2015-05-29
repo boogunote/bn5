@@ -441,6 +441,9 @@ export class Tree extends Node {
     } else if (event.ctrlKey && event.shiftKey && 67 == event.keyCode && this.flatVM) {
       this.flatVM.copy(this.file.nodes[this.root_id]);
       return false;
+    } else if (event.ctrlKey && event.shiftKey && 86 == event.keyCode && this.flatVM) {
+      this.flatVM.infect(this.file.nodes[this.root_id])
+      return false;
     } else if (event.ctrlKey && event.shiftKey && 88 == event.keyCode && this.flatVM) {
       this.flatVM.copy(this.file.nodes[this.root_id]);
       this.flatVM.delete(this.file.nodes[this.root_id]);

@@ -132,6 +132,41 @@ export class Tree extends Node {
     this.rootVM.record(nodeRecordList, "remove");
   }
 
+  infect(node) {
+    if (node.content != "") return;
+    if (node.children.length != 0) return;
+
+    var clipboardData = localStorage.getItem("clipboardData");
+    if (!clipboardData) return;
+    var copiedSubTreeList = JSON.parse(clipboardData);
+
+    if (copiedSubTreeList.length > 1) {
+      alert("Only accepte one item!")
+      return;
+    };
+
+    var ret = this.utility.treeToList(copiedSubTreeList[0].subTree);
+    var new_node = null;
+    for (var i = 0; i < ret.nodes.length; i++) {
+      if (ret.nodes[i].id == ret.root_id) {
+        new_node = ret.nodes[i]
+        break;
+      }
+    };
+
+    new_node.x = node.x;
+    new_node.y = node.y;
+    new_node.width = node.width;
+    new_node.height = node.height;
+
+    this.rootVM.insertSubTree(this.root_id, 0, ret.nodes, ret.root_id);
+    this.removeSubTree(this.file.nodes.root.id, node.id);
+    // // node.children = source_node.children
+    
+    // console.log(node.content)
+    // console.log(source_node)
+  }
+
   // removeSubTree(parent_id, node_id) {
   //   var parent = this.file.nodes[parent_id];
   //   var position = -1;
