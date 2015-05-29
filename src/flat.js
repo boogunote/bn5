@@ -280,6 +280,26 @@ export class Tree extends Node {
     return false;
   }
 
+  onWindowMouseDown(event) {
+    var windows = $("#"+this.file_id+" .flat-window")
+    for (var i = 0; i < windows.length; i++) {
+      if ($(windows[i]).css('z-index') == 'auto' ||
+          $(windows[i]).css('z-index') == '') {
+        $(windows[i]).css('z-index', 0)
+      }
+    };
+    windows.sort(function(a, b){
+      return parseInt($(a).css("z-index")) - parseInt($(b).css('z-index'))
+    });
+    for (var i = 0; i < windows.length; i++) {
+      $(windows[i]).css('z-index', i);
+    };
+    var maxZ = parseInt($(windows[windows.length-1]).css('z-index'));
+    var targetWindow = $(event.target).closest('.flat-window');
+    targetWindow.css('z-index', maxZ+1)
+    return true;
+  }
+
   setPositionToRemoteServer(id) {
     // var element = $("#"+id);
     // console.log(element.left())
