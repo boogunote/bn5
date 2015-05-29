@@ -99,7 +99,7 @@ export class Tree extends Node {
   }
 
   canActivate(params, queryString, routeConfig) {
-    this.routeConfig = routeConfig;
+    // this.routeConfig = routeConfig;
     // this.routeConfig.navModel.title = "wawaw";
     return true;
   }
