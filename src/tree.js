@@ -437,7 +437,14 @@ export class Tree extends Node {
       return false;
     } else if (event.ctrlKey && 46 == event.keyCode && this.flatVM) {
       this.flatVM.delete(this.file.nodes[this.root_id]);
-      return false
+      return false;
+    } else if (event.ctrlKey && event.shiftKey && 67 == event.keyCode && this.flatVM) {
+      this.flatVM.copy(this.file.nodes[this.root_id]);
+      return false;
+    } else if (event.ctrlKey && event.shiftKey && 88 == event.keyCode && this.flatVM) {
+      this.flatVM.copy(this.file.nodes[this.root_id]);
+      this.flatVM.delete(this.file.nodes[this.root_id]);
+      return false;
     } else if (event.ctrlKey && 192 == event.keyCode) {
       this.openSubTreeInNewWindow(this.node.id);
     }

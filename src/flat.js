@@ -104,6 +104,21 @@ export class Tree extends Node {
     return true;
   }
 
+  copy(node) {
+    var copiedSubTreeList = [];
+    var newSubTree = {
+      file_id: this.file_id,
+      subTree: this.utility.listToTree(this.rootVM.file.nodes, node.id),
+      type: "tree_nodes"
+    };
+    copiedSubTreeList.push(newSubTree);
+
+    delete localStorage.clipboardData;
+    localStorage.clipboardData = undefined;
+    localStorage.clipboardData = JSON.stringify(copiedSubTreeList);
+    console.log(localStorage.clipboardData);
+  }
+
   delete(node) {
     var nodeRecordList = [];
     var subTree = this.utility.listToTree(this.rootVM.file.nodes, node.id);
