@@ -13,7 +13,7 @@ export class Utility {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
     var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
-        "x", "y", "width", "height"];
+        "x", "y", "width", "height", "zindex"];
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
@@ -24,7 +24,7 @@ export class Utility {
       if (typeof node[attrName] != "undefined") newNode[attrName] = node[attrName];
     }
     var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
-        "x", "y", "width", "height"];
+        "x", "y", "width", "height", "zindex"];
     for (var i = 0; i < attrList.length; i++) {
       copyAttributes(newNode, node, attrList[i]);
     };
@@ -220,7 +220,7 @@ export class Utility {
 
   isSameNode(node1, node2) {
     var attrList = ["collapsed", "content", "fold", "icon", "id", "create_time",
-        "x", "y", "width", "height"];
+        "x", "y", "width", "height", "zindex"];
     for (var i = 0; i < attrList.length; i++) {
       if (node1[attrList[i]] != node2[attrList[i]])
         return false;

@@ -158,6 +158,7 @@ export class Tree extends Node {
     new_node.y = node.y;
     new_node.width = node.width;
     new_node.height = node.height;
+    new_node.zindex = node.zindex;
 
     this.rootVM.insertSubTree(this.root_id, 0, ret.nodes, ret.root_id);
     this.removeSubTree(this.file.nodes.root.id, node.id);
@@ -209,6 +210,7 @@ export class Tree extends Node {
 
   newFlatNode() {
     var flatNode = this.utility.createNewFlatNode();
+    flatNode.zindex = 9999;
     this.nodesRef.child(flatNode.id).set(flatNode);
     var children = this.utility.getCleanChildren(this.node);
     this.file.nodes[flatNode.id] = flatNode;
@@ -316,22 +318,51 @@ export class Tree extends Node {
   }
 
   onWindowMouseDown(event) {
-    var windows = $("#"+this.file_id+" .flat-window")
-    for (var i = 0; i < windows.length; i++) {
-      if ($(windows[i]).css('z-index') == 'auto' ||
-          $(windows[i]).css('z-index') == '') {
-        $(windows[i]).css('z-index', 0)
+    // var windows = $("#"+this.file_id+" .flat-window")
+    // for (var i = 0; i < windows.length; i++) {
+    //   if ($(windows[i]).css('z-index') == 'auto' ||
+    //       $(windows[i]).css('z-index') == '') {
+    //     $(windows[i]).css('z-index', 0)
+    //   }
+    // };
+    // windows.sort(function(a, b){
+    //   return parseInt($(a).css("z-index")) - parseInt($(b).css('z-index'))
+    // });
+    // for (var i = 0; i < windows.length; i++) {
+    //   $(windows[i]).css('z-index', i);
+    // };
+    // var maxZ = parseInt($(windows[windows.length-1]).css('z-index'));
+    // var targetWindow = $(event.target).closest('.flat-window');
+    // targetWindow.css('z-index', maxZ+1)
+    // return true;
+
+    var rootChildrenList = []
+    for (var i = 0; i < this.file.nodes.root.children.length; i++) {
+      if (typeof this.file.nodes[this.file.nodes.root.children[i]].zindex != 'number') {
+        this.file.nodes[this.file.nodes.root.children[i]].zindex = 0;
       }
+      rootChildrenList.push(this.file.nodes[this.file.nodes.root.children[i]])
+    }
+
+    rootChildrenList.sort(function(a, b) {
+      return a.zindex - b.zindex;
+    })
+
+    for (var i = 0; i < rootChildrenList.length; i++) {
+      rootChildrenList[i].zindex = i;
     };
-    windows.sort(function(a, b){
-      return parseInt($(a).css("z-index")) - parseInt($(b).css('z-index'))
+
+    var maxZ = rootChildrenList[rootChildrenList.length-1].zindex;
+    var target = $(event.target).closest('.flat-window');
+    // console.log(target.id)
+    this.file.nodes[$(target).attr('id')].zindex = maxZ +1;
+    var that = this;
+    this.doEdit(function() {
+      for (var i = 0; i < rootChildrenList.length; i++) {
+        that.nodesRef.child(rootChildrenList[i].id).child('zindex').set(rootChildrenList[i].zindex)
+      };
     });
-    for (var i = 0; i < windows.length; i++) {
-      $(windows[i]).css('z-index', i);
-    };
-    var maxZ = parseInt($(windows[windows.length-1]).css('z-index'));
-    var targetWindow = $(event.target).closest('.flat-window');
-    targetWindow.css('z-index', maxZ+1)
+
     return true;
   }
 
