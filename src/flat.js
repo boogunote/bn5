@@ -83,16 +83,16 @@ export class Tree extends Node {
         }
       });
 
-      this.nodesRef.child("root/children").on("value", function(dataSnapshot) {
-        var children = dataSnapshot.val();
-        for (var i = 0; i < children.length; i++) {
-          if(that.file && !that.file.nodes[children[i]]) {
-            var placeHolder = that.utility.createNewFlatNode();
-            placeHolder.id = children[i];
-            that.file.nodes[children[i]] = placeHolder;
-          }
-        };
-      })
+      // this.nodesRef.child("root/children").on("value", function(dataSnapshot) {
+      //   var children = dataSnapshot.val();
+      //   for (var i = 0; i < children.length; i++) {
+      //     if(that.file && !that.file.nodes[children[i]]) {
+      //       var placeHolder = that.utility.createNewFlatNode();
+      //       placeHolder.id = children[i];
+      //       that.file.nodes[children[i]] = placeHolder;
+      //     }
+      //   };
+      // })
 
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
