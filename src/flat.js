@@ -385,4 +385,8 @@ export class Tree extends Node {
       that.nodesRef.child(id).set(newNode);
     });
   }
+
+  showShareDialog() {
+    $("#shareDialog").modal('show');
+  }
 }

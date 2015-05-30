@@ -11,7 +11,7 @@
         <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newFlatNode()">New</a></li>
         <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="undo()">Undo</a></li>
         <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="redo()">Redo</a></li>
-        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1">Share</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="showShareDialog()">Share</a></li>
       </ul>
     </div>
     <div class="flat-window" id.bind="child" style="left: ${$parent.file.nodes[child].x}px; top: ${$parent.file.nodes[child].y}px; width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px; z-index: ${$parent.file.nodes[child].zindex};" repeat.for="child of node.children" contextmenu.delegate="$parent.onWindowClick($event)" mousedown.delegate="$parent.onWindowMouseDown($event)">
@@ -22,5 +22,24 @@
         view-model="tree">
       </compose>
     </div>
+  </div>
+  <div id="shareDialog" class="modal fade">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Input the id of user you want to share with</h4>
+              </div>
+              <div class="modal-body">
+                <input type="text"></input><input type="button" value="Add"></input><input type="button" value="Remove All"></input>
+                <div repeat.for="item of shared_list">
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-primary">Save</button>
+              </div>
+          </div>
+      </div>
   </div>
 </template>
