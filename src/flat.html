@@ -2,11 +2,18 @@
   <!--script src="../interact-1.2.4.min.js"></script-->
   <!-- script src="../interact-1.2.4.js"></script-->
   <div id.bind="file_id" class="flat-mainwindow" style="width: ${node.width}px; height: ${node.height}px;" contextmenu.delegate="onClick($event)">
-    <div>${file.meta.name}</div>
-    <input type="button" value="New" click.delegate="newFlatNode()"></input>
-    <input type="button" value="Undo" click.delegate="undo()"></input>
-    <input type="button" value="Redo" click.delegate="redo()"></input>
-    <input type="button" value="New Temporary Mosaic" click.delegate="newTemporaryMosaic()"></input>
+    <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Menu
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newFlatNode()">New</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="undo()">Undo</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="redo()">Redo</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1">Share</a></li>
+      </ul>
+    </div>
     <div class="flat-window" id.bind="child" style="left: ${$parent.file.nodes[child].x}px; top: ${$parent.file.nodes[child].y}px; width: ${$parent.file.nodes[child].width}px; height: ${$parent.file.nodes[child].height}px; z-index: ${$parent.file.nodes[child].zindex};" repeat.for="child of node.children" contextmenu.delegate="$parent.onWindowClick($event)" mousedown.delegate="$parent.onWindowMouseDown($event)">
       <span class="flat-titlebar"></span>
       <compose
