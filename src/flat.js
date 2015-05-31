@@ -83,6 +83,8 @@ export class Tree extends Node {
         }
       });
 
+      this.getShareList();
+
       // this.nodesRef.child("root/children").on("value", function(dataSnapshot) {
       //   var children = dataSnapshot.val();
       //   for (var i = 0; i < children.length; i++) {
@@ -96,6 +98,18 @@ export class Tree extends Node {
 
       // this.loadNodeDataById(this.file_id, this.root_id);
     }
+  }
+
+  addShareId() {
+    var shareIdElement = $("#share_dialog #share_id");
+    var idString = shareIdElement.val();
+    var id = parseInt(idString)
+    if (isNaN(id) || id < 1)
+      alert("Please input friend id in numerica.")
+    
+    var realId = "simplelogin:" + id;
+
+    this.fileRef.children("meta/share/"+realId).set("")
   }
 
   canActivate(params, queryString, routeConfig) {
@@ -130,6 +144,12 @@ export class Tree extends Node {
     };
     nodeRecordList.push(nodeRecord);
     this.rootVM.record(nodeRecordList, "remove");
+  }
+
+  getShareList() {
+    this.fileRef.child("meta/share").once("value", function(dataSnapshot) {
+      console.log(dataSnapshot.val());
+    })
   }
 
   infect(node) {
@@ -387,6 +407,6 @@ export class Tree extends Node {
   }
 
   showShareDialog() {
-    $("#shareDialog").modal('show');
+    $("#share_dialog").modal('show');
   }
 }

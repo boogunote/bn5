@@ -23,7 +23,7 @@
       </compose>
     </div>
   </div>
-  <div id="shareDialog" class="modal fade">
+  <div id="share_dialog" class="modal fade">
       <div class="modal-dialog">
           <div class="modal-content">
               <div class="modal-header">
@@ -31,8 +31,8 @@
                   <h4 class="modal-title">Input the id of user you want to share with</h4>
               </div>
               <div class="modal-body">
-                <input type="text"></input><input type="button" value="Add"></input><input type="button" value="Remove All"></input>
-                <div repeat.for="item of shared_list">
+                <input id="share_id" type="text"></input><input type="button" value="Add" click.delegate="addShareId()"></input><input type="button" value="Remove All"></input>
+                <div repeat.for="item of share_list">
                 </div>
               </div>
               <div class="modal-footer">
