@@ -111,7 +111,7 @@ export class Tree extends Node {
     
     var realId = "simplelogin:" + id;
 
-    this.fileRef.children("meta/share/"+realId).set("")
+    this.fileRef.child("meta/share/"+realId).set("")
   }
 
   canActivate(params, queryString, routeConfig) {
@@ -399,6 +399,10 @@ export class Tree extends Node {
     });
 
     return true;
+  }
+
+  popup() {
+    window.open("#flat/online/"+this.file_id+"/root")
   }
 
   setPositionToRemoteServer(id) {
