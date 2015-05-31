@@ -103,6 +103,8 @@ export class MainWindow {
         } else {
           this.active_id = this.info.mainwindow.tabs[0].id;
         }
+
+        this.resizeAllTextareas(this.active_id);
       } else {
         this.active_id = "";
         this.localTabList = [];
