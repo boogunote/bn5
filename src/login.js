@@ -16,8 +16,6 @@ export class Login {
   login() {
     console.log("login");
     $('#btn-login').text('Waiting...')
-    // window.location.href = "/#fm";
-    // var hash = window.location.hash;
     var that = this;
     var ref = new Firebase(this.common.firebase_url);
     ref.authWithPassword({
@@ -31,8 +29,6 @@ export class Login {
       } else if (authData) {
         // user authenticated with Firebase
         console.log("Logged In! User ID: " + authData.uid);
-        // window.location.href = "/#fm";
-        // window.location.href = window.location.origin + "/#fm";
         that.router.navigate("mainwindow")
         // if (hash.length > 2) {
         //     window.location.replace("index.html" + hash);
@@ -127,8 +123,6 @@ export class Login {
             timelineInfoRef.set(user_timeline);
 
             that.router.navigate("mainwindow")
-            // window.location.href = window.location.origin + "/#fm";
-            // that.router.navigate("fm")
           }
         });
       }

@@ -311,7 +311,7 @@ export class Node {
   }
 
   openSubTreeInNewWindow(node_id) {
-    var url = "#tree/online/" + this.rootVM.file_id +
+    var url = "#tree/online/" + this.rootVM.user_id + "/" +  this.rootVM.file_id +
         "/" + this.node.id;
     window.open(url);
   }

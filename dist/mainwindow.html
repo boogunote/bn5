@@ -8,7 +8,7 @@
   </div>
   <div show.bind="showFileManager">
     <compose
-      model.bind="{'frameVM': frameVM}"
+      model.bind="{'user_id':user_id, 'frameVM': frameVM}"
       view-model="./file_manager/tree">
     </compose>
   </div>
@@ -24,18 +24,18 @@
       <div show.bind="tab.id == $parent.active_id">
         <compose
           if.bind="tab.type=='tree'"
-          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
+          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
           view-model="./tree">
         </compose>
         <compose
           if.bind="tab.type=='flat'"
-          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
+          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
           view-model="./flat">
         </compose>
         <compose
           if.bind="tab.type=='mosaic'"
-          model.bind="{'type':'online', 'file_id':tab.id, 'root_id':'root'}"
-          view-model="./mosaic">
+          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
+          view-model="./mosaic/mosaic">
         </compose>
       </div>
     </div>

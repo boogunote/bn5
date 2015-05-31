@@ -47,9 +47,9 @@ export class TreeNode extends Node{
       that.meta = data;
       console.log(that.meta)
       if ("tree" == that.meta.type || "flat" == that.meta.type) {
-        that.url = "./#" + that.meta.type + "/online/" + that.meta.id + "/root";
+        that.url = "./#" + that.meta.type + "/online/" + that.rootVM.user_id + "/" + that.meta.id + "/root";
       } else if ("mosaic" == that.meta.type) {
-        that.url = "./#" + that.meta.type + "/online/" + that.meta.id;
+        that.url = "./#" + that.meta.type + "/online/" + that.rootVM.user_id + "/" + that.meta.id;
       }
     });
   }

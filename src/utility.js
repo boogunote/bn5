@@ -69,6 +69,10 @@ export class Utility {
     };
   }
 
+  getRealUserId(id) {
+    return "simplelogin:"+id;
+  }
+
   getUniqueId() {
     function randomString(length, chars) {
       var result = '';

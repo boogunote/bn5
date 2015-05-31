@@ -19,7 +19,7 @@
       <span class="flat-titlebar"></span>
       <compose
         class="flat-body"
-        model.bind="{'file_id':$parent.file.meta.id, 'root_id':child, 'type': 'online', 'flatVM':$parent}"
+        model.bind="{'file_id':$parent.file.meta.id, 'root_id':child, 'type': 'online', 'user_id':$parent.user_id, 'flatVM':$parent}"
         view-model="tree">
       </compose>
     </div>

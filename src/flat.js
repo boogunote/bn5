@@ -45,7 +45,9 @@ export class Tree extends Node {
       console.log("Please login!")
       return;
     }
-    this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
+
+    this.user_id = params.user_id;
+    this.fileRef = this.rootRef.child('/notes/users/' + this.utility.getRealUserId(this.user_id) +
       '/files/' + this.file_id);
     this.nodesRef = this.fileRef.child("nodes");
 
@@ -402,7 +404,7 @@ export class Tree extends Node {
   }
 
   popup() {
-    window.open("#flat/online/"+this.file_id+"/root")
+    window.open("#flat/online/"+ this.user_id + "/" + this.file_id+"/root")
   }
 
   setPositionToRemoteServer(id) {

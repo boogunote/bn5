@@ -60,7 +60,8 @@ export class Mosaic extends Node{
           console.log("Please login!")
           return;
         }
-        this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
+        this.user_id = params.user_id;
+        this.fileRef = this.rootRef.child('/notes/users/' + this.utility.getRealUserId(this.user_id) +
           '/files/' + this.file_id);
 
         var that = this;

@@ -60,7 +60,8 @@ export class Tree extends Node {
         console.log("Please login!")
         return;
       }
-      this.fileRef = this.rootRef.child('/notes/users/' + authData.uid +
+      this.user_id = params.user_id;
+      this.fileRef = this.rootRef.child('/notes/users/' + this.utility.getRealUserId(this.user_id) +
         '/files/' + this.file_id);
       this.nodesRef = this.fileRef.child("nodes");
       if (this.flatVM && this.flatVM.file) {
@@ -601,11 +602,12 @@ export class Tree extends Node {
       for (var i = 0; node.children && i < node.children.length; i++) {
         newNode.children.push(node.children[i].id)
       };
-      var ref = new Firebase(that.common.firebase_url);
-      var authData = ref.getAuth();
-      var nodeRef = ref.child("notes").child("users").child(authData.uid)
-          .child("files").child(that.file_id).child("nodes").child(node.id);
-      nodeRef.set(newNode)
+      // var ref = new Firebase(that.common.firebase_url);
+      // var authData = ref.getAuth();
+      // var nodeRef = ref.child("notes").child("users").child(this.user_id)
+      //     .child("files").child(that.file_id).child("nodes").child(node.id);
+      // nodeRef.set(newNode)
+      this.nodesRef.child(node.id).set(newNode);
       for (var i = 0; i < node.children.length; i++) {
         visite(node.children[i]);
       };
@@ -723,11 +725,12 @@ export class Tree extends Node {
         that.removeObserver(removedNodes[i]);
         // Remove from server
         var visite = function(node) {
-          var ref = new Firebase(that.common.firebase_url);
-          var authData = ref.getAuth();
-          var nodeRef = ref.child("notes").child("users").child(authData.uid)
-              .child("files").child(that.file_id).child("nodes").child(node.id);
-          nodeRef.remove();
+          // var ref = new Firebase(that.common.firebase_url);
+          // var authData = ref.getAuth();
+          // var nodeRef = ref.child("notes").child("users").child(authData.uid)
+          //     .child("files").child(that.file_id).child("nodes").child(node.id);
+          // nodeRef.remove();
+          that.nodesRef.child(node.id).remove();
           for (var i = 0; i < node.children.length; i++) {
             visite(node.children[i]);
           };

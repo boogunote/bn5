@@ -39,10 +39,12 @@ export class Tree extends Node{
       return;
     }
 
-    var filesPath = '/notes/users/' + authData.uid + '/files';
+    this.user_id = params.user_id;
+
+    var filesPath = '/notes/users/' + this.utility.getRealUserId(this.user_id) + '/files';
     this.filesRef = ref.child(filesPath);
 
-    var dirNodesPath = '/notes/users/' + authData.uid + '/directories/nodes';
+    var dirNodesPath = '/notes/users/' + this.utility.getRealUserId(this.user_id) + '/directories/nodes';
     this.dirNodesRef = ref.child(dirNodesPath);
     var that = this;
     this.dirNodesRef.child('root').on('value', function(dataSnapshot) {

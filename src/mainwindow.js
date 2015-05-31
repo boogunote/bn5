@@ -34,6 +34,9 @@ export class MainWindow {
       return;
     }
 
+    var tempList = authData.uid.split(':')
+    this.user_id = tempList[tempList.length-1];
+
     this.infoRef = this.groupsRef = this.rootRef.child('/info/users/' + authData.uid);
 
     var that = this;
