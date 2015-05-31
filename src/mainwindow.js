@@ -42,6 +42,8 @@ export class MainWindow {
 
       that.info = dataSnapshot.val();
       console.log(that.info)
+      if (typeof that.info.mainwindow == 'undefined')
+        that.info.mainwindow = {}
       if (typeof that.info.mainwindow.tabs == 'undefined')
         that.info.mainwindow.tabs = [];
       // copy to local tab list

@@ -33,6 +33,7 @@
               <div class="modal-body">
                 <input id="share_id" type="text"></input><input type="button" value="Add" click.delegate="addShareId()"></input><input type="button" value="Remove All"></input>
                 <div repeat.for="item of share_list">
+                  ${item.id}
                 </div>
               </div>
               <div class="modal-footer">

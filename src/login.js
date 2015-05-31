@@ -93,9 +93,10 @@ export class Login {
               id: file_id
             }
             user_notes_skeleton.directories.nodes[file_id] = file_item;
-            var new_tree_note_skeleton = that.utility.clone(that.common.new_tree_note_skeleton)
-            new_tree_note_skeleton.meta.create_time = Firebase.ServerValue.TIMESTAMP;
-            user_notes_skeleton.files[file_id] = new_tree_note_skeleton;
+            var new_flat_note_skeleton = that.utility.clone(that.common.new_flat_note_skeleton)
+            new_flat_note_skeleton.meta.id = file_id;
+            new_flat_note_skeleton.meta.create_time = Firebase.ServerValue.TIMESTAMP;
+            user_notes_skeleton.files[file_id] = new_flat_note_skeleton;
             userNotesRef.set(user_notes_skeleton);
             var userInfoRef = ref.child("info").child("users").child(userData.uid);
             var user_info = {
@@ -105,6 +106,26 @@ export class Login {
               id: file_id
             };
             userInfoRef.set(user_info);
+
+            var timelineInfoRef = ref.child("timeline").child("users").child(userData.uid);
+            var user_timeline = {
+              "data": {
+                "BN-default": {
+                  "first_item": {
+                    content: "Welcome",
+                    start: that.utility.now()
+                  }
+                }
+              },
+              "groups": {
+                "0": {
+                  "content": "default",
+                  "id": "BN-default"
+                }
+              }
+            };
+            timelineInfoRef.set(user_timeline);
+
             that.router.navigate("mainwindow")
             // window.location.href = window.location.origin + "/#fm";
             // that.router.navigate("fm")

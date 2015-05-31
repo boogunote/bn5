@@ -104,8 +104,10 @@ export class Tree extends Node {
     var shareIdElement = $("#share_dialog #share_id");
     var idString = shareIdElement.val();
     var id = parseInt(idString)
-    if (isNaN(id) || id < 1)
+    if (isNaN(id) || id < 1) {
       alert("Please input friend id in numerica.")
+      return;
+    }
     
     var realId = "simplelogin:" + id;
 
@@ -147,8 +149,21 @@ export class Tree extends Node {
   }
 
   getShareList() {
+    var that = this;
     this.fileRef.child("meta/share").once("value", function(dataSnapshot) {
       console.log(dataSnapshot.val());
+      var idList = dataSnapshot.val();
+      that.share_list = [];
+      for (var id in idList) {
+        if (idList.hasOwnProperty(id)) {
+          that.share_list.push({
+            id: id
+          });
+        }
+      }
+
+      console.log("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
+      console.log(that.share_list)
     })
   }
 
