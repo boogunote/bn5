@@ -105,15 +105,27 @@ export class Tree extends Node {
   addShareId() {
     var shareIdElement = $("#share_dialog #share_id");
     var idString = shareIdElement.val();
+    shareIdElement.val("")
     var id = parseInt(idString)
     if (isNaN(id) || id < 1) {
       alert("Please input friend id in numerica.")
       return;
     }
     
-    var realId = "simplelogin:" + id;
-
-    this.fileRef.child("meta/share/"+realId).set("")
+    var simpleloginIdString = this.utility.getRealUserId(id);
+    var infoRef = this.rootRef.child('/info/users');
+    var that = this;
+    infoRef.child(simpleloginIdString+"/name").on("value", function(dataSnapshot) {
+      var name = dataSnapshot.val();
+      if (!name) {
+        alert("Don't have this ID.")
+        return;
+      };
+      that.fileRef.child("meta/share/"+simpleloginIdString).set({
+        read: true,
+        write: false
+      })
+    });
   }
 
   canActivate(params, queryString, routeConfig) {
@@ -151,16 +163,37 @@ export class Tree extends Node {
   }
 
   getShareList() {
+    var infoRef = this.rootRef.child('/info/users');
     var that = this;
-    this.fileRef.child("meta/share").once("value", function(dataSnapshot) {
+    this.fileRef.child("meta/share").on("value", function(dataSnapshot) {
       console.log(dataSnapshot.val());
-      var idList = dataSnapshot.val();
+      var simpleloginIdStringList = dataSnapshot.val();
       that.share_list = [];
-      for (var id in idList) {
-        if (idList.hasOwnProperty(id)) {
+      for (var simpleloginIdString in simpleloginIdStringList) {
+        // simpleloginIdString = simpleloginIdString.trim();
+        if (simpleloginIdStringList.hasOwnProperty(simpleloginIdString)) {
+          var tokens = simpleloginIdString.split(":")
+          var idString = tokens[tokens.length-1];
           that.share_list.push({
-            id: id
+            id: idString,
+            read: simpleloginIdStringList[simpleloginIdString].read,
+            write: simpleloginIdStringList[simpleloginIdString].write,
           });
+
+          infoRef.child(simpleloginIdString+"/name").on("value", function(dataSnapshot) {
+            var name = dataSnapshot.val();
+
+            var tokens = dataSnapshot.ref().parent().path.slice();
+            var simpleloginIdString = tokens[tokens.length-1];
+            simpleloginIdString = simpleloginIdString.trim();
+            for (var i = 0; i < that.share_list.length; i++) {
+              var tokens = simpleloginIdString.split(":")
+              var idString = tokens[tokens.length-1];
+              if (that.share_list[i].id == idString) {
+                that.share_list[i].name = name;
+              };
+            };
+          })
         }
       }
 
@@ -407,6 +440,20 @@ export class Tree extends Node {
     window.open("#flat/online/"+ this.user_id + "/" + this.file_id+"/root")
   }
 
+  removeShareId(index) {
+    var id = this.share_list[index].id;
+    this.fileRef.child("meta/share").child(this.utility.getRealUserId(id)).remove();
+    return true;
+  }
+
+  removeAllShareId() {
+    if (!confirm("Remove all?"))
+      return;
+    for (var i = 0; i < this.share_list.length; i++) {
+      this.removeShareId(i);
+    };
+  }
+
   setPositionToRemoteServer(id) {
     // var element = $("#"+id);
     // console.log(element.left())
@@ -429,5 +476,31 @@ export class Tree extends Node {
 
   showShareDialog() {
     $("#share_dialog").modal('show');
+  }
+
+  togglePomission(index, permission) {
+    var item = this.share_list[index];
+    if (!item.read && !item.write) {
+      if (confirm('Do you want to remove "' + item.name + '"')) {
+        this.removeShareId(index);
+      } else {
+        item[permission] = true;
+      }
+      return
+    }
+
+    var realId = this.utility.getRealUserId(item.id);
+
+    this.fileRef.child("meta/share/"+realId+"/"+permission).set(item[permission])
+  }
+
+  toggleReadPomission(index) {
+    this.togglePomission(index, "read")
+    return true;
+  }
+
+  toggleWritePomission(index) {
+    this.togglePomission(index, "write")
+    return true;
   }
 }
