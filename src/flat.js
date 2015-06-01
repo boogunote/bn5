@@ -3,6 +3,8 @@ import {Common} from './common';
 import {Node} from './node';
 import 'jquery';
 import autosize from 'jquery-autosize';
+import 'bootstrap';
+import 'bootstrap/css/bootstrap.css!';
 
 export class Tree extends Node {
   static inject() { return [Common, Utility]; }
