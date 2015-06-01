@@ -218,9 +218,45 @@ export class Node {
     // console.log("this.utility.copyAttributes(this.node, newNode);")
     // console.log(this.node);
     // console.log(newNode)
+
+    // flat view needs children be loaded before being added.
+    if (this.node.id == "root") {
+      var newChildrenList = [];
+      for (var i = 0; newNode.children && i < newNode.children.length; i++) {
+        var find = false;
+        for (var j = 0; this.node.children && j < this.node.children.length; j++) {
+          if (newNode.children[i] == this.node.children[j]) {
+            find = true;
+            break;
+          }
+        };
+        if (!find) {
+          newChildrenList.push(newNode.children[i])
+        };
+      };
+      
+      if (newChildrenList.length != 0) {
+        var count = 0;
+        for (var i = 0; i < newChildrenList.length; i++) {
+          this.nodesRef.child(newChildrenList[i]).once("value", function(dataSnapshot) {
+            var childNode = dataSnapshot.val();
+            that.file.nodes[childNode.id] = childNode;
+            count++;
+            if (count == newChildrenList.length) {
+              that.utility.copyAttributes(that.node, newNode);
+              that.rootVM.receiveRemoteTime = that.utility.now();
+              setTimeout(function() {
+                if (that.resize) that.resize();
+              }, 0)
+            };
+          })
+          newChildrenList[i]
+        };
+        this.rootVM.receiveRemoteTime = this.utility.now();
+        return;  
+      }
+    }
     this.utility.copyAttributes(this.node, newNode);
-    // console.log(this.resize)
-    // this.node = newNode;
     this.rootVM.receiveRemoteTime = this.utility.now();
     setTimeout(function() {
       if (that.resize) that.resize();
