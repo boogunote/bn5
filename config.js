@@ -159,8 +159,10 @@ System.config({
       "bn5/tree",
       "bn5/tree-node",
       "bn5/login",
-      "bn5/flat",
       "github:twbs/bootstrap@3.3.2/css/bootstrap.css!github:systemjs/plugin-css@0.1.9",
+      "github:twbs/bootstrap@3.3.2/js/bootstrap",
+      "github:twbs/bootstrap@3.3.2",
+      "bn5/flat",
       "bn5/app"
     ]
   }

@@ -1,6 +1,8 @@
 import {Common} from '../common'
 import {Utility} from '../utility';
-// import {VIS} from './vis'
+import 'jquery';
+import 'bootstrap';
+import 'bootstrap/css/bootstrap.css!';
 
 export class Timeline{
   static inject() { return [Common, Utility]; }
@@ -40,7 +42,7 @@ export class Timeline{
     if (typeof item.end != "undefined") {
       remoteItem.end = item.end.getTime();
     };
-    this.setToRemoteTime = this.utility.now();
+    // this.setToRemoteTime = this.utility.now();
     this.dataRef.child(item.group).child(remoteItem.id).set(remoteItem);
   }
 
@@ -85,14 +87,22 @@ export class Timeline{
           },
 
           onAdd: function (item, callback) {
-            item.content = prompt('Enter text content for new item:', item.content);
-            if (item.content != null) {
-              that.addItem(item);
-              callback(item); // send back adjusted new item
-            }
-            else {
-              callback(null); // cancel item creation
-            }
+            $('#timeline_modal').modal({
+              backdrop: 'static'
+            });
+            $('#content').focus();
+            // that.datetimepicker.data("DateTimePicker").date(new Date());
+            that.initDialog(item);
+            that.temp_group = item.group;
+            callback(null);
+            // item.content = prompt('Enter text content for new item:', item.content);
+            // if (item.content != null) {
+            //   that.addItem(item);
+            //   callback(item); // send back adjusted new item
+            // }
+            // else {
+            //   callback(null); // cancel item creation
+            // }
           },
 
           onMove: function (item, callback) {
@@ -155,8 +165,6 @@ export class Timeline{
         that.getGroups();
 
 
-
-
         // setInterval(function() {
         //   timeline.setItems(items);
         // }, 1000);
@@ -172,6 +180,16 @@ export class Timeline{
           //     'properties=' + JSON.stringify(properties);
           // log.firstChild ? log.insertBefore(msg, log.firstChild) : log.appendChild(msg);
         }
+    });
+    
+
+    System.import('amd/bootstrap-datetimepicker').then( () => {
+      that.datetimepicker = $('#datetimepicker1');
+      that.datetimepicker.datetimepicker({
+        // format: 'YYYY-MM-DD HH:mm:SS',
+        format: 'YYYY-MM-DD HH:mm',
+        date: new Date()
+      });
     });
   }
 
@@ -243,6 +261,18 @@ export class Timeline{
     })
   }
 
+  initDialog(item) {
+    $('#content').val(item.content);
+    this.datetimepicker.data("DateTimePicker").date(item.start);
+    if (item.end) {
+      var duration = Math.ceil((item.end - item.start)/60000.0);
+      $('#duration').val(''+duration);
+    } else {
+      $('#duration').val('0');
+    }
+    $('#repeat').val('1');
+  }
+
   moveItem(item) {
     if (typeof item.end != "undefined")
       item.title = this.utility.millisecondsToString(item.end - item.start);
@@ -250,6 +280,61 @@ export class Timeline{
     if (typeof item.end != "undefined") {
       this.dataRef.child(item.group).child(item.id).child("end").set(item.end.getTime());
     }
+  }
+
+  onKeyDown(event) {
+    console.log(event)
+  }
+
+  saveChanges() {
+    var content = $('#content').val().trim();
+    var start = this.datetimepicker.data("DateTimePicker").date().toDate()
+    var durationString = $('#duration').val();
+    var repeatString = $('#repeat').val();
+
+    var duration = 0;
+
+    if ('' != durationString) {
+      duration = parseInt(durationString)
+      if (isNaN(duration) || duration < 0) {
+        alert("Please input correct duration.")
+        return;
+      }
+    }
+
+    if (duration == 0) {
+      var item = {
+        id: this.utility.getUniqueId(),
+        group: this.temp_group,
+        content: content,
+        start: start
+      }
+      this.addItem(item);
+    } else {
+      var repeat = 0;
+      if ('' != repeatString) {
+        var repeat = parseInt(repeatString)
+        if (isNaN(repeat) || repeat < 0) {
+          alert("Please input correct repeat.")
+          return;
+        }
+      }
+
+      for (var i = 0; i < repeat; i++) {
+        var item = {
+          id: this.utility.getUniqueId(),
+          group: this.temp_group,
+          content: content,
+          start: new Date(start.getTime() + i*duration*60000),
+          end: new Date(start.getTime() + (i+1)*duration*60000)
+        }
+        this.addItem(item);
+      };
+    }
+    
+
+    
+    $('#timeline_modal').modal('hide');
   }
 
   updateItem(item) {

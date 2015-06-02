@@ -1,5 +1,6 @@
 <template>
-  <link href="vis.min.css" rel="stylesheet" type="text/css" />
+  <link href="styles/vis.min.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/bootstrap-datetimepicker.css">
   <style type="text/css">
     .vis.timeline .item.range .content {
       overflow: visible;
@@ -7,10 +8,44 @@
   </style>
 <!--   <input type="button" click.delegate="addNewItem()" value="add item"></input>
   <input type="button" click.delegate="removeItem()" value="remove item"></input> -->
-  <div id="visualization"></div>
+  <div id="visualization" keydown.delegate="onKeyDown($event)"></div>
 
-  <script>
-
-
-  </script>
+  <div class="modal" id="timeline_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <div class='input-group'>
+                  <span class="input-group-addon">Content</span>
+                  <input type='text' id='content' class="form-control" />
+                </div>
+                <div class='input-group date' id='datetimepicker1'>
+                  <span class="input-group-addon">Start</span>
+                  <input type='text' class="form-control" />
+                  <span class="input-group-addon">
+                      <span class="glyphicon glyphicon-calendar"></span>
+                  </span>
+                </div>
+                <div class='input-group'>
+                  <span class="input-group-addon">Duration</span>
+                  <input type='text' id='duration' class="form-control" />
+                  <span class="input-group-addon">min.</span>
+                </div>
+                <div class='input-group'>
+                  <span class="input-group-addon">Repeat</span>
+                  <input type='text' id='repeat' class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" click.delegate="saveChanges()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
