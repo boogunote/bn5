@@ -29,7 +29,7 @@ export class App {
         {route: ['fm'],     moduleId: './file_manager/tree/:user_id', nav: true},
         {route: ['flat/:type/:user_id/:file_id/:root_id'],     moduleId: 'flat', nav: true},
         {route: ['mosaic/:type/:user_id/:file_id', 'mosaic'],     moduleId: 'mosaic/mosaic', nav: true},
-        {route: ['mainwindow'], moduleId: 'mainwindow', nav: true},
+        {route: ['main'], moduleId: 'main', nav: true},
         {route: ['timeline'], moduleId: 'timeline/timeline', nav: true}
       ]);
     });

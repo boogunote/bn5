@@ -29,7 +29,7 @@ export class Login {
       } else if (authData) {
         // user authenticated with Firebase
         console.log("Logged In! User ID: " + authData.uid);
-        that.router.navigate("mainwindow")
+        that.router.navigate("main")
         // if (hash.length > 2) {
         //     window.location.replace("index.html" + hash);
         // } else {
@@ -122,7 +122,7 @@ export class Login {
             };
             timelineInfoRef.set(user_timeline);
 
-            that.router.navigate("mainwindow")
+            that.router.navigate("main")
           }
         });
       }

@@ -9,7 +9,7 @@ import {Common} from './common';
 import {Utility} from './utility';
 import {Router} from 'aurelia-router';
 
-export class MainWindow {
+export class Main {
   static inject() { return [Common, Utility, Router]; }
   constructor(common, utility, router){
     this.common = common;
