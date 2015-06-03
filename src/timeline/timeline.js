@@ -107,6 +107,7 @@ export class Timeline{
           },
 
           onMove: function (item, callback) {
+            console.log("yaya: "+item.content)
             that.moveItem(item);
             callback(item);
             // if (confirm('Do you really want to move the item to\n' +
@@ -120,6 +121,8 @@ export class Timeline{
           },
 
           onMoving: function (item, callback) {
+            console.log("wawa: "+item.content)
+            // that.moveItem(item);
             // if (item.start < min) item.start = min;
             // if (item.start > max) item.start = max;
             // if (item.end   > max) item.end   = max;
@@ -282,6 +285,7 @@ export class Timeline{
   }
 
   moveItem(item) {
+    this.setToRemoteTime = this.utility.now();
     if (typeof item.end != "undefined")
       item.title = this.utility.millisecondsToString(item.end - item.start);
     this.dataRef.child(item.group).child(item.id).child("start").set(item.start.getTime());
