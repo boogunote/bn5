@@ -35,6 +35,13 @@ export class Login {
         // } else {
         //     window.location.replace("list.html");
         // }
+        var logoutTime = (authData.expires - 60*60)*1000 - parseInt(new Date().getTime().toString());
+
+        setTimeout(function(){
+          if (confirm("Login expired. Go to login page or keep on this page?")) {
+            that.router.navigate("login")
+          }
+        }, logoutTime);
       }
     });
   }
