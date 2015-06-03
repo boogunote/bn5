@@ -1,7 +1,7 @@
 <template>
   <input type="button" value="File Manager" click.delegate="toggleFileManager()"></input>
   <input type="button" value="Timeline" click.delegate="toggleTimeline()"></input>
-  <div show.bind="showTimeline">
+  <div show.bind="!showFileManager && showTimeline">
     <compose
       view-model="./timeline/timeline">
     </compose>
