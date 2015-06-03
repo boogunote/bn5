@@ -21,23 +21,23 @@
             <div class="form-group">
                 <div class='input-group'>
                   <span class="input-group-addon">Content</span>
-                  <input type='text' id='content' class="form-control" />
+                  <input type='text' id='content' class="form-control" keydown.delegate="onDialogKeyDown($event)"/>
                 </div>
                 <div class='input-group date' id='datetimepicker1'>
                   <span class="input-group-addon">Start</span>
-                  <input type='text' class="form-control" />
+                  <input type='text' class="form-control" keydown.delegate="onDialogKeyDown($event)"/>
                   <span class="input-group-addon">
                       <span class="glyphicon glyphicon-calendar"></span>
                   </span>
                 </div>
                 <div class='input-group'>
                   <span class="input-group-addon">Duration</span>
-                  <input type='text' id='duration' class="form-control" />
+                  <input type='text' id='duration' class="form-control" keydown.delegate="onDialogKeyDown($event)"/>
                   <span class="input-group-addon">min.</span>
                 </div>
                 <div class='input-group'>
                   <span class="input-group-addon">Repeat</span>
-                  <input type='text' id='repeat' class="form-control" />
+                  <input type='text' id='repeat' class="form-control" keydown.delegate="onDialogKeyDown($event)"/>
                 </div>
             </div>
         </div>

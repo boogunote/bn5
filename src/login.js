@@ -47,7 +47,7 @@ export class Login {
   }
 
   onKeyDown(event) {
-    console.log(event)
+    // console.log(event)
     if (13 == event.keyCode) {
       this.login();
     };

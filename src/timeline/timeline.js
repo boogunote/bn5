@@ -298,6 +298,13 @@ export class Timeline{
     console.log(event)
   }
 
+  onDialogKeyDown(event) {
+    if (13 == event.keyCode) {
+      this.saveChanges();
+    }
+    return true;
+  }
+
   saveChanges() {
     var content = $('#content').val().trim();
     var start = this.datetimepicker.data("DateTimePicker").date().toDate()
