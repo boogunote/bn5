@@ -26,7 +26,7 @@ export class Timeline{
   }
 
   removeItem(item) {
-    this.setToRemoteTime = this.utility.now();
+    // this.setToRemoteTime = this.utility.now();
     console.log(item)
     this.dataRef.child(item.group).child(item.id).remove();
   }
@@ -48,8 +48,8 @@ export class Timeline{
 
   attached() {
     var nowTimestamp = this.utility.now();
-    this.startTimestamp = nowTimestamp - 3*60*60*1000;
-    this.endTimestamp = nowTimestamp + 9*60*60*1000;
+    this.startTimestamp = nowTimestamp - 1*60*60*1000;
+    this.endTimestamp = nowTimestamp + 4*60*60*1000;
     this.queryEpsilon = 24*60*60*1000;
 
         // console.log(VIS().canActivate())
@@ -92,6 +92,7 @@ export class Timeline{
             });
             $('#content').focus();
             // that.datetimepicker.data("DateTimePicker").date(new Date());
+            item.content = "";
             that.initDialog(item);
             that.temp_group = item.group;
             callback(null);
@@ -138,9 +139,16 @@ export class Timeline{
           },
 
           onRemove: function (item, callback) {
-            if (confirm('Remove item ' + item.content + '?')) {
-              that.removeItem(item);
-              callback(item); // confirm deletion
+            if (confirm('Remove ?')) {
+              var selectedItems = that.timeline.getSelection()
+              console.log(selectedItems)
+              for (var i = 0; i < selectedItems.length; i++) {
+                var dataSet = that.timeline.itemsData.getDataSet();
+                that.removeItem(dataSet.get(selectedItems[i]))
+                // dataSet.remove(selectedItems[i]);
+              };
+              // that.removeItem(item);
+              // callback(item); // confirm deletion
             }
             else {
               callback(null); // cancel deletion
