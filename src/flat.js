@@ -318,11 +318,12 @@ export class Tree extends Node {
   }
 
   onClick(event) {
-    // console.log(event);
+    console.log(event);
     // event.bubbles = false;
+    var that = this;
     var delta = 100;
-    if (!event.ctrlKey) {
-      var y = event.pageY;
+    if (event.ctrlKey && !event.altKey) {
+      var y = event.pageY - $(event.target).closest('.flat-mainwindow').position().top
       var expand = null;
       if (!event.shiftKey) {
         expand = true;
@@ -340,8 +341,9 @@ export class Tree extends Node {
           }
 
           if (node.y < 0) node.y = 0;
-
-          this.nodesRef.child(node.id+"/y").set(node.y);
+          this.doEdit(function() {
+            that.nodesRef.child(node.id+"/y").set(node.y);
+          });
         }
       };
 
@@ -350,8 +352,10 @@ export class Tree extends Node {
       } else {
         this.node.height -= delta;
       }
-      this.nodesRef.child(this.node.id+"/height").set(this.node.height);
-    } else {
+      this.doEdit(function() {
+        that.nodesRef.child(that.node.id+"/height").set(that.node.height);
+      });
+    } else if (event.ctrlKey && event.altKey) {
       var x = event.pageX;
       var expand = null;
       if (!event.shiftKey) {
@@ -370,7 +374,9 @@ export class Tree extends Node {
           }
         }
         if (node.x < 0) node.x = 0;
-        this.nodesRef.child(node.id+"/x").set(node.x);
+        this.doEdit(function() {
+          that.nodesRef.child(node.id+"/x").set(node.x);
+        });
       }
 
       if (expand) {
@@ -378,7 +384,9 @@ export class Tree extends Node {
       } else {
         this.node.width -= delta;
       }
-      this.nodesRef.child(this.node.id+"/width").set(this.node.width);
+      this.doEdit(function() {
+        that.nodesRef.child(that.node.id+"/width").set(that.node.width);
+      });
     }
 
     return false;
