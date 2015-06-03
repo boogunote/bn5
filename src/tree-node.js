@@ -38,7 +38,7 @@ export class TreeNode extends Node {
       var evt = document.createEvent('Event');
       evt.initEvent('autosize.destroy', true, false);
       this.ta.dispatchEvent(evt);
-      this.ta.style.height = this.ta.scrollHeight;
+      this.ta.style.height = '24px'; //this.ta.scrollHeight;
     }
   }
 

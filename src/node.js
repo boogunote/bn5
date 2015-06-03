@@ -259,7 +259,8 @@ export class Node {
     this.utility.copyAttributes(this.node, newNode);
     this.rootVM.receiveRemoteTime = this.utility.now();
     setTimeout(function() {
-      if (that.resize) that.resize();
+      // if (that.resize) that.resize();
+      if (that.foldNode) that.foldNode();
     }, 0)
   }
 
