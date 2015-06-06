@@ -276,7 +276,9 @@ export class Timeline{
     $('#content').val(item.content);
     this.datetimepicker.data("DateTimePicker").date(item.start);
     if (item.end) {
-      var duration = Math.ceil((item.end - item.start)/60000.0);
+      var duration = (item.end - item.start)/60000.0;
+      if (duration < 1.0) { duration = 1};
+      duration = Math.floor(duration);
       $('#duration').val(''+duration);
     } else {
       $('#duration').val('0');
@@ -308,6 +310,7 @@ export class Timeline{
   saveChanges() {
     var content = $('#content').val().trim();
     var start = this.datetimepicker.data("DateTimePicker").date().toDate()
+    start = new Date(Math.floor(start.getTime()/(60*1000))*(60*1000));
     var durationString = $('#duration').val();
     var repeatString = $('#repeat').val();
 
