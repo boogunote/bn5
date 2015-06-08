@@ -1,6 +1,10 @@
 import {Common} from '../common';
 import {Node} from './node';
 import {Utility} from '../utility';
+import 'jquery';
+import 'bootstrap';
+import 'bootstrap/css/bootstrap.css!';
+
 
 export class Tree extends Node{
   static inject() { return [Common, Element, Utility]; }

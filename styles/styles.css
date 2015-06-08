@@ -1,3 +1,9 @@
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }
@@ -84,6 +90,14 @@ textarea:focus{
     margin-top: 5px;
 }
 
+.dropdown-hiden {
+  display: none;
+}
+
+.tree-node-wrapper:hover .dropdown-hiden {
+  display:block;
+}
+
 .tree-node-icon-container {
 /*    position: absolute;
     text-align : right;
@@ -98,6 +112,7 @@ textarea:focus{
 /*    top : 2px;
     position: relative;*/
     margin: auto, auto;
+    margin-right: 4px;
     /*margin-bottom: 2px;*/
     font-size:10px;
     width: 12px;
@@ -180,9 +195,18 @@ textarea:focus{
   padding: 5px;
 }
 
-.mainwindow-content {
+.main-content {
   overflow: auto;
   width: 100%;
+}
+
+.main-left {
+  width: 400px;
+  overflow: scroll;
+}
+.main-right {
+  -webkit-flex: 1;
+          flex: 1;
 }
 
 .mosaic {

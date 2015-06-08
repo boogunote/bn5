@@ -1,22 +1,29 @@
 <template>
-  <div class="tree-node-wrapper">
-    <div class="tree-node-icon-container">  
+  <div class="tree-node-wrapper" style="height:30px"> 
+    <div class="tree-node-icon-container" style="padding-top:3px">  
       <span class="tree-node-expand-button glyphicon ${meta.collapsed ? 'glyphicon-plus-sign':'glyphicon-minus-sign'}" click.delegate="toggle()"></span>
     </div>
-    <span href.bind="url" click.delegate="open($event)">${meta.name}</span>
-    <input show.bind="meta.type=='directory'" type="button" value="New Directory" click.delegate="newDirectory()"></input>
-    <input show.bind="meta.type=='directory'" type="button" value="New Flat" click.delegate="newFlat()"></input>
-    <input show.bind="meta.type=='directory'" type="button" value="New Tree" click.delegate="newTree()"></input>
-    <input show.bind="meta.type=='directory'" type="button" value="New Mosaic" click.delegate="newMosaic()"></input>
-    <input type="button" value="Cut" click.delegate="cut()"></input>
-    <input show.bind="meta.type=='directory'" type="button" value="Paste" click.delegate="paste()"></input>
-    <input type="button" value="Rename" click.delegate="rename()"></input>
-    <input type="button" value="Delete" click.delegate="delete()"></input>
-  </div>
-    <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.meta.collapsed">
-      <compose
-        model.bind="{'node_id':child, 'parentVM':$parent}"
-        view-model="./tree-node">
-      </compose>
+    <span href.bind="url" style="padding-top:6px; margin-right:10px; cursor: pointer;" click.delegate="open($event)">${meta.name}</span>
+    <div class="dropdown dropdown-hiden">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Menu
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li show.bind="meta.type=='directory'" role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newDirectory()">New Directory</a></li>
+        <li show.bind="meta.type=='directory'" role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newFlat()">New Flat</a></li>
+        <li show.bind="meta.type=='directory'" role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newMosaic()">New Mosaic</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="cut()">Cut</a></li>
+        <li show.bind="meta.type=='directory'" role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="paste()">Paste</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="rename()">Rename</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="delete()">Delete</a></li>
+      </ul>
     </div>
+  </div>
+  <div class="tree-node-child-list" repeat.for="child of node.children" show.bind="!$parent.meta.collapsed">
+    <compose
+      model.bind="{'node_id':child, 'parentVM':$parent}"
+      view-model="./tree-node">
+    </compose>
+  </div>
 </template>

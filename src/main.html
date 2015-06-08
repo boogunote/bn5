@@ -1,42 +1,47 @@
 <template>
   <input type="button" value="File Manager" click.delegate="toggleFileManager()"></input>
   <input type="button" value="Timeline" click.delegate="toggleTimeline()"></input>
-  <div show.bind="!showFileManager && showTimeline">
-    <compose
-      view-model="./timeline/timeline">
-    </compose>
-  </div>
-  <div show.bind="showFileManager">
-    <compose
-      model.bind="{'user_id':user_id, 'frameVM': frameVM}"
-      view-model="./file_manager/tree">
-    </compose>
-  </div>
-  <ul class="nav nav-tabs">
-    <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
-    <li class="${tab.id == $parent.active_id?'active':''}" mouseenter.delegate="$parent.onMouseEnter($event)"  mouseleave.delegate="$parent.onMouseLeave($event)" repeat.for="tab of info.mainwindow.tabs">
-      <a style="display:block; float:left; cursor: pointer;" file_id.bind="tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
-      <input style="display:none" file_id.bind="tab.id" type="button" value="x" click.delegate="$parent.close($event)"></input>
-    </li>
-  </ul>
-  <div class="mainwindow-content">
-    <div id.bind="'page-'+tab.id" repeat.for="tab of localTabList">
-      <div show.bind="tab.id == $parent.active_id">
+  <div style="clear:left; display: -webkit-flex; display: flex;">
+    <div show.bind="showFileManager" class="main-left">
+      <compose
+        model.bind="{'user_id':user_id, 'frameVM': frameVM}"
+        view-model="./file_manager/tree">
+      </compose>
+    </div>
+    <div class="main-right">
+      <div show.bind="showTimeline">
         <compose
-          if.bind="tab.type=='tree'"
-          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
-          view-model="./tree">
+          view-model="./timeline/timeline">
         </compose>
-        <compose
-          if.bind="tab.type=='flat'"
-          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
-          view-model="./flat">
-        </compose>
-        <compose
-          if.bind="tab.type=='mosaic'"
-          model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
-          view-model="./mosaic/mosaic">
-        </compose>
+      </div>
+      
+      <ul class="nav nav-tabs">
+        <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
+        <li class="${tab.id == $parent.active_id?'active':''}" mouseenter.delegate="$parent.onMouseEnter($event)"  mouseleave.delegate="$parent.onMouseLeave($event)" repeat.for="tab of info.mainwindow.tabs">
+          <a style="display:block; float:left; cursor: pointer;" file_id.bind="tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
+          <input style="display:none" file_id.bind="tab.id" type="button" value="x" click.delegate="$parent.close($event)"></input>
+        </li>
+      </ul>
+      <div class="main-content">
+        <div id.bind="'page-'+tab.id" repeat.for="tab of localTabList">
+          <div show.bind="tab.id == $parent.active_id">
+            <compose
+              if.bind="tab.type=='tree'"
+              model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
+              view-model="./tree">
+            </compose>
+            <compose
+              if.bind="tab.type=='flat'"
+              model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
+              view-model="./flat">
+            </compose>
+            <compose
+              if.bind="tab.type=='mosaic'"
+              model.bind="{'type':'online', 'user_id':$parent.user_id, 'file_id':tab.id, 'root_id':'root'}"
+              view-model="./mosaic/mosaic">
+            </compose>
+          </div>
+        </div>
       </div>
     </div>
   </div>

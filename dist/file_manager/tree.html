@@ -1,12 +1,18 @@
 <template>
   <div>
-    <input type="button" value="New Directory" click.delegate="newDirectory()"></input>
-    <input type="button" value="New Flat" click.delegate="newFlat()"></input>
-    <input type="button" value="New Tree" click.delegate="newTree()"></input>
-    <input type="button" value="New Mosaic" click.delegate="newMosaic()"></input>
-    <input type="button" value="Paste" click.delegate="paste()"></input>
-    <input type="button" value="Clean Status" click.delegate="cleanStatus()"></input>
-    <input type="button" value="New Temporary Mosaic" click.delegate="newTemporaryMosaic()"></input>
+    <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Menu
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newDirectory()">New Directory</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newFlat()">New Flat</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="newMosaic()">New Mosaic</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="paste()">Paste</a></li>
+        <li role="presentation"><a style="cursor: pointer;" role="menuitem" tabindex="-1" click.delegate="cleanStatus()">Clean Status</a></li>
+      </ul>
+    </div>
     <div repeat.for="child of node.children">
       <compose
         model.bind="{'node_id':child, 'parentVM':$parent}"
