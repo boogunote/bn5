@@ -200,6 +200,15 @@ textarea:focus{
   width: 100%;
 }
 
+.main-header {
+  -moz-column-count: 2;
+  -moz-column-gap: 50%;
+  -webkit-column-count: 2;
+  -webkit-column-gap: 50%;
+  column-count: 2;
+  column-gap: 50%;
+}
+
 .main-left {
   width: 400px;
   overflow: scroll;

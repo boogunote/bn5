@@ -1,6 +1,11 @@
 <template>
-  <input type="button" value="File Manager" click.delegate="toggleFileManager()"></input>
-  <input type="button" value="Timeline" click.delegate="toggleTimeline()"></input>
+  <div class="main-header">
+    <span align="left">BooguNote 5 <span style="font-size:xx-small">alpha</span></span>
+    <div align="right">
+      <button class="btn btn-default" click.delegate="toggleFileManager()">Notes Manager</button>
+      <button class="btn btn-default" click.delegate="toggleTimeline()">Timeline</button>
+    </div>
+  </div>
   <div style="clear:left; display: -webkit-flex; display: flex;">
     <div show.bind="showFileManager" class="main-left">
       <compose
