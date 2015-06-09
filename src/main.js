@@ -156,14 +156,6 @@ export class Main {
     this.showTimeline = !this.showTimeline;
   }
 
-  onMouseEnter(event) {
-    $(event.target).find('input').show();
-  }
-
-  onMouseLeave(event) {
-    $(event.target).find('input').hide();
-  }
-
   onSwitchTab(event) {
     console.log(event)
     var id = event.target.file_id

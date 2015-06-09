@@ -22,9 +22,9 @@
       
       <ul class="nav nav-tabs">
         <!-- <li class="${tab.id} ${$parent.active_id}" repeat.for="tab of info.mainwindow.tabs"> -->
-        <li class="${tab.id == $parent.active_id?'active':''}" mouseenter.delegate="$parent.onMouseEnter($event)"  mouseleave.delegate="$parent.onMouseLeave($event)" repeat.for="tab of info.mainwindow.tabs">
+        <li class="${tab.id == $parent.active_id?'active':''} main-tab-header" style="position: relative;" repeat.for="tab of info.mainwindow.tabs">
           <a style="display:block; float:left; cursor: pointer;" file_id.bind="tab.id" click.delegate="$parent.onSwitchTab($event)">${tab.name}</a>
-          <input style="display:none" file_id.bind="tab.id" type="button" value="x" click.delegate="$parent.close($event)"></input>
+          <div class="main-tab-header-close" file_id.bind="tab.id" click.delegate="$parent.close($event)">x</div>
         </li>
       </ul>
       <div class="main-content">

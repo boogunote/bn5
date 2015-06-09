@@ -157,6 +157,7 @@ System.config({
       "github:jackmoore/autosize@2.0.0",
       "bn5/node",
       "bn5/tree",
+      "amd/moment-with-locales",
       "bn5/tree-node",
       "bn5/login",
       "github:twbs/bootstrap@3.3.2/css/bootstrap.css!github:systemjs/plugin-css@0.1.9",

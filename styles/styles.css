@@ -218,6 +218,22 @@ textarea:focus{
           flex: 1;
 }
 
+.main-tab-header {
+
+}
+
+.main-tab-header-close {
+  position:absolute;
+  right:0;
+  cursor: pointer;
+  padding-right:7px;
+  display:none;
+}
+
+.main-tab-header:hover .main-tab-header-close {
+  display:block;
+}
+
 .mosaic {
   display: -webkit-box;
   display: -moz-box;
