@@ -697,6 +697,15 @@ export class Tree extends Node {
     } else if (89 == event.keyCode && event.ctrlKey && event.shiftKey) {
       this.redo();
       return false;
+    } else if (123 == event.keyCode) {
+      if (this.focusedVM)
+        if (!event.ctrlKey) {
+          this.focusedVM.insertTime()
+        } else {
+          this.focusedVM.insertDate()
+        }
+      
+      return false;
     } else if (187 == event.keyCode && event.altKey) {
       if (this.focusedVM)
         this.focusedVM.stepIcon(true);

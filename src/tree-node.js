@@ -4,6 +4,7 @@ import {DataSource} from './data-source';
 import {Node} from './node';
 import {Utility} from './utility';
 import autosize from 'jquery-autosize';
+import 'amd/moment-with-locales';
 
 export class TreeNode extends Node {
   static inject() { return [Common, Element, DataSource, Utility]; }
@@ -66,6 +67,16 @@ export class TreeNode extends Node {
     this.node.fold = !this.node.fold;
     this.foldNode(this.node.fold);
     this.setNodeToServer(this.node.id);
+  }
+
+  insertTime() {
+    this.utility.insertAtCaret(this.ta, moment().format('HH:mm:ss'));
+    this.node.content = $(this.ta).val();
+  }
+
+  insertDate() {
+    this.utility.insertAtCaret(this.ta, moment().format('YYYY-MM-DD'))
+    this.node.content = $(this.ta).val();
   }
 
   stepIcon(direction) {
