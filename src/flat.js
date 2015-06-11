@@ -7,11 +7,12 @@ import 'bootstrap';
 import 'bootstrap/css/bootstrap.css!';
 
 export class Tree extends Node {
-  static inject() { return [Common, Utility]; }
-  constructor(common, utility){
+  static inject() { return [Common, Element, Utility]; }
+  constructor(common, element, utility){
     super();
     this.common = common;
     this.utility = utility;
+    this.element = element;
 
     this.operationRecordList = [];
     this.operationRecordList.cursor = -1;
@@ -105,7 +106,7 @@ export class Tree extends Node {
   }
 
   addShareId() {
-    var shareIdElement = $("#share_dialog #share_id");
+    var shareIdElement = $(this.element).find("#share_dialog #share_id");
     var idString = shareIdElement.val();
     shareIdElement.val("")
     var id = parseInt(idString)
@@ -485,7 +486,7 @@ export class Tree extends Node {
   }
 
   showShareDialog() {
-    $("#share_dialog").modal('show');
+    $(this.element).find("#share_dialog").modal('show');
   }
 
   togglePomission(index, permission) {
